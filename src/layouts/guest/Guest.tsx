@@ -15,24 +15,18 @@ import {
 import { Link, Outlet, useLocation } from 'react-router-dom';
 import { useEffect, useRef, useState } from 'react';
 import {
-  AppstoreAddOutlined,
-  GithubOutlined,
+  ApartmentOutlined,
   LoginOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
-  ProductOutlined,
+  TrophyOutlined,
 } from '@ant-design/icons';
 import { useMediaQuery } from 'react-responsive';
 import { Logo, NProgress } from '../../components';
-import {
-  PATH_AUTH,
-  PATH_DASHBOARD,
-  PATH_DOCS,
-  PATH_GITHUB,
-  PATH_LANDING,
-} from '../../constants';
+import { PATH_AUTH, PATH_DASHBOARD, PATH_LANDING } from '../../constants';
+import FooterCustom from '@components/Footer/FooterCustom';
 
-const { Header, Content, Footer } = Layout;
+const { Header, Content } = Layout;
 
 export const GuestLayout = () => {
   const {
@@ -90,9 +84,10 @@ export const GuestLayout = () => {
         >
           <Logo color="blue" asLink href={PATH_LANDING.root} />
           {!isMobile ? (
+            // Desktop Menu
             <>
               <Flex gap="small">
-                <Link to={PATH_DOCS.productRoadmap} target="_blank">
+                {/* <Link to={PATH_DOCS.productRoadmap} target="_blank">
                   <Button icon={<ProductOutlined />} type="link">
                     Product Roadmap
                   </Button>
@@ -106,21 +101,33 @@ export const GuestLayout = () => {
                   <Button icon={<GithubOutlined />} type="link">
                     Give us a star
                   </Button>
+                </Link> */}
+                <Link to={PATH_AUTH.signin} target="_blank">
+                  <Button icon={<TrophyOutlined />} type="link">
+                    Giải đấu
+                  </Button>
+                </Link>
+                <Link to={PATH_AUTH.signin} target="_blank">
+                  <Button icon={<ApartmentOutlined />} type="link">
+                    Bảng xếp hạng
+                  </Button>
                 </Link>
                 <Link to={PATH_AUTH.signin}>
                   <Button icon={<LoginOutlined />} type="primary">
-                    Live Preview
+                    Đăng nhập
                   </Button>
                 </Link>
               </Flex>
             </>
           ) : (
+            // Mobile Menu
             <Tooltip title={`${open ? 'Expand' : 'Collapse'} Sidebar`}>
               <Button
                 type="text"
                 icon={open ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
                 onClick={showDrawer}
                 style={{
+                  color: 'white',
                   fontSize: '16px',
                   width: 48,
                   height: 48,
@@ -166,27 +173,15 @@ export const GuestLayout = () => {
           </TransitionGroup>
           <FloatButton.BackTop />
         </Content>
-        <Footer
-          style={{
-            textAlign: 'center',
-            backgroundColor: 'rgba(52, 152, 219, 0.2)',
-          }}
-        >
-          AntD Dashboard &copy; {new Date().getFullYear()} Created by Design
-          Sparx
-        </Footer>
+
+        <FooterCustom />
       </Layout>
       <Drawer title="Menu" placement="left" onClose={onClose} open={open}>
         <>
           <Flex gap="small" vertical>
-            <Link to={PATH_DOCS.productRoadmap} target="_blank">
+            {/* <Link to={PATH_DOCS.productRoadmap} target="_blank">
               <Button icon={<ProductOutlined />} type="link">
                 Roadmap
-              </Button>
-            </Link>
-            <Link to={PATH_DASHBOARD.default}>
-              <Button icon={<LoginOutlined />} type="text">
-                Live Preview
               </Button>
             </Link>
             <Link to={PATH_DOCS.components} target="_blank">
@@ -197,6 +192,11 @@ export const GuestLayout = () => {
             <Link to={PATH_GITHUB.repo} target="_blank">
               <Button icon={<GithubOutlined />} type="text">
                 Github
+              </Button>
+            </Link> */}
+            <Link to={PATH_DASHBOARD.default}>
+              <Button icon={<LoginOutlined />} type="text">
+                Login
               </Button>
             </Link>
           </Flex>

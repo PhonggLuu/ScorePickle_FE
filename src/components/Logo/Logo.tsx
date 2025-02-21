@@ -28,6 +28,7 @@ export const Logo = ({
   } = theme.useToken();
 
   return asLink ? (
+    // Add the logo link
     <Link to={href || '#'} className="logo-link">
       <Flex gap={others.gap || 'small'} align="center" {...others}>
         <img
@@ -39,14 +40,14 @@ export const Logo = ({
           level={5}
           type="secondary"
           style={{
-            color,
+            color: 'white',
             margin: 0,
             padding: `4px 8px`,
             backgroundColor: bgColor,
             borderRadius,
           }}
         >
-          Antd Admin
+          ScorePickle
         </Typography.Title>
       </Flex>
     </Link>
@@ -68,7 +69,7 @@ export const Logo = ({
           borderRadius,
         }}
       >
-        Antd Admin
+        ScorePickle Admin
       </Typography.Title>
     </Flex>
   );

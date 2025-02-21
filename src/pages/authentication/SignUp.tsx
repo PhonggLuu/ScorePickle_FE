@@ -10,6 +10,7 @@ import {
   Row,
   theme,
   Typography,
+  Card,
 } from 'antd';
 import {
   FacebookFilled,
@@ -67,16 +68,30 @@ export const SignUpPage = () => {
           align="center"
           justify="center"
           className="text-center"
-          style={{ background: colorPrimary, height: '100%', padding: '1rem' }}
+          style={{ background: colorPrimary, height: '100%' }}
         >
-          <Logo color="white" />
-          <Title level={2} className="text-white">
-            Welcome to Antd Admin
-          </Title>
-          <Text className="text-white" style={{ fontSize: 18 }}>
-            A dynamic and versatile multipurpose dashboard utilizing Ant Design,
-            React, TypeScript, and Vite.
-          </Text>
+          <Card
+            hoverable
+            style={{
+              border: '0px !important',
+              width: '100%',
+              height: '100%',
+              alignContent: 'center',
+              background: colorPrimary,
+            }}
+            cover={
+              <iframe
+                src="https://www.youtube.com/embed/JMwKyO4-WYU"
+                frameBorder="0"
+                allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                style={{
+                  objectFit: 'cover',
+                  height: '300px',
+                }}
+              />
+            }
+          />
         </Flex>
       </Col>
       <Col xs={24} lg={12}>
