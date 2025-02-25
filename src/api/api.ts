@@ -10,7 +10,7 @@ import {
   apiSuccessResponseInterceptor,
 } from './apiInterceptor';
 import type { ApiResponse } from './apiResponses';
-import { convertObjectToQueryParams } from '../../utils/urlUtils';
+import { convertObjectToQueryParams } from '../utils/urlUtils';
 
 export const apiRequestConfig: CreateAxiosDefaults<unknown> = {
   // base url để call api

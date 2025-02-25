@@ -10,7 +10,7 @@ import {
   getLocalStorageItem,
   removeLocalStorageItem,
   setLocalStorageItem,
-} from '../../utils/localStorageUtils';
+} from '../utils/localStorageUtils';
 
 class AuthUtils {
   private static refreshingToken: Promise<AxiosResponse> | undefined =
