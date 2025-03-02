@@ -1,6 +1,5 @@
 import {
   Button,
-  Checkbox,
   Col,
   Divider,
   Flex,
@@ -11,27 +10,31 @@ import {
   theme,
   Typography,
   Card,
+  DatePicker,
+  Select,
 } from 'antd';
 import {
   FacebookFilled,
   GoogleOutlined,
   TwitterOutlined,
 } from '@ant-design/icons';
-import { Logo } from '../../components';
 import { useMediaQuery } from 'react-responsive';
 import { PATH_AUTH, PATH_DASHBOARD } from '../../constants';
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
+import { useRegisterUser } from '@src/modules/User/hooks/useRegisterUser';
 
 const { Title, Text, Link } = Typography;
 
 type FieldType = {
-  firstName?: string;
-  lastName?: string;
-  email?: string;
-  password?: string;
-  cPassword?: string;
-  terms?: boolean;
+  firstName: string;
+  secondName?: string;
+  lastName: string;
+  email: string;
+  password: string;
+  cPassword: string;
+  dateOfBirth: Date;
+  gender: string;
 };
 
 export const SignUpPage = () => {
@@ -41,19 +44,37 @@ export const SignUpPage = () => {
   const isMobile = useMediaQuery({ maxWidth: 769 });
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const { mutate: registerUser } = useRegisterUser();
 
-  const onFinish = (values: any) => {
-    console.log('Success:', values);
-    setLoading(true);
+  const onFinish = (values: FieldType) => {
+    registerUser(
+      {
+        FirstName: values.firstName,
+        LastName: values.lastName,
+        SecondName: values.secondName || '',
+        Email: values.email,
+        PasswordHash: values.password,
+        DateOfBirth: values.dateOfBirth.toISOString(),
+        Gender: values.gender,
+      },
+      {
+        onSuccess: () => {
+          message.open({
+            type: 'success',
+            content: 'Sign up successful',
+          });
 
-    message.open({
-      type: 'success',
-      content: 'Account signup successful',
-    });
-
-    setTimeout(() => {
-      navigate(PATH_DASHBOARD.default);
-    }, 5000);
+          navigate(PATH_AUTH.signin);
+        },
+        onError: (error) => {
+          message.open({
+            type: 'error',
+            content: 'Sign up failed',
+          });
+          setLoading(false);
+        },
+      }
+    );
   };
 
   const onFinishFailed = (errorInfo: any) => {
@@ -130,7 +151,7 @@ export const SignUpPage = () => {
             requiredMark={false}
           >
             <Row gutter={[8, 0]}>
-              <Col xs={24} lg={12}>
+              <Col xs={24} lg={8}>
                 <Form.Item<FieldType>
                   label="First name"
                   name="firstName"
@@ -144,15 +165,35 @@ export const SignUpPage = () => {
                   <Input />
                 </Form.Item>
               </Col>
-              <Col xs={24} lg={12}>
+              <Col xs={24} lg={8}>
+                <Form.Item<FieldType> label="Second name" name="secondName">
+                  <Input />
+                </Form.Item>
+              </Col>
+              <Col xs={24} lg={8}>
                 <Form.Item<FieldType>
                   label="Last name"
                   name="lastName"
+                  labelCol={{ span: 6 }}
                   rules={[
                     { required: true, message: 'Please input your last name!' },
                   ]}
                 >
                   <Input />
+                </Form.Item>
+              </Col>
+              <Col xs={24} lg={12}>
+                <Form.Item<FieldType> label="DateOfBirth" name="dateOfBirth">
+                  <DatePicker style={{ width: '100%' }} />
+                </Form.Item>
+              </Col>
+              <Col xs={24} lg={12}>
+                <Form.Item<FieldType> label="Gender" name="gender">
+                  <Select>
+                    <Select.Option value="male">Nam</Select.Option>
+                    <Select.Option value="female">Nữ</Select.Option>
+                    <Select.Option value="other">Khác</Select.Option>
+                  </Select>
                 </Form.Item>
               </Col>
               <Col xs={24}>
@@ -189,14 +230,6 @@ export const SignUpPage = () => {
                   ]}
                 >
                   <Input.Password />
-                </Form.Item>
-              </Col>
-              <Col xs={24}>
-                <Form.Item<FieldType> name="terms" valuePropName="checked">
-                  <Flex>
-                    <Checkbox>I agree to</Checkbox>
-                    <Link>terms and conditions</Link>
-                  </Flex>
                 </Form.Item>
               </Col>
             </Row>

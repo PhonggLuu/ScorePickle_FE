@@ -3,50 +3,62 @@ import axios, {
   type AxiosRequestConfig,
   type CreateAxiosDefaults,
 } from 'axios';
+
+import { REQUEST_TIMEOUT_MS } from './apiConstants';
 import {
-  apiFailureRequestInterceptor,
-  apiFailureResponseInterceptor,
   apiRequestInterceptor,
+  apiFailureRequestInterceptor,
   apiSuccessResponseInterceptor,
+  apiFailureResponseInterceptor,
 } from './apiInterceptor';
-import type { ApiResponse } from './apiResponses';
+import { ApiResponse } from './apiResponses';
 import { convertObjectToQueryParams } from '../utils/urlUtils';
 
-export const apiRequestConfig: CreateAxiosDefaults<unknown> = {
-  // base url để call api
-  baseURL: 'http://localhost:5098/api/',
+const apiRequestConfig: CreateAxiosDefaults<unknown> = {
+  baseURL: `${import.meta.env.API_BASE_URL || 'http://localhost:5098/api'}`,
+  timeout: REQUEST_TIMEOUT_MS,
   headers: { 'Content-Type': 'application/json' },
-  timeout: 0,
+  withCredentials: false,
 };
 
 export const axiosInstance: AxiosInstance = axios.create(apiRequestConfig);
 
+// todo bug is here
 // -- Request --
 axiosInstance.interceptors.request.use(
-  (cf) => apiRequestInterceptor(cf),
-  (err) => apiFailureRequestInterceptor(err)
+  (cf) => {
+    console.log('Request Interceptor:', cf);
+    return apiRequestInterceptor(cf);
+  },
+  (err) => {
+    console.error('Request Interceptor Error:', err);
+    return apiFailureRequestInterceptor(err);
+  }
 );
 
 // -- Response --
 axiosInstance.interceptors.response.use(
-  (res) => apiSuccessResponseInterceptor(res),
-  (err) => apiFailureResponseInterceptor(err)
+  (res) => {
+    console.log('Response Interceptor:', res);
+    return apiSuccessResponseInterceptor(res);
+  },
+  (err) => {
+    console.error('Response Interceptor Error:', err);
+    return apiFailureResponseInterceptor(err);
+  }
 );
 
 class Api {
-  private static buildUrl(url: string, queryParams?: unknown): string {
-    return url + convertObjectToQueryParams(queryParams);
-  }
-
   static get<T>(
     url: string,
     queryParams?: unknown,
     config: AxiosRequestConfig = {}
-  ): Promise<ApiResponse<T>> {
-    const _url = this.buildUrl(url, queryParams);
-    return axiosInstance
-      .get<ApiResponse<T>>(_url, { ...config })
-      .then((response) => response.data);
+  ) {
+    const _url = url + convertObjectToQueryParams(queryParams);
+    console.log('Making GET request to URL:', _url);
+    return axiosInstance.get<T>(_url, { ...config }) as unknown as Promise<
+      ApiResponse<T>
+    >;
   }
 
   static post<T>(
@@ -54,52 +66,46 @@ class Api {
     body?: unknown,
     queryParams?: unknown,
     config: AxiosRequestConfig = {}
-  ): Promise<ApiResponse<T>> {
-    const _url = this.buildUrl(url, queryParams);
-    return axiosInstance
-      .post<ApiResponse<T>>(_url, body, {
-        ...config,
-      })
-      .then((response) => response.data);
+  ) {
+    const _url = url + convertObjectToQueryParams(queryParams);
+    return axiosInstance.post<T>(_url, body, {
+      ...config,
+    }) as unknown as Promise<ApiResponse<T>>;
   }
 
-  static put<T>(
+  static async put<T>(
     url: string,
     body?: unknown,
     queryParams?: unknown,
     config: AxiosRequestConfig = {}
-  ): Promise<ApiResponse<T>> {
-    const _url = this.buildUrl(url, queryParams);
-    return axiosInstance
-      .put<ApiResponse<T>>(_url, body, {
-        ...config,
-      })
-      .then((response) => response.data);
+  ) {
+    const _url = url + convertObjectToQueryParams(queryParams);
+    return axiosInstance.put<T>(_url, body, {
+      ...config,
+    }) as unknown as Promise<ApiResponse<T>>;
   }
 
-  static patch<T>(
+  static async patch<T>(
     url: string,
     body?: unknown,
     queryParams?: unknown,
     config: AxiosRequestConfig = {}
-  ): Promise<ApiResponse<T>> {
-    const _url = this.buildUrl(url, queryParams);
-    return axiosInstance
-      .patch<ApiResponse<T>>(_url, body, {
-        ...config,
-      })
-      .then((response) => response.data);
+  ) {
+    const _url = url + convertObjectToQueryParams(queryParams);
+    return axiosInstance.patch<T>(_url, body, {
+      ...config,
+    }) as unknown as Promise<ApiResponse<T>>;
   }
 
-  static delete<T>(
+  static async delete<T>(
     url: string,
     queryParams?: unknown,
     config: AxiosRequestConfig = {}
-  ): Promise<ApiResponse<T>> {
-    const _url = this.buildUrl(url, queryParams);
-    return axiosInstance
-      .delete<ApiResponse<T>>(_url, { ...config })
-      .then((response) => response.data);
+  ) {
+    const _url = url + convertObjectToQueryParams(queryParams);
+    return axiosInstance.delete<T>(_url, { ...config }) as unknown as Promise<
+      ApiResponse<T>
+    >;
   }
 }
 

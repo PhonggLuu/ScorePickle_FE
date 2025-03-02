@@ -41,31 +41,31 @@ const getEnvVariable = (key: string, defaultValue?: string): string => {
   return value || defaultValue!;
 };
 
+// import to ENV
 export const apiRequestInterceptor = (config: InternalAxiosRequestConfig) => {
   config.headers = config.headers ?? {};
-  const keyStoreAccessToken = getEnvVariable(
-    'REACT_APP_API_KEY_STORE_ACCESS_TOKEN'
-  );
-  const headerKey = getEnvVariable(
-    'REACT_APP_API_ACCESS_TOKEN_HEADER',
-    'Authorization'
-  );
+  const keyStoreAccessToken = 'access_token_key';
+  const headerKey = 'Authorization';
   const token = getLocalStorageItem(keyStoreAccessToken) as string;
-  if (token) config.headers[headerKey] = `${token}`;
+  if (token) config.headers[headerKey] = `Bearer ${token}`;
+
   return config;
 };
 
 export const apiFailureRequestInterceptor = async (error: unknown) => {
+  console.error('Request Error:', error);
   return Promise.resolve(error);
 };
 
 export const apiSuccessResponseInterceptor = async (
   response: AxiosResponse
 ): Promise<AxiosResponse['data']> => {
+  console.log('Response Data:', response.data);
   return response.data;
 };
 
 export const apiFailureResponseInterceptor = async (error: AxiosError) => {
+  console.error('Response Error:', error);
   if (error.response) {
     if (error.response.status === 401) {
       try {
@@ -108,7 +108,7 @@ export const apiFailureResponseInterceptor = async (error: AxiosError) => {
   } else if (error.request) {
     console.error('Request Error ', error.request);
   } else {
-    //
+    console.error('Error', error.message);
   }
 
   return Promise.reject(error);
