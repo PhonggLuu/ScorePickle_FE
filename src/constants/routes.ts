@@ -23,6 +23,7 @@ const ROOTS_INBOX = '/inbox';
 const ROOTS_CALENDAR = '/calendar';
 const ROOTS_ERRORS = '/errors';
 const ROOTS_ABOUT = '/about';
+const ROOTS_TOURNAMENT = '/tournament';
 
 export const PATH_LANDING = {
   root: ROOTS_LANDING,
@@ -226,4 +227,10 @@ export const PATH_SOCIALS = {
 
 export const PATH_ABOUT = {
   root: ROOTS_ABOUT,
+};
+
+//New path
+export const PATH_TOURNAMENT = {
+  root: ROOTS_TOURNAMENT,
+  overview: path(ROOTS_TOURNAMENT, '/overview'),
 };

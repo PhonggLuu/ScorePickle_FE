@@ -15,7 +15,7 @@ import { ApiResponse } from './apiResponses';
 import { convertObjectToQueryParams } from '../utils/urlUtils';
 
 const apiRequestConfig: CreateAxiosDefaults<unknown> = {
-  baseURL: `${import.meta.env.API_BASE_URL || 'http://localhost:5098/api'}`,
+  baseURL: `'http://localhost:5098/api'}`, //${import.meta.env.API_BASE_URL ||
   timeout: REQUEST_TIMEOUT_MS,
   headers: { 'Content-Type': 'application/json' },
   withCredentials: false,
