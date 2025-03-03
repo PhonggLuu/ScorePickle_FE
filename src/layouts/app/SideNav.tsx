@@ -26,6 +26,8 @@ import {
   PATH_LANDING,
   PATH_SITEMAP,
   PATH_USER_PROFILE,
+  //New Path
+  PATH_TOURNAMENT,
 } from '../../constants';
 import { COLOR } from '../../App.tsx';
 
@@ -90,6 +92,14 @@ const items: MenuProps['items'] = [
     'sitemap',
     <BranchesOutlined />
   ),
+  getItem(
+    <Link to={PATH_TOURNAMENT.overview}>Tournament</Link>,
+    'tournament',
+    <BranchesOutlined />
+  ),
+  // getItem('Tournament', 'tournament', <BranchesOutlined />, [
+  //   getItem(<Link to={PATH_TOURNAMENT.overview}>Overview</Link>, 'overview', null),
+  // ]),
 
   getItem('Pages', 'pages', null, [], 'group'),
 

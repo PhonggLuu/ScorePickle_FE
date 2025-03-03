@@ -25,6 +25,8 @@ import {
   PATH_SITEMAP,
   PATH_SOCIALS,
   PATH_ABOUT,
+  //New Path
+  PATH_TOURNAMENT,
 } from './routes.ts';
 
 const DASHBOARD_ITEMS = [
@@ -107,4 +109,12 @@ export {
   AUTHENTICATION_ITEMS,
   ERROR_ITEMS,
   PATH_ABOUT,
+  //New Path
+  PATH_TOURNAMENT,
+  TOURNAMENT_ITEMS,
 };
+
+//New path
+const TOURNAMENT_ITEMS = [
+  { title: 'Overview', path: PATH_TOURNAMENT.overview },
+];

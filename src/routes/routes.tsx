@@ -36,6 +36,8 @@ import {
   WelcomePage,
   LearningDashboardPage,
   LogisticsDashboardPage,
+  // Import the OverviewPage component, New Page
+  OverviewPage,
 } from '../pages';
 import {
   CorporateLayout,
@@ -45,6 +47,7 @@ import {
 } from '../layouts';
 import React, { ReactNode, useEffect } from 'react';
 import { AboutPage } from '../pages/About.tsx';
+import { TournamentLayout } from '@src/layouts/tournament/index.tsx';
 
 // Custom scroll restoration function
 export const ScrollToTop: React.FC = () => {
@@ -86,6 +89,18 @@ const router = createBrowserRouter([
         index: true,
         path: '',
         element: <HomePage />,
+      },
+    ],
+  },
+  {
+    path: '/tournament',
+    element: <PageWrapper children={<TournamentLayout />} />,
+    errorElement: <ErrorPage />,
+    children: [
+      {
+        index: true,
+        path: 'overview',
+        element: <OverviewPage />,
       },
     ],
   },
