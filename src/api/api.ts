@@ -12,10 +12,13 @@ import {
   apiFailureResponseInterceptor,
 } from './apiInterceptor';
 import { ApiResponse } from './apiResponses';
-import { convertObjectToQueryParams } from '../utils/urlUtils';
+import {
+  convertObjectToHeader,
+  convertObjectToQueryParams,
+} from '../utils/urlUtils';
 
 const apiRequestConfig: CreateAxiosDefaults<unknown> = {
-  baseURL: `'http://localhost:5098/api'}`, //${import.meta.env.API_BASE_URL ||
+  baseURL: `http://localhost:5098/api`, //${import.meta.env.API_BASE_URL ||
   timeout: REQUEST_TIMEOUT_MS,
   headers: { 'Content-Type': 'application/json' },
   withCredentials: false,
@@ -54,7 +57,7 @@ class Api {
     queryParams?: unknown,
     config: AxiosRequestConfig = {}
   ) {
-    const _url = url + convertObjectToQueryParams(queryParams);
+    const _url = url + convertObjectToHeader(queryParams);
     console.log('Making GET request to URL:', _url);
     return axiosInstance.get<T>(_url, { ...config }) as unknown as Promise<
       ApiResponse<T>

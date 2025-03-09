@@ -21,7 +21,7 @@ import { useMediaQuery } from 'react-responsive';
 import { PATH_AUTH, PATH_DASHBOARD } from '../../constants';
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
-import { useLogin } from '@src/modules/User/hooks/useLogin';
+import { useLogin, saveRefreshToken } from '@src/modules/User/hooks/useLogin';
 
 const { Title, Text, Link } = Typography;
 
@@ -55,7 +55,9 @@ export const SignInPage = () => {
             type: 'success',
             content: 'Login successful',
           });
-
+          if (values.remember) {
+            saveRefreshToken();
+          }
           navigate(PATH_DASHBOARD.default);
         },
         onError: (error) => {

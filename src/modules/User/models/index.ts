@@ -21,7 +21,7 @@ export interface RegisterUserResponse {
   gender: string;
   status: boolean;
   roleId?: RoleFactory;
-  readonlyefreshToken: string;
+  refreshToken: string;
   createAt: string;
   refreshTokenExpiryTime: string;
   userDetails?: string;
@@ -59,4 +59,9 @@ export interface User {
   refreshToken: string;
   createAt?: Date;
   refreshTokenExpiryTime: Date;
+}
+
+export interface GetNewAccessToken {
+  refreshToken: string;
+  tokenString: string;
 }

@@ -87,11 +87,11 @@ const items: MenuProps['items'] = [
     'about',
     <InfoCircleOutlined />
   ),
-  getItem(
-    <Link to={PATH_SITEMAP.root}>Sitemap</Link>,
-    'sitemap',
-    <BranchesOutlined />
-  ),
+  // getItem(
+  //   <Link to={PATH_SITEMAP.root}>Sitemap</Link>,
+  //   'sitemap',
+  //   <BranchesOutlined />
+  // ),
   getItem(
     <Link to={PATH_TOURNAMENT.overview}>Tournament</Link>,
     'tournament',

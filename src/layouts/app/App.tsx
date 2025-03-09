@@ -6,12 +6,12 @@ import {
   Input,
   Layout,
   MenuProps,
-  message,
+  // message,
   theme,
   Tooltip,
   Switch,
 } from 'antd';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { ReactNode, useEffect, useRef, useState } from 'react';
 import {
   AppstoreOutlined,
@@ -35,10 +35,10 @@ import SideNav from './SideNav.tsx';
 import HeaderNav from './HeaderNav.tsx';
 import FooterNav from './FooterNav.tsx';
 import { NProgress } from '../../components';
-import { PATH_LANDING } from '../../constants';
 import { useSelector, useDispatch } from 'react-redux';
 import { toggleTheme } from '../../redux/theme/themeSlice.ts';
 import { RootState } from '../../redux/store.ts';
+import useLogout from '@src/modules/User/hooks/useLogout.ts';
 const { Content } = Layout;
 
 type AppLayoutProps = {
@@ -46,6 +46,7 @@ type AppLayoutProps = {
 };
 
 export const AppLayout = ({ children }: AppLayoutProps) => {
+  const { logout } = useLogout();
   const {
     token: { borderRadius },
   } = theme.useToken();
@@ -54,7 +55,7 @@ export const AppLayout = ({ children }: AppLayoutProps) => {
   const [navFill, setNavFill] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const location = useLocation();
-  const navigate = useNavigate();
+  //const navigate = useNavigate();
   const nodeRef = useRef(null);
   const floatBtnRef = useRef(null);
   const dispatch = useDispatch();
@@ -83,16 +84,7 @@ export const AppLayout = ({ children }: AppLayoutProps) => {
       label: 'logout',
       icon: <LogoutOutlined />,
       danger: true,
-      onClick: () => {
-        message.open({
-          type: 'loading',
-          content: 'signing you out',
-        });
-
-        setTimeout(() => {
-          navigate(PATH_LANDING.root);
-        }, 1000);
-      },
+      onClick: () => logout(),
     },
   ];
 

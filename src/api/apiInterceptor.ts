@@ -26,7 +26,7 @@ class AuthUtils {
       }
 
       this.refreshingToken = axios
-        .post(`auth/refresh-token`, { refreshToken }, config)
+        .post(`Auth/refresh-token`, { refreshToken }, config)
         .finally(() => (this.refreshingToken = undefined));
     }
     return this.refreshingToken;
