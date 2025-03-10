@@ -9,10 +9,20 @@ import { useGetAllTournaments } from '@src/modules/Tournament/hooks/useGetAllTou
 type DataIndex = string;
 
 export const OverviewPage = () => {
-  const { data, isLoading, refetch } = useGetAllTournaments();
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [pageSize, setPageSize] = useState<number>(10);
+  const { data, isLoading, refetch } = useGetAllTournaments(
+    currentPage,
+    pageSize
+  );
   const [searchText, setSearchText] = useState<string>('');
   const [searchedColumn, setSearchedColumn] = useState<string>('');
   const searchInput = useRef<InputRef>(null);
+
+  const handlePaginationChange = (page: number, pageSize: number) => {
+    setCurrentPage(page);
+    setPageSize(pageSize);
+  };
 
   // todo: remove this
   console.log(searchText);
@@ -144,6 +154,22 @@ export const OverviewPage = () => {
       ),
     },
     {
+      title: 'Is Accepted',
+      dataIndex: 'isAccept',
+      key: 'isAccept',
+      filters: [
+        { text: 'Accepted', value: true },
+        { text: 'Not Accepted', value: false },
+      ],
+      onFilter: (value, record) => record.isAccept === value,
+      render: (isAccept: boolean) =>
+        isAccept ? (
+          <Tag color="green">Accepted</Tag>
+        ) : (
+          <Tag color="green">Rejected</Tag>
+        ),
+    },
+    {
       title: 'Action',
       key: 'action',
       render: (text, record) => (
@@ -152,13 +178,13 @@ export const OverviewPage = () => {
     },
   ];
 
-  const totalTournaments = data?.length || 0;
+  const totalTournaments = data?.totalItems || 0;
   const activeTournaments =
-    data?.filter((t) => t.status === 'Active').length || 0;
+    data?.tournaments.filter((t) => t.status === 'Active').length || 0;
   const singlesTournaments =
-    data?.filter((t) => t.type === 'Singles').length || 0;
+    data?.tournaments.filter((t) => t.type === 'Singles').length || 0;
   const doublesTournaments =
-    data?.filter((t) => t.type === 'Doubles').length || 0;
+    data?.tournaments.filter((t) => t.type === 'Doubles').length || 0;
 
   return (
     <div>
@@ -192,10 +218,25 @@ export const OverviewPage = () => {
         Refetch
       </Button>
       <Table
-        columns={columns}
-        dataSource={data}
+        columns={[
+          {
+            title: 'STT',
+            render: (text, record, index) =>
+              (currentPage - 1) * pageSize + index + 1,
+          },
+          ...columns,
+        ]}
+        dataSource={data?.tournaments}
         loading={isLoading}
         rowKey="id"
+        pagination={{
+          current: data?.currentPage,
+          total: data?.totalItems,
+          pageSize: data?.pageSize,
+          onChange: handlePaginationChange,
+          pageSizeOptions: ['10', '20', '50'],
+          showSizeChanger: true,
+        }}
       />
     </div>
   );
