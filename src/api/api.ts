@@ -64,6 +64,18 @@ class Api {
     >;
   }
 
+  static getByQueryParams<T>(
+    url: string,
+    queryParams?: unknown,
+    config: AxiosRequestConfig = {}
+  ) {
+    const _url = url + convertObjectToQueryParams(queryParams);
+    console.log('Making GET request to URL:', _url);
+    return axiosInstance.get<T>(_url, { ...config }) as unknown as Promise<
+      ApiResponse<T>
+    >;
+  }
+
   static post<T>(
     url: string,
     body?: unknown,

@@ -16,4 +16,6 @@ export type ResponseMetadata = {
 export type ApiResponse<T = undefined> = {
   metadata: ResponseMetadata;
   data: T;
+  totalItems?: number;
+  totalPages?: number;
 };
