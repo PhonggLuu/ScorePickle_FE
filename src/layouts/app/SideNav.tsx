@@ -28,6 +28,7 @@ import {
   PATH_USER_PROFILE,
   //New Path
   PATH_TOURNAMENT,
+  PATH_USER,
 } from '../../constants';
 import { COLOR } from '../../App.tsx';
 
@@ -97,6 +98,18 @@ const items: MenuProps['items'] = [
     'tournament',
     <BranchesOutlined />
   ),
+  getItem('User', 'user', <UserOutlined />, [
+    getItem(<Link to={PATH_USER.user}>Users</Link>, 'users', null),
+    getItem(<Link to={PATH_USER.player}>Players</Link>, 'players', null),
+    getItem(<Link to={PATH_USER.sponsor}>Sponsors</Link>, 'sponsors', null),
+    getItem(<Link to={PATH_USER.referee}>Referees</Link>, 'referees', null),
+    getItem(
+      <Link to={PATH_USER.organizer}>Organizers</Link>,
+      'organizers',
+      null
+    ),
+    getItem(<Link to={PATH_USER.staff}>Staffs</Link>, 'staffs', null),
+  ]),
   // getItem('Tournament', 'tournament', <BranchesOutlined />, [
   //   getItem(<Link to={PATH_TOURNAMENT.overview}>Overview</Link>, 'overview', null),
   // ]),
