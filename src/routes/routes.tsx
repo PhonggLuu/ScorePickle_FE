@@ -50,6 +50,7 @@ import React, { ReactNode, useEffect } from 'react';
 import { AboutPage } from '../pages/About.tsx';
 import { TournamentLayout } from '@src/layouts/tournament/index.tsx';
 import { UserLayout } from '@src/layouts/user/index.tsx';
+import TournamentDetail from '@src/pages/tournament/DetailPage.tsx';
 
 // Custom scroll restoration function
 export const ScrollToTop: React.FC = () => {
@@ -103,6 +104,10 @@ const router = createBrowserRouter([
         index: true,
         path: 'overview',
         element: <OverviewPage />,
+      },
+      {
+        path: ':id',
+        element: <TournamentDetail />,
       },
     ],
   },
