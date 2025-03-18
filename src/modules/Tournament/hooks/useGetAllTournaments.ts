@@ -15,7 +15,7 @@ const fetchTournaments = async (
     });
     console.log('Pagination Tournament Response: ', response);
     const pagination: Pagination<Tournament> = {
-      tournaments: response.data as Tournament[],
+      data: response.data as Tournament[],
       currentPage: PageNumber ?? 1,
       pageSize: PageSize ?? 10,
       totalItems: response.totalItems ?? 0,

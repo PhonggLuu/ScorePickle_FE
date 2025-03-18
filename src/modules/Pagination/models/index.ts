@@ -1,5 +1,5 @@
 export interface Pagination<T> {
-  tournaments: T[];
+  data: T[];
   currentPage: number;
   pageSize: number;
   totalItems: number;
