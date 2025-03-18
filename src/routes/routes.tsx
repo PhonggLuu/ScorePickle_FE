@@ -39,6 +39,7 @@ import {
   // Import the OverviewPage component, New Page
   OverviewPage,
   RefereePage,
+  UserPage,
 } from '../pages';
 import {
   CorporateLayout,
@@ -120,6 +121,11 @@ const router = createBrowserRouter([
         index: true,
         path: 'referees',
         element: <RefereePage />,
+      },
+      {
+        index: true,
+        path: 'users',
+        element: <UserPage />,
       },
     ],
   },
