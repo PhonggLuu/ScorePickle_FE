@@ -16,7 +16,7 @@ const fetchUsers = async (
       isOrderByCreateAt,
     });
     const pagination: Pagination<User> = {
-      tournaments: response.data as User[],
+      data: response.data as User[],
       currentPage: PageNumber ?? 1,
       pageSize: PageSize ?? 10,
       totalItems: response.totalItems ?? 0,
