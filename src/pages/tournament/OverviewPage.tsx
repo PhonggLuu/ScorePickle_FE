@@ -180,11 +180,11 @@ export const OverviewPage = () => {
 
   const totalTournaments = data?.totalItems || 0;
   const activeTournaments =
-    data?.tournaments.filter((t) => t.status === 'Active').length || 0;
+    data?.data.filter((t) => t.status === 'Active').length || 0;
   const singlesTournaments =
-    data?.tournaments.filter((t) => t.type === 'Singles').length || 0;
+    data?.data.filter((t) => t.type === 'Singles').length || 0;
   const doublesTournaments =
-    data?.tournaments.filter((t) => t.type === 'Doubles').length || 0;
+    data?.data.filter((t) => t.type === 'Doubles').length || 0;
 
   return (
     <div>
@@ -226,7 +226,7 @@ export const OverviewPage = () => {
           },
           ...columns,
         ]}
-        dataSource={data?.tournaments}
+        dataSource={data?.data}
         loading={isLoading}
         rowKey="id"
         pagination={{
