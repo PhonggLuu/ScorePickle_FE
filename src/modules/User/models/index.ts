@@ -65,3 +65,15 @@ export interface GetNewAccessToken {
   refreshToken: string;
   tokenString: string;
 }
+
+export interface Sponsor {
+  sponsorId: number;
+  companyName: string;
+  logoUrl?: string;
+  urlSocial: string;
+  urlSocial1?: string;
+  contactEmail: string;
+  description?: string;
+  isAccept: boolean;
+  joinedAt: Date;
+}
