@@ -52,6 +52,7 @@ import { AboutPage } from '../pages/About.tsx';
 import { TournamentLayout } from '@src/layouts/tournament/index.tsx';
 import { UserLayout } from '@src/layouts/user/index.tsx';
 import TournamentDetail from '@src/pages/tournament/DetailPage.tsx';
+import SponsorPage from '@src/pages/user/SponsorPage.tsx';
 
 // Custom scroll restoration function
 export const ScrollToTop: React.FC = () => {
@@ -126,6 +127,11 @@ const router = createBrowserRouter([
         index: true,
         path: 'users',
         element: <UserPage />,
+      },
+      {
+        index: true,
+        path: 'sponsors',
+        element: <SponsorPage />,
       },
     ],
   },
