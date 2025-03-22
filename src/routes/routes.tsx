@@ -53,6 +53,9 @@ import { TournamentLayout } from '@src/layouts/tournament/index.tsx';
 import { UserLayout } from '@src/layouts/user/index.tsx';
 import TournamentDetail from '@src/pages/tournament/DetailPage.tsx';
 import SponsorPage from '@src/pages/user/SponsorPage.tsx';
+import PlayerPage from '@src/pages/user/PlayerPage.tsx';
+import OrganizerPage from '@src/pages/user/OrganizerpAGE.tsx';
+import StaffPage from '@src/pages/user/StaffPage.tsx';
 
 // Custom scroll restoration function
 export const ScrollToTop: React.FC = () => {
@@ -132,6 +135,21 @@ const router = createBrowserRouter([
         index: true,
         path: 'sponsors',
         element: <SponsorPage />,
+      },
+      {
+        index: true,
+        path: 'players',
+        element: <PlayerPage />,
+      },
+      {
+        index: true,
+        path: 'organizers',
+        element: <OrganizerPage />,
+      },
+      {
+        index: true,
+        path: 'staffs',
+        element: <StaffPage />,
       },
     ],
   },

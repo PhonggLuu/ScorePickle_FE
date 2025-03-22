@@ -77,3 +77,14 @@ export interface Sponsor {
   isAccept: boolean;
   joinedAt: Date;
 }
+
+export interface Player {
+  province: string;
+  city: string;
+  cccd?: string;
+  totalMatch: number;
+  totalWins: number;
+  rankingPoint: number;
+  experienceLevel: number;
+  joinedAt: Date;
+}
