@@ -25,6 +25,9 @@ const ROOTS_ERRORS = '/errors';
 const ROOTS_ABOUT = '/about';
 const ROOTS_TOURNAMENT = '/tournament';
 const ROOTS_USER = '/user';
+const ROOTS_TOURNAMENT_PAGE = '/tournament-page';
+const ROOTS_RANKING_PAGE = '/ranking-page';
+const ROOTS_RULE_PAGE = '/rule-page';
 
 export const PATH_LANDING = {
   root: ROOTS_LANDING,
@@ -244,4 +247,16 @@ export const PATH_USER = {
   referee: path(ROOTS_USER, '/referees'),
   organizer: path(ROOTS_USER, '/organizers'),
   staff: path(ROOTS_USER, '/staffs'),
+};
+
+export const PATH_TOURNAMENT_PAGE = {
+  root: ROOTS_TOURNAMENT_PAGE,
+};
+
+export const PATH_RANKING_PAGE = {
+  root: ROOTS_RANKING_PAGE,
+};
+
+export const PATH_RULE_PAGE = {
+  root: ROOTS_RULE_PAGE,
 };

@@ -5,7 +5,7 @@ import MatchRoom from './containers/MatchRoom';
 
 const { TabPane } = Tabs;
 
-const TournamentDetail = () => {
+export const TournamentDetail = () => {
   const { id } = useParams<{ id: string }>();
   const { data, isLoading, error } = useGetTournamentById(Number(id || 0));
   const navigate = useNavigate();

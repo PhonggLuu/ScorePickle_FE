@@ -19,7 +19,7 @@ import {
   TwitterOutlined,
 } from '@ant-design/icons';
 import { useMediaQuery } from 'react-responsive';
-import { PATH_AUTH, PATH_DASHBOARD } from '../../constants';
+import { PATH_AUTH } from '../../constants';
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import { useRegisterUser } from '@src/modules/User/hooks/useRegisterUser';
@@ -67,6 +67,7 @@ export const SignUpPage = () => {
           navigate(PATH_AUTH.signin);
         },
         onError: (error) => {
+          console.log(error);
           message.open({
             type: 'error',
             content: 'Sign up failed',
@@ -102,7 +103,7 @@ export const SignUpPage = () => {
             }}
             cover={
               <iframe
-                src="https://www.youtube.com/embed/JMwKyO4-WYU"
+                src="https://www.youtube.com/embed/JMwKyO4-WYU?autoplay=1&loop=1&playlist=JMwKyO4-WYU"
                 frameBorder="0"
                 allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen

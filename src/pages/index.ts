@@ -7,3 +7,5 @@ export * from './authentication';
 export * from './errors';
 export * from './tournament';
 export * from './user';
+export * from './tournamentPage';
+export * from './rankingPage';

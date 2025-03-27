@@ -20,11 +20,17 @@ import {
   MenuFoldOutlined,
   MenuUnfoldOutlined,
   TrophyOutlined,
+  UserAddOutlined,
 } from '@ant-design/icons';
 import { useMediaQuery } from 'react-responsive';
 import { Logo, NProgress } from '../../components';
 import { PATH_AUTH, PATH_DASHBOARD, PATH_LANDING } from '../../constants';
 import FooterCustom from '@components/Footer/FooterCustom';
+import {
+  PATH_TOURNAMENT_PAGE,
+  PATH_RANKING_PAGE,
+  PATH_RULE_PAGE,
+} from '@src/constants/routes';
 
 const { Header, Content } = Layout;
 
@@ -72,7 +78,7 @@ export const GuestLayout = () => {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
-            // background: navFill ? 'rgba(255, 255, 255, .5)' : 'none',
+            background: navFill ? 'rgba(255, 255, 255, 0.5)' : 'none',
             backdropFilter: navFill ? 'blur(8px)' : 'none',
             boxShadow: navFill ? '0 0 8px 2px rgba(0, 0, 0, 0.05)' : 'none',
             gap: 12,
@@ -81,8 +87,9 @@ export const GuestLayout = () => {
             padding: isMobile ? '0 1rem' : '0 2rem',
             zIndex: 1,
           }}
+          className="border-bottom border-1 border-dark"
         >
-          <Logo color="blue" asLink href={PATH_LANDING.root} />
+          <Logo color="black" asLink href={PATH_LANDING.root} />
           {!isMobile ? (
             // Desktop Menu
             <>
@@ -102,19 +109,49 @@ export const GuestLayout = () => {
                     Give us a star
                   </Button>
                 </Link> */}
-                <Link to={PATH_AUTH.signin} target="_blank">
-                  <Button icon={<TrophyOutlined />} type="link">
+                <Link to={PATH_TOURNAMENT_PAGE.root}>
+                  <Button
+                    icon={<TrophyOutlined />}
+                    type="link"
+                    className="text-black"
+                  >
                     Giải đấu
                   </Button>
                 </Link>
-                <Link to={PATH_AUTH.signin} target="_blank">
-                  <Button icon={<ApartmentOutlined />} type="link">
+                <Link to={PATH_RANKING_PAGE.root}>
+                  <Button
+                    icon={<ApartmentOutlined />}
+                    type="link"
+                    className="text-black"
+                  >
                     Bảng xếp hạng
                   </Button>
                 </Link>
+                <Link to={PATH_RULE_PAGE.root}>
+                  <Button
+                    icon={<ApartmentOutlined />}
+                    type="link"
+                    className="text-black"
+                  >
+                    Luật chơi
+                  </Button>
+                </Link>
                 <Link to={PATH_AUTH.signin}>
-                  <Button icon={<LoginOutlined />} type="primary">
+                  <Button
+                    icon={<LoginOutlined />}
+                    type="primary"
+                    className="bg-light text-black border border-1 border-dark"
+                  >
                     Đăng nhập
+                  </Button>
+                </Link>
+                <Link to={PATH_AUTH.signup}>
+                  <Button
+                    icon={<UserAddOutlined />}
+                    type="primary"
+                    className="bg-dark text-white"
+                  >
+                    Đăng ký
                   </Button>
                 </Link>
               </Flex>
@@ -194,9 +231,49 @@ export const GuestLayout = () => {
                 Github
               </Button>
             </Link> */}
-            <Link to={PATH_DASHBOARD.default}>
-              <Button icon={<LoginOutlined />} type="text">
-                Login
+            <Link to={PATH_TOURNAMENT_PAGE.root}>
+              <Button
+                icon={<TrophyOutlined />}
+                type="link"
+                className="text-black"
+              >
+                Giải đấu
+              </Button>
+            </Link>
+            <Link to={PATH_RANKING_PAGE.root}>
+              <Button
+                icon={<ApartmentOutlined />}
+                type="link"
+                className="text-black"
+              >
+                Bảng xếp hạng
+              </Button>
+            </Link>
+            <Link to={PATH_RULE_PAGE.root}>
+              <Button
+                icon={<ApartmentOutlined />}
+                type="link"
+                className="text-black"
+              >
+                Luật chơi
+              </Button>
+            </Link>
+            <Link to={PATH_AUTH.signin}>
+              <Button
+                icon={<LoginOutlined />}
+                type="link"
+                className="text-black"
+              >
+                Đăng nhập
+              </Button>
+            </Link>
+            <Link to={PATH_AUTH.signup}>
+              <Button
+                icon={<UserAddOutlined />}
+                type="link"
+                className="text-black"
+              >
+                Đăng ký
               </Button>
             </Link>
           </Flex>

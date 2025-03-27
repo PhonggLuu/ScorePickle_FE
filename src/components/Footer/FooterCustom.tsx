@@ -165,7 +165,7 @@ const CustomFooter: React.FC = () => {
               <div>
                 <p className="subtitle">Facebook</p>
                 <a href="https://www.facebook.com/pickleball/">
-                  https://www.facebook.com/pickleball/
+                  facebook.com/pickleball/
                 </a>
               </div>
             </div>
@@ -193,7 +193,7 @@ const CustomFooter: React.FC = () => {
               <div>
                 <p className="subtitle">Instagram</p>
                 <a href="https://www.instagram.com/pickleball/">
-                  https://www.instagram.com/pickleball/
+                  instagram.com/pickleball/
                 </a>
               </div>
             </div>
