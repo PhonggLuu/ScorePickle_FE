@@ -38,8 +38,17 @@ import {
   LogisticsDashboardPage,
   // Import the OverviewPage component, New Page
   OverviewPage,
+  TournamentDetail,
+  // Import the user management component
   RefereePage,
   UserPage,
+  SponsorPage,
+  PlayerPage,
+  OrganizerPage,
+  StaffPage,
+  // Import the (player view)
+  TournamentPage,
+  RankingPage,
 } from '../pages';
 import {
   CorporateLayout,
@@ -51,11 +60,7 @@ import React, { ReactNode, useEffect } from 'react';
 import { AboutPage } from '../pages/About.tsx';
 import { TournamentLayout } from '@src/layouts/tournament/index.tsx';
 import { UserLayout } from '@src/layouts/user/index.tsx';
-import TournamentDetail from '@src/pages/tournament/DetailPage.tsx';
-import SponsorPage from '@src/pages/user/SponsorPage.tsx';
-import PlayerPage from '@src/pages/user/PlayerPage.tsx';
-import OrganizerPage from '@src/pages/user/OrganizerpAGE.tsx';
-import StaffPage from '@src/pages/user/StaffPage.tsx';
+import RulePage from '@src/pages/rulePage/rulePage.tsx';
 
 // Custom scroll restoration function
 export const ScrollToTop: React.FC = () => {
@@ -97,6 +102,21 @@ const router = createBrowserRouter([
         index: true,
         path: '',
         element: <HomePage />,
+      },
+      {
+        index: true,
+        path: 'tournament-page',
+        element: <TournamentPage />,
+      },
+      {
+        index: true,
+        path: 'ranking-page',
+        element: <RankingPage />,
+      },
+      {
+        index: true,
+        path: 'rule-page',
+        element: <RulePage />,
       },
     ],
   },

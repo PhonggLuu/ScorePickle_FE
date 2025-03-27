@@ -172,9 +172,7 @@ export const OverviewPage = () => {
     {
       title: 'Action',
       key: 'action',
-      render: (text, record) => (
-        <Link to={`/tournament/${record.id}`}>Detail</Link>
-      ),
+      render: (record) => <Link to={`/tournament/${record.id}`}>Detail</Link>,
     },
   ];
 
@@ -221,8 +219,7 @@ export const OverviewPage = () => {
         columns={[
           {
             title: 'STT',
-            render: (text, record, index) =>
-              (currentPage - 1) * pageSize + index + 1,
+            render: (index) => (currentPage - 1) * pageSize + index + 1,
           },
           ...columns,
         ]}

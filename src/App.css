@@ -1,3 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 /*react transition group css*/
 .page-enter {
   opacity: 0;
