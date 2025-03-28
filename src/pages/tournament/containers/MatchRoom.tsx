@@ -45,12 +45,11 @@ const MatchRoom = ({ id }: MatchRoomProps) => {
   const [userDetails, setUserDetails] = useState<any[]>([]);
   const [filteredDetails, setFilteredDetails] = useState<Match[]>([]);
   const [filter] = useState<string>('All');
-  const [searchText, setSearchText] = useState<string>('');
+  const [, setSearchText] = useState<string>('');
   const [searchedColumn, setSearchedColumn] = useState<string>('');
   const searchInput = useRef<InputRef>(null);
-  const [isModalVisible, setIsModalVisible] = useState(false);
-  const [isUpdateModalVisible, setIsUpdateModalVisible] = useState(false);
-  const [selectedMatch, setSelectedMatch] = useState<IMatch | null>(null);
+  const [, setIsUpdateModalVisible] = useState(false);
+  const [, setSelectedMatch] = useState<IMatch | null>(null);
 
   // matchData member của team có sự lặp lại cache lại data hạn chế request đến DB
   const userCache = useRef<Map<number, User>>(new Map());

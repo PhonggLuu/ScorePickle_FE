@@ -1,4 +1,4 @@
-export type Clients = {
+export interface Clients {
   client_id: string;
   first_name: string;
   last_name: string;
@@ -10,4 +10,4 @@ export type Clients = {
   unit_price: number;
   total_price: number;
   country: string;
-};
+}

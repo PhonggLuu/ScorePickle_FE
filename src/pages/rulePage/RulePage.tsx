@@ -12,7 +12,7 @@ export const RulePage = () => {
     <div className="container mt-4">
       <h1 className="display-4 mb-4">Platform Rules</h1>
 
-      <Tabs defaultActiveKey="scoring" onChange={setActiveTab}>
+      <Tabs defaultActiveKey={activeTab} onChange={setActiveTab}>
         <Tabs.TabPane tab="Scoring System" key="scoring">
           <ScoringSystem />
         </Tabs.TabPane>
