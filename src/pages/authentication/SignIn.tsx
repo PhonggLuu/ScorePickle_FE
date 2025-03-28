@@ -60,7 +60,7 @@ export const SignInPage = () => {
           }
           navigate(PATH_DASHBOARD.default);
         },
-        onError: (error) => {
+        onError: () => {
           message.open({
             type: 'error',
             content: 'Login failed',

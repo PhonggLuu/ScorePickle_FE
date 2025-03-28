@@ -2,7 +2,7 @@ import { useMutation } from '@tanstack/react-query';
 import { useDispatch } from 'react-redux';
 import Api from '../../../api/api';
 import { LoginRequest, LoginResponse, User } from '../models';
-import { isAuth, setUser } from '../../../redux/authentication/authSlide';
+import { isAuth } from '../../../redux/authentication/authSlide';
 import {
   getLocalStorageItem,
   setLocalStorageItem,
@@ -22,7 +22,7 @@ export function useLogin() {
   const dispatch = useDispatch();
   return useMutation({
     mutationFn: login,
-    onSuccess: (data) => {
+    onSuccess: () => {
       dispatch(isAuth());
     },
     onError: (error) => {

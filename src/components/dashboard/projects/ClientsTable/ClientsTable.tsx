@@ -21,10 +21,11 @@ const COLUMNS = [
 
 type Props = {
   data: Clients[];
-} & TableProps<any>;
+} & TableProps<Clients>;
 
 export const ClientsTable = ({ data, ...others }: Props) => (
-  <Table
+  <Table<Clients>
+    rowKey={(record) => record.client_id}
     dataSource={data}
     columns={COLUMNS}
     key="client_table"

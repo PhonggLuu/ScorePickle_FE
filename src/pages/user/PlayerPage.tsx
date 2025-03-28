@@ -170,8 +170,7 @@ export const PlayerPage = () => {
         columns={[
           {
             title: 'STT',
-            render: (text, record, index) =>
-              (currentPage - 1) * pageSize + index + 1,
+            render: (index) => (currentPage - 1) * pageSize + index + 1,
           },
           ...columns,
         ]}

@@ -95,7 +95,7 @@ const RevenueColumnChart = () => {
       value: 37.4,
     },
   ];
-  const config = {
+  const config: import('@ant-design/charts').ColumnConfig = {
     data,
     isGroup: true,
     xField: 'period',
@@ -126,7 +126,7 @@ const RevenueColumnChart = () => {
       ],
     },
   };
-  // @ts-ignore
+  // Render the column chart
   return <Column {...config} />;
 };
 
