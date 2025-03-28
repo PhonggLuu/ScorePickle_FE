@@ -9,3 +9,5 @@ export * from './tournament';
 export * from './user';
 export * from './tournamentPage';
 export * from './rankingPage';
+export * from './rulePage';
+export * from './rule';

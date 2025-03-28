@@ -1,16 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { ConfigProvider, Layout, Menu, MenuProps, SiderProps } from 'antd';
 import {
-  AppstoreAddOutlined,
   BranchesOutlined,
-  BugOutlined,
-  GithubOutlined,
-  IdcardOutlined,
+  FormOutlined,
   InfoCircleOutlined,
   PieChartOutlined,
-  ProductOutlined,
   SecurityScanOutlined,
-  SnippetsOutlined,
   UserOutlined,
 } from '@ant-design/icons';
 import { Logo } from '../../components';
@@ -18,17 +13,13 @@ import { Link, useLocation } from 'react-router-dom';
 import {
   PATH_ABOUT,
   PATH_AUTH,
-  PATH_CORPORATE,
   PATH_DASHBOARD,
-  PATH_DOCS,
-  PATH_ERROR,
-  PATH_GITHUB,
   PATH_LANDING,
-  PATH_SITEMAP,
   PATH_USER_PROFILE,
   //New Path
   PATH_TOURNAMENT,
   PATH_USER,
+  PATH_CONTENT,
 } from '../../constants';
 import { COLOR } from '../../App.tsx';
 
@@ -97,6 +88,11 @@ const items: MenuProps['items'] = [
     <Link to={PATH_TOURNAMENT.overview}>Tournament</Link>,
     'tournament',
     <BranchesOutlined />
+  ),
+  getItem(
+    <Link to={PATH_CONTENT.root}>Content</Link>,
+    'content',
+    <FormOutlined />
   ),
   getItem('User', 'user', <UserOutlined />, [
     getItem(<Link to={PATH_USER.user}>Users</Link>, 'users', null),

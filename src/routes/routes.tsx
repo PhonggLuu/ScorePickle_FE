@@ -49,6 +49,8 @@ import {
   // Import the (player view)
   TournamentPage,
   RankingPage,
+  RulePage,
+  ContentPage,
 } from '../pages';
 import {
   CorporateLayout,
@@ -59,8 +61,8 @@ import {
 import React, { ReactNode, useEffect } from 'react';
 import { AboutPage } from '../pages/About.tsx';
 import { TournamentLayout } from '@src/layouts/tournament/index.tsx';
+import { ContentLayout } from '@src/layouts/content/index.tsx';
 import { UserLayout } from '@src/layouts/user/index.tsx';
-import RulePage from '@src/pages/rulePage/rulePage.tsx';
 
 // Custom scroll restoration function
 export const ScrollToTop: React.FC = () => {
@@ -117,6 +119,17 @@ const router = createBrowserRouter([
         index: true,
         path: 'rule-page',
         element: <RulePage />,
+      },
+    ],
+  },
+  {
+    path: '/content',
+    element: <PageWrapper children={<ContentLayout />} />,
+    errorElement: <ErrorPage />,
+    children: [
+      {
+        index: true,
+        element: <ContentPage />,
       },
     ],
   },

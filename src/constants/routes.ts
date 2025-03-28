@@ -28,6 +28,7 @@ const ROOTS_USER = '/user';
 const ROOTS_TOURNAMENT_PAGE = '/tournament-page';
 const ROOTS_RANKING_PAGE = '/ranking-page';
 const ROOTS_RULE_PAGE = '/rule-page';
+const ROOTS_CONTENT = '/content';
 
 export const PATH_LANDING = {
   root: ROOTS_LANDING,
@@ -259,4 +260,8 @@ export const PATH_RANKING_PAGE = {
 
 export const PATH_RULE_PAGE = {
   root: ROOTS_RULE_PAGE,
+};
+
+export const PATH_CONTENT = {
+  root: ROOTS_CONTENT,
 };

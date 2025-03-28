@@ -219,7 +219,11 @@ export const OverviewPage = () => {
         columns={[
           {
             title: 'STT',
-            render: (index) => (currentPage - 1) * pageSize + index + 1,
+            render: (_, __, index) => {
+              // Chắc chắn index là số và tính toán số thứ tự theo trang và kích thước trang
+              const stt = (currentPage - 1) * pageSize + index + 1;
+              return stt;
+            },
           },
           ...columns,
         ]}
