@@ -24,7 +24,7 @@ import {
 } from '@ant-design/icons';
 import { useMediaQuery } from 'react-responsive';
 import { Logo, NProgress } from '../../components';
-import { PATH_AUTH, PATH_DASHBOARD, PATH_LANDING } from '../../constants';
+import { PATH_AUTH, PATH_LANDING } from '../../constants';
 import FooterCustom from '@components/Footer/FooterCustom';
 import {
   PATH_TOURNAMENT_PAGE,
