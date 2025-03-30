@@ -1,13 +1,19 @@
-import { Button, Spin, Tabs } from 'antd';
+import { Button, Spin, Tabs, Card } from 'antd';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useGetTournamentById } from '@src/modules/Tournament/hooks/useGetTournamentById';
 import MatchRoom from './containers/MatchRoom';
+import PlayersTable from './containers/PlayerRegistration';
+import TournamentInfoForm from './containers/TournamentInfoForm';
+import Policy from './containers/Policy';
+import BillTab from './containers/BillTab';
 
 const { TabPane } = Tabs;
 
 export const TournamentDetail = () => {
   const { id } = useParams<{ id: string }>();
-  const { data, isLoading, error } = useGetTournamentById(Number(id || 0));
+  const { data, isLoading, error, refetch } = useGetTournamentById(
+    Number(id || 0)
+  );
   const navigate = useNavigate();
 
   if (isLoading) {
@@ -22,6 +28,10 @@ export const TournamentDetail = () => {
     return <div>No tournament data found</div>;
   }
 
+  const handleSave = (values: any) => {
+    console.log('Saved values:', values);
+  };
+
   return (
     <div>
       <Button
@@ -34,6 +44,25 @@ export const TournamentDetail = () => {
       <Tabs defaultActiveKey="1">
         <TabPane tab="Matches" key="1">
           <MatchRoom id={data.id} />
+        </TabPane>
+        <TabPane tab="Players" key="2">
+          <PlayersTable
+            tournamentId={data.id}
+            registrations={data.registrationDetails}
+            refetch={refetch}
+          />
+        </TabPane>
+
+        <TabPane tab="Tournament Info" key="4">
+          <Card title="Tournament Info" bordered={false}>
+            <TournamentInfoForm data={data} onSave={handleSave} />
+          </Card>
+        </TabPane>
+        <TabPane tab="Policy" key="5">
+          <Policy id={data.id} data={data} refetch={refetch} />
+        </TabPane>
+        <TabPane tab="Bill" key="6">
+          <BillTab id={data.id} />
         </TabPane>
       </Tabs>
     </div>
