@@ -29,12 +29,12 @@ export interface TournamentDetail {
 }
 
 export interface RegistrationDetail {
+  [x: string]: any;
+  status: TouramentregistrationStatus;
+  partnerId?: number;
   id: number;
   playerId: number;
   paymentId: number;
-  registeredAt: string;
-  isApproved: boolean;
-  playerDetails: PlayerDetail;
 }
 
 export interface PlayerDetail {
@@ -44,4 +44,60 @@ export interface PlayerDetail {
   email: string;
   ranking: number;
   avatarUrl: string;
+}
+
+export interface Match {
+  id: number;
+  title: string;
+  description: string;
+  matchDate: string;
+  venueId: number | null;
+  status: number;
+  matchCategory: number;
+  matchFormat: number;
+  winScore: number;
+  isPublic: boolean;
+  refereeId: number | null;
+  teamResponse: Team[];
+}
+
+export interface Team {
+  id: number;
+  name: string;
+  captainId: number | null;
+  matchingId: number;
+  members: Member[];
+}
+
+export interface Member {
+  playerDetails: any;
+  id: number;
+  playerId: number;
+  teamId: number;
+  joinedAt: string;
+}
+
+export type TournamentRequest = Omit<
+  Tournament,
+  'id' | 'status' | 'isAccept' | 'touramentDetails' | 'registrationDetails'
+>;
+
+export enum TournamentType {
+  Singles = 'Singles',
+  Doubles = 'Doubles',
+}
+
+export interface UpdateApprovalDTO {
+  isApproved: TouramentregistrationStatus;
+  tournamentId: number;
+  playerId: number;
+  partnerId?: number;
+}
+
+export enum TouramentregistrationStatus {
+  Pending = 1,
+  Approved = 2,
+  Rejected = 3,
+  Waiting = 4,
+  Eliminated = 5,
 }

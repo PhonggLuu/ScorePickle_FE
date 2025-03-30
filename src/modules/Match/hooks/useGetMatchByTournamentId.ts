@@ -8,7 +8,7 @@ const fetchTournamenMatchtById = async (id: number): Promise<Match[]> => {
     const response = await Api.get(`/Match/GetMatchByTouramentId/${id}`);
     return response.data as Match[];
   } catch (error) {
-    throw new Error('Error fetching tournament by ID');
+    throw new Error('No tournament matches found');
   }
 };
 

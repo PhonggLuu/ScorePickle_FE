@@ -51,6 +51,7 @@
     "react-transition-group": "^4.4.5",
     "redux-mock-store": "^1.5.5",
     "redux-persist": "^6.0.0",
+    "seedrandom": "^3.0.5",
     "ts-jest": "^29.2.6"
   },
   "devDependencies": {
