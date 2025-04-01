@@ -2,7 +2,7 @@ import { useMutation } from '@tanstack/react-query';
 import { useDispatch } from 'react-redux';
 import Api from '../../../api/api';
 import { LoginRequest, LoginResponse, User } from '../models';
-import { isAuth } from '../../../redux/authentication/authSlide';
+import { isAuth, setUser } from '../../../redux/authentication/authSlide';
 import {
   getLocalStorageItem,
   setLocalStorageItem,
@@ -23,7 +23,11 @@ export function useLogin() {
   return useMutation({
     mutationFn: login,
     onSuccess: () => {
-      dispatch(isAuth());
+      getUser().then((user) => {
+        dispatch(setUser(user));
+        dispatch(isAuth());
+        console.log('user', user);
+      });
     },
     onError: (error) => {
       console.error('Error logging in:', error);
@@ -33,7 +37,6 @@ export function useLogin() {
 
 const getUser = async (): Promise<User> => {
   const token = getLocalStorageItem('token');
-  console.log('token: ', token);
   const response = (await Api.get('Auth/GetUserByToken/', {
     token,
   })) as unknown as User;

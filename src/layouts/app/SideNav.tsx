@@ -1,27 +1,25 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { ConfigProvider, Layout, Menu, MenuProps, SiderProps } from 'antd';
 import {
-  BranchesOutlined,
   FormOutlined,
-  InfoCircleOutlined,
   PieChartOutlined,
-  SecurityScanOutlined,
+  TrophyOutlined,
   UserOutlined,
 } from '@ant-design/icons';
-import { Logo } from '../../components';
+import { ConfigProvider, Layout, Menu, MenuProps, SiderProps } from 'antd';
+import React, { useEffect, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { COLOR } from '../../App.tsx';
+import { Logo } from '../../components';
+import { PATH_LANDING } from '../../constants';
 import {
-  PATH_ABOUT,
-  PATH_AUTH,
-  PATH_DASHBOARD,
-  PATH_LANDING,
-  PATH_USER_PROFILE,
-  //New Path
-  PATH_TOURNAMENT,
+  PATH_ADMIN_PAYMENT,
+  PATH_ADMIN_TOURNAMENT,
   PATH_USER,
   PATH_CONTENT,
-} from '../../constants';
-import { COLOR } from '../../App.tsx';
+  PATH_PAYMENT,
+  PATH_TOURNAMENT,
+} from '../../constants/routes.ts';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../redux/store.ts';
 
 const { Sider } = Layout;
 
@@ -43,149 +41,17 @@ const getItem = (
   } as MenuItem;
 };
 
-const items: MenuProps['items'] = [
-  getItem('Dashboards', 'dashboards', <PieChartOutlined />, [
-    getItem(<Link to={PATH_DASHBOARD.default}>Default</Link>, 'default', null),
-    getItem(
-      <Link to={PATH_DASHBOARD.projects}>Projects</Link>,
-      'projects',
-      null
-    ),
-    getItem(
-      <Link to={PATH_DASHBOARD.ecommerce}>eCommerce</Link>,
-      'ecommerce',
-      null
-    ),
-    getItem(
-      <Link to={PATH_DASHBOARD.marketing}>Marketing</Link>,
-      'marketing',
-      null
-    ),
-    getItem(<Link to={PATH_DASHBOARD.social}>Social</Link>, 'social', null),
-    getItem(<Link to={PATH_DASHBOARD.bidding}>Bidding</Link>, 'bidding', null),
-    getItem(
-      <Link to={PATH_DASHBOARD.learning}>Learning</Link>,
-      'learning',
-      null
-    ),
-    getItem(
-      <Link to={PATH_DASHBOARD.logistics}>Logistics</Link>,
-      'logistics',
-      null
-    ),
-  ]),
-  getItem(
-    <Link to={PATH_ABOUT.root}>About</Link>,
-    'about',
-    <InfoCircleOutlined />
-  ),
-  // getItem(
-  //   <Link to={PATH_SITEMAP.root}>Sitemap</Link>,
-  //   'sitemap',
-  //   <BranchesOutlined />
-  // ),
-  getItem(
-    <Link to={PATH_TOURNAMENT.overview}>Tournament</Link>,
-    'tournament',
-    <BranchesOutlined />
-  ),
-  getItem(
-    <Link to={PATH_CONTENT.root}>Content</Link>,
-    'content',
-    <FormOutlined />
-  ),
-  getItem('User', 'user', <UserOutlined />, [
-    getItem(<Link to={PATH_USER.user}>Users</Link>, 'users', null),
-    getItem(<Link to={PATH_USER.player}>Players</Link>, 'players', null),
-    getItem(<Link to={PATH_USER.sponsor}>Sponsors</Link>, 'sponsors', null),
-    getItem(<Link to={PATH_USER.referee}>Referees</Link>, 'referees', null),
-    getItem(
-      <Link to={PATH_USER.organizer}>Organizers</Link>,
-      'organizers',
-      null
-    ),
-    getItem(<Link to={PATH_USER.staff}>Staffs</Link>, 'staffs', null),
-  ]),
-  // getItem('Tournament', 'tournament', <BranchesOutlined />, [
-  //   getItem(<Link to={PATH_TOURNAMENT.overview}>Overview</Link>, 'overview', null),
-  // ]),
-
-  getItem('Pages', 'pages', null, [], 'group'),
-
-  getItem('User profile', 'user-profile', <UserOutlined />, [
-    getItem(
-      <Link to={PATH_USER_PROFILE.details}>Details</Link>,
-      'details',
-      null
-    ),
-    getItem(
-      <Link to={PATH_USER_PROFILE.preferences}>Preferences</Link>,
-      'preferences',
-      null
-    ),
-    getItem(
-      <Link to={PATH_USER_PROFILE.personalInformation}>Information</Link>,
-      'personal-information',
-      null
-    ),
-    getItem(
-      <Link to={PATH_USER_PROFILE.security}>Security</Link>,
-      'security',
-      null
-    ),
-    getItem(
-      <Link to={PATH_USER_PROFILE.activity}>Activity</Link>,
-      'activity',
-      null
-    ),
-    getItem(
-      <Link to={PATH_USER_PROFILE.action}>Actions</Link>,
-      'actions',
-      null
-    ),
-    getItem(<Link to={PATH_USER_PROFILE.help}>Help</Link>, 'help', null),
-    getItem(
-      <Link to={PATH_USER_PROFILE.feedback}>Feedback</Link>,
-      'feedback',
-      null
-    ),
-  ]),
-
-  getItem('Authentication', 'authentication', <SecurityScanOutlined />, [
-    getItem(<Link to={PATH_AUTH.signin}>Sign In</Link>, 'auth-signin', null),
-    getItem(<Link to={PATH_AUTH.signup}>Sign Up</Link>, 'auth-signup', null),
-    getItem(<Link to={PATH_AUTH.welcome}>Welcome</Link>, 'auth-welcome', null),
-    getItem(
-      <Link to={PATH_AUTH.verifyEmail}>Verify email</Link>,
-      'auth-verify',
-      null
-    ),
-    getItem(
-      <Link to={PATH_AUTH.passwordReset}>Password reset</Link>,
-      'auth-password-reset',
-      null
-    ),
-    // getItem(<Link to={PATH_AUTH.passwordConfirm}>Passsword confirmation</Link>, 'auth-password-confirmation', null),
-    getItem(
-      <Link to={PATH_AUTH.accountDelete}>Account deleted</Link>,
-      'auth-account-deactivation',
-      null
-    ),
-  ]),
-];
-
-const rootSubmenuKeys = ['dashboards', 'corporate', 'user-profile'];
-
-type SideNavProps = SiderProps;
-
-const SideNav = ({ ...others }: SideNavProps) => {
+const SideNav = ({ ...others }: SiderProps) => {
   const nodeRef = useRef(null);
   const { pathname } = useLocation();
-  const [openKeys, setOpenKeys] = useState(['']);
-  const [current, setCurrent] = useState('');
+  const [openKeys, setOpenKeys] = useState<string[]>([]);
+  const [current, setCurrent] = useState<string>('');
+  const user = useSelector((state: RootState) => state.auth.user);
+
+  console.log('user', user);
 
   const onClick: MenuProps['onClick'] = (e) => {
-    console.log('click ', e);
+    setCurrent(e.key);
   };
 
   const onOpenChange: MenuProps['onOpenChange'] = (keys) => {
@@ -202,6 +68,69 @@ const SideNav = ({ ...others }: SideNavProps) => {
     setOpenKeys(paths);
     setCurrent(paths[paths.length - 1]);
   }, [pathname]);
+  const items: MenuProps['items'] = [
+    ...(user?.roleId === 2
+      ? [
+          getItem('Dashboard', 'admin/payment', <PieChartOutlined />, [
+            getItem(<Link to={PATH_ADMIN_PAYMENT.root}>Default</Link>, 'List'),
+          ]),
+          getItem('User', 'user', <UserOutlined />, [
+            getItem(
+              <Link to={PATH_USER.managerSponsor}>Manage Sponsor</Link>,
+              'managerSponsor'
+            ),
+            getItem(
+              <Link to={PATH_USER.blockUser}>Block User</Link>,
+              'blockUser'
+            ),
+          ]),
+          getItem('Tournaments', 'admin/tournament', <TrophyOutlined />, [
+            getItem(
+              <Link to={PATH_ADMIN_TOURNAMENT.overview}>Overview</Link>,
+              'overview'
+            ),
+            getItem(
+              <Link to={PATH_ADMIN_TOURNAMENT.venues}>Venues</Link>,
+              'venues'
+            ),
+            getItem(
+              <Link to={PATH_ADMIN_TOURNAMENT.referees}>Referees</Link>,
+              'referees'
+            ),
+          ]),
+          getItem(
+            <Link to={PATH_CONTENT.root}>Content</Link>,
+            'content',
+            <FormOutlined />
+          ),
+        ]
+      : [
+          getItem('Tournament', 'tournament', <TrophyOutlined />, [
+            getItem(
+              <Link to={PATH_TOURNAMENT.overview}>List</Link>,
+              'overview'
+            ),
+            getItem(
+              <Link to={PATH_TOURNAMENT.venues}>Venues</Link>,
+              'schedule'
+            ),
+            getItem(
+              <Link to={PATH_TOURNAMENT.referees}>Referees</Link>,
+              'referees'
+            ),
+          ]),
+          getItem('Payments', 'payment', <PieChartOutlined />, [
+            getItem(<Link to={PATH_PAYMENT.root}>List</Link>, 'List'),
+          ]),
+        ]),
+  ];
+
+  const rootSubmenuKeys = [
+    'dashboards',
+    'corporate',
+    'user-profile',
+    'tournament',
+  ];
 
   return (
     <Sider ref={nodeRef} breakpoint="lg" collapsedWidth="0" {...others}>

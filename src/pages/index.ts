@@ -11,3 +11,4 @@ export * from './tournamentPage';
 export * from './rankingPage';
 export * from './rulePage';
 export * from './rule';
+export * from './tournament/Admin';
