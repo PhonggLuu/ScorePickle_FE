@@ -29,6 +29,8 @@ const ROOTS_TOURNAMENT_PAGE = '/tournament-page';
 const ROOTS_RANKING_PAGE = '/ranking-page';
 const ROOTS_RULE_PAGE = '/rule-page';
 const ROOTS_CONTENT = '/content';
+const ROOTS_PAYMENT = '/payment';
+const ROOTS_ADMIN = '/admin';
 
 export const PATH_LANDING = {
   root: ROOTS_LANDING,
@@ -48,6 +50,8 @@ export const PATH_DASHBOARD = {
   bidding: path(ROOTS_DASHBOARD, '/bidding'),
   learning: path(ROOTS_DASHBOARD, '/learning'),
   logistics: path(ROOTS_DASHBOARD, '/logistics'),
+  admin: path(ROOTS_DASHBOARD, '/admin'),
+  sponsor: path(ROOTS_DASHBOARD, '/sponsor'),
 };
 
 export const PATH_SITEMAP = {
@@ -238,6 +242,9 @@ export const PATH_ABOUT = {
 export const PATH_TOURNAMENT = {
   root: ROOTS_TOURNAMENT,
   overview: path(ROOTS_TOURNAMENT, '/overview'),
+  venues: path(ROOTS_TOURNAMENT, '/venues'),
+  standings: path(ROOTS_TOURNAMENT, '/standings'),
+  referees: path(ROOTS_TOURNAMENT, '/referees'),
 };
 
 export const PATH_USER = {
@@ -248,6 +255,12 @@ export const PATH_USER = {
   referee: path(ROOTS_USER, '/referees'),
   organizer: path(ROOTS_USER, '/organizers'),
   staff: path(ROOTS_USER, '/staffs'),
+
+  managerSponsor: path(ROOTS_USER, '/manage-sponsor'),
+  blockUser: path(ROOTS_USER, '/block-user'),
+  managerPlayer: path(ROOTS_USER, '/manager-player'),
+  sponsorDetails: path(ROOTS_USER, `/manager-sponsor/:id`),
+  playerDetails: path(ROOTS_USER, `/manager-player/:id`),
 };
 
 export const PATH_TOURNAMENT_PAGE = {
@@ -264,4 +277,18 @@ export const PATH_RULE_PAGE = {
 
 export const PATH_CONTENT = {
   root: ROOTS_CONTENT,
+};
+
+export const PATH_ADMIN_PAYMENT = {
+  root: `${ROOTS_ADMIN}${ROOTS_PAYMENT}`,
+};
+
+export const PATH_ADMIN_TOURNAMENT = {
+  overview: path(ROOTS_ADMIN, `${ROOTS_TOURNAMENT}/overview`),
+  venues: path(ROOTS_ADMIN, `${ROOTS_TOURNAMENT}/venues`),
+  referees: path(ROOTS_ADMIN, `${ROOTS_TOURNAMENT}/referees`),
+};
+
+export const PATH_PAYMENT = {
+  root: ROOTS_PAYMENT,
 };

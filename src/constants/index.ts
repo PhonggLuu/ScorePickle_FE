@@ -29,6 +29,7 @@ import {
   PATH_TOURNAMENT,
   PATH_USER,
   PATH_CONTENT,
+  PATH_ADMIN_TOURNAMENT,
 } from './routes.ts';
 
 const DASHBOARD_ITEMS = [
@@ -118,11 +119,18 @@ export {
   USER_ITEMS,
   PATH_CONTENT,
   CONTENT_ITEMS,
+  TOURNAMENT_ADMIN_ITEMS,
 };
 
 //New path
 const TOURNAMENT_ITEMS = [
   { title: 'Overview', path: PATH_TOURNAMENT.overview },
+];
+
+const TOURNAMENT_ADMIN_ITEMS = [
+  { title: 'Overview', path: PATH_ADMIN_TOURNAMENT.overview },
+  { title: 'Venues', path: PATH_ADMIN_TOURNAMENT.venues },
+  { title: 'Referees', path: PATH_ADMIN_TOURNAMENT.referees },
 ];
 
 const USER_ITEMS = [

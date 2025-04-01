@@ -51,6 +51,13 @@ import {
   RankingPage,
   RulePage,
   ContentPage,
+  // Admin pages
+  PaymentAdmin,
+  // Sponsor pages
+  PaymentSponsor,
+  OverviewAdminPage,
+  VenuePage,
+  RefereesPage,
 } from '../pages';
 import {
   CorporateLayout,
@@ -63,6 +70,11 @@ import { AboutPage } from '../pages/About.tsx';
 import { TournamentLayout } from '@src/layouts/tournament/index.tsx';
 import { ContentLayout } from '@src/layouts/content/index.tsx';
 import { UserLayout } from '@src/layouts/user/index.tsx';
+import { PaymentAdminLayout } from '@src/layouts/payment/index.admin.tsx';
+import { TournamentAdminLayout } from '@src/layouts/tournament/index.admin.tsx';
+import { UserAdminLayout } from '@src/layouts/user/index.admin.tsx';
+import ManageSponsor from '@src/pages/user/ManageSponsor.tsx';
+import BlockUser from '@src/pages/user/BlockUser.tsx';
 
 // Custom scroll restoration function
 export const ScrollToTop: React.FC = () => {
@@ -119,6 +131,67 @@ const router = createBrowserRouter([
         index: true,
         path: 'rule-page',
         element: <RulePage />,
+      },
+    ],
+  },
+  {
+    path: '/admin/',
+    element: <PageWrapper children={<PaymentAdminLayout />} />,
+    errorElement: <ErrorPage />,
+    children: [
+      {
+        index: true,
+        element: <PaymentAdmin />,
+      },
+    ],
+  },
+  {
+    path: '/admin/payment',
+    element: <PageWrapper children={<PaymentAdminLayout />} />,
+    errorElement: <ErrorPage />,
+    children: [
+      {
+        index: true,
+        element: <PaymentAdmin />,
+      },
+    ],
+  },
+  {
+    path: '/admin/tournament',
+    element: <PageWrapper children={<TournamentAdminLayout />} />,
+    errorElement: <ErrorPage />,
+    children: [
+      {
+        index: true,
+        path: 'overview',
+        element: <OverviewAdminPage />,
+      },
+      {
+        index: true,
+        path: 'venues',
+        element: <VenuePage />,
+      },
+      {
+        index: true,
+        path: 'referees',
+        element: <RefereesPage />,
+      },
+    ],
+  },
+  {
+    path: '/user',
+    element: <PageWrapper children={<UserAdminLayout />} />,
+    errorElement: <ErrorPage />,
+    children: [
+      {
+        index: true,
+        path: 'manage-sponsor',
+        element: <ManageSponsor />,
+      },
+      {
+        index: true,
+        path: 'block-user',
+        element: <BlockUser />,
       },
     ],
   },
@@ -223,6 +296,14 @@ const router = createBrowserRouter([
       {
         path: 'logistics',
         element: <LogisticsDashboardPage />,
+      },
+      {
+        path: 'admin',
+        element: <PaymentAdmin />,
+      },
+      {
+        path: 'sponsor',
+        element: <PaymentSponsor />,
       },
     ],
   },

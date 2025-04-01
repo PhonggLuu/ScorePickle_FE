@@ -1,0 +1,413 @@
+import { SearchOutlined } from '@ant-design/icons';
+import type { InputRef } from 'antd';
+import {
+  Button,
+  Card,
+  Col,
+  Input,
+  Row,
+  Space,
+  Table,
+  Tag,
+  Typography,
+} from 'antd';
+import type { ColumnsType, ColumnType } from 'antd/es/table';
+import { useRef, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { useGetAllTournaments } from '@src/modules/Tournament/hooks/useGetAllTournaments';
+import { useUpdateTournament } from '@src/modules/Tournament/hooks/useUpdateTournament';
+import { Pie } from '@ant-design/charts';
+
+const { Title } = Typography;
+
+type DataIndex = string;
+
+export const OverviewAdminPage = () => {
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [pageSize, setPageSize] = useState<number>(10);
+  const { data, isLoading, refetch } = useGetAllTournaments(
+    currentPage,
+    pageSize
+  );
+  const { mutate: updateTournament } = useUpdateTournament();
+  const [, setSearchText] = useState<string>('');
+  const [searchedColumn, setSearchedColumn] = useState<string>('');
+  const searchInput = useRef<InputRef>(null);
+
+  const handlePaginationChange = (page: number, pageSize: number) => {
+    setCurrentPage(page);
+    setPageSize(pageSize);
+  };
+
+  const handleSearch = (
+    selectedKeys: string[],
+    confirm: () => void,
+    dataIndex: DataIndex
+  ) => {
+    confirm();
+    setSearchText(selectedKeys[0]);
+    setSearchedColumn(dataIndex);
+  };
+
+  const handleReset = (clearFilters?: () => void) => {
+    if (clearFilters) {
+      clearFilters();
+    }
+    setSearchText('');
+  };
+
+  const getColumnSearchProps = (dataIndex: DataIndex): ColumnType<any> => ({
+    filterDropdown: ({
+      setSelectedKeys,
+      selectedKeys,
+      confirm,
+      clearFilters,
+    }) => (
+      <div style={{ padding: 8 }}>
+        <Input
+          ref={searchInput}
+          placeholder={`Search ${dataIndex}`}
+          value={selectedKeys[0]}
+          onChange={(e) =>
+            setSelectedKeys(e.target.value ? [e.target.value] : [])
+          }
+          onPressEnter={() =>
+            handleSearch(selectedKeys as string[], confirm, dataIndex)
+          }
+          style={{ marginBottom: 8, display: 'block' }}
+        />
+        <Space>
+          <Button
+            type="primary"
+            onClick={() =>
+              handleSearch(selectedKeys as string[], confirm, dataIndex)
+            }
+            icon={<SearchOutlined />}
+            size="small"
+            style={{ width: 90 }}
+          >
+            Search
+          </Button>
+          <Button
+            onClick={() => handleReset(clearFilters)}
+            size="small"
+            style={{ width: 90 }}
+          >
+            Reset
+          </Button>
+        </Space>
+      </div>
+    ),
+    filterIcon: (filtered: boolean) => (
+      <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />
+    ),
+    onFilter: (value, record) =>
+      record[dataIndex]
+        ? record[dataIndex]
+            .toString()
+            .toLowerCase()
+            .includes((value as string).toLowerCase())
+        : '',
+    onFilterDropdownVisibleChange: (visible) => {
+      if (visible) {
+        setTimeout(() => searchInput.current?.select(), 100);
+      }
+    },
+    render: (text) =>
+      searchedColumn === dataIndex ? (
+        <span style={{ backgroundColor: '#ffc069', padding: 0 }}>{text}</span>
+      ) : (
+        text
+      ),
+  });
+
+  const handleAccept = async (id: number) => {
+    try {
+      updateTournament(
+        { id, data: { isAccept: true } },
+        {
+          onSuccess: () => {
+            console.log(`Accepted tournament with id: ${id}`);
+            refetch();
+          },
+          onError: (error) => {
+            console.error('Error accepting tournament:', error);
+          },
+        }
+      );
+    } catch (error) {
+      console.error('Error accepting tournament:', error);
+    }
+  };
+
+  const handleReject = async (id: number) => {
+    try {
+      updateTournament(
+        { id, data: { isAccept: false } },
+        {
+          onSuccess: () => {
+            console.log(`Rejected tournament with id: ${id}`);
+            refetch();
+          },
+          onError: (error) => {
+            console.error('Error rejecting tournament:', error);
+          },
+        }
+      );
+    } catch (error) {
+      console.error('Error rejecting tournament:', error);
+    }
+  };
+
+  const columns: ColumnsType<any> = [
+    {
+      title: 'Name',
+      dataIndex: 'name',
+      key: 'name',
+      ...getColumnSearchProps('name'),
+    },
+    {
+      title: 'Location',
+      dataIndex: 'location',
+      key: 'location',
+      ...getColumnSearchProps('location'),
+    },
+    {
+      title: 'Max Players',
+      dataIndex: 'maxPlayer',
+      key: 'maxPlayer',
+    },
+    {
+      title: 'Total Prize',
+      dataIndex: 'totalPrize',
+      key: 'totalPrize',
+    },
+    {
+      title: 'Status',
+      dataIndex: 'status',
+      key: 'status',
+      render: (status: string) => {
+        let color = '';
+        let label = '';
+
+        switch (status) {
+          case 'Scheduled':
+            color = 'blue';
+            label = 'Scheduled';
+            break;
+          case 'Ongoing':
+            color = 'orange';
+            label = 'Ongoing';
+            break;
+          case 'Completed':
+            color = 'green';
+            label = 'Completed';
+            break;
+          case 'Disable':
+            color = 'red';
+            label = 'Disable';
+            break;
+          default:
+            color = 'default';
+            label = status;
+        }
+
+        return <Tag color={color}>{label}</Tag>;
+      },
+    },
+    {
+      title: 'Type',
+      dataIndex: 'type',
+      key: 'type',
+      filters: [
+        { text: 'Singles', value: 'Singles' },
+        { text: 'Doubles', value: 'Doubles' },
+      ],
+      onFilter: (value, record) => record.type.indexOf(value as string) === 0,
+      render: (type: string) => (
+        <Tag color={type === 'Singles' ? 'blue' : 'purple'}>{type}</Tag>
+      ),
+    },
+    {
+      title: 'Is Accepted',
+      dataIndex: 'isAccept',
+      key: 'isAccept',
+      filters: [
+        { text: 'Accepted', value: true },
+        { text: 'Not Accepted', value: false },
+      ],
+      onFilter: (value, record) => record.isAccept === value,
+      render: (isAccept: boolean, record) =>
+        isAccept ? (
+          <Button danger onClick={() => handleReject(record.id)}>
+            Reject
+          </Button>
+        ) : (
+          <Button type="primary" onClick={() => handleAccept(record.id)}>
+            Accept
+          </Button>
+        ),
+    },
+    {
+      title: 'Action',
+      key: 'action',
+      render: (text, record) => (
+        <Link to={`/tournament/admin/${record.id}`}>Detail</Link>
+      ),
+    },
+  ];
+
+  const totalTournaments = data?.data.length || 0;
+  const pendingTournaments =
+    data?.data.filter((t) => t.status === 'Pending').length || 0;
+  const ongoingTournaments =
+    data?.data.filter((t) => t.status === 'Ongoing').length || 0;
+  const completedTournaments =
+    data?.data.filter((t) => t.status === 'Completed').length || 0;
+  const disabledTournaments =
+    data?.data.filter((t) => t.status === 'Disable').length || 0;
+  const singlesTournaments =
+    data?.data.filter((t) => t.type === 'Singles').length || 0;
+  const doublesTournaments =
+    data?.data.filter((t) => t.type === 'Doubles').length || 0;
+
+  const tournamentTypeData = [
+    { type: 'Singles', value: singlesTournaments },
+    { type: 'Doubles', value: doublesTournaments },
+  ];
+
+  const tournamentStatusData = [
+    { status: 'Pending', value: pendingTournaments },
+    { status: 'Ongoing', value: ongoingTournaments },
+    { status: 'Completed', value: completedTournaments },
+    { status: 'Disable', value: disabledTournaments },
+  ];
+
+  const pieConfig = (data: any[], angleField: string, colorField: string) => ({
+    appendPadding: 10,
+    data,
+    angleField,
+    colorField,
+    radius: 1,
+    innerRadius: 0.6,
+    width: 170,
+    height: 170,
+    label: {
+      type: 'inner',
+      offset: '-50%',
+      content: (data: any) => `${(data.percent * 100).toFixed(0)}%`,
+      style: {
+        fontSize: 14,
+        textAlign: 'center',
+      },
+    },
+    interactions: [{ type: 'element-active' }],
+  });
+
+  return (
+    <div style={{ padding: '24px', backgroundColor: '#f0f2f5' }}>
+      <Title level={2} style={{ marginBottom: '24px' }}>
+        Tournament Overview
+      </Title>
+      <Row gutter={16} style={{ marginBottom: 16 }}>
+        <Col span={12}>
+          <Row gutter={16}>
+            <Col span={12}>
+              <Card
+                title="Total Tournaments"
+                bordered={false}
+                style={{ backgroundColor: '#ffffff' }}
+              >
+                {totalTournaments}
+              </Card>
+            </Col>
+            <Col span={12}>
+              <Card
+                title="Active Tournaments"
+                bordered={false}
+                style={{ backgroundColor: '#ffffff' }}
+              >
+                {ongoingTournaments}
+              </Card>
+            </Col>
+          </Row>
+          <Row gutter={16} style={{ marginTop: 16 }}>
+            <Col span={12}>
+              <Card
+                title="Singles Tournaments"
+                bordered={false}
+                style={{ backgroundColor: '#ffffff' }}
+              >
+                {singlesTournaments}
+              </Card>
+            </Col>
+            <Col span={12}>
+              <Card
+                title="Doubles Tournaments"
+                bordered={false}
+                style={{ backgroundColor: '#ffffff' }}
+              >
+                {doublesTournaments}
+              </Card>
+            </Col>
+          </Row>
+        </Col>
+        <Col span={12}>
+          <Row gutter={16}>
+            <Col span={12}>
+              <Card
+                title="Tournament Types"
+                bordered={false}
+                style={{ backgroundColor: '#ffffff' }}
+              >
+                <Pie {...pieConfig(tournamentTypeData, 'value', 'type')} />
+              </Card>
+            </Col>
+            <Col span={12}>
+              <Card
+                title="Tournament Status"
+                bordered={false}
+                style={{ backgroundColor: '#ffffff' }}
+              >
+                <Pie {...pieConfig(tournamentStatusData, 'value', 'status')} />
+              </Card>
+            </Col>
+          </Row>
+        </Col>
+      </Row>
+      <Button
+        type="primary"
+        onClick={() => refetch()}
+        style={{ marginBottom: 16 }}
+      >
+        Refetch
+      </Button>
+      <Table
+        columns={[
+          {
+            title: 'STT',
+            render: (_, __, index) => {
+              // Chắc chắn index là số và tính toán số thứ tự theo trang và kích thước trang
+              const stt = (currentPage - 1) * pageSize + index + 1;
+              return stt;
+            },
+          },
+          ...columns,
+        ]}
+        dataSource={data?.data}
+        loading={isLoading}
+        rowKey="id"
+        pagination={{
+          current: data?.currentPage,
+          total: data?.totalItems,
+          pageSize: data?.pageSize,
+          onChange: handlePaginationChange,
+          pageSizeOptions: ['10', '20', '50'],
+          showSizeChanger: true,
+        }}
+      />
+    </div>
+  );
+};
+
+export default OverviewAdminPage;
