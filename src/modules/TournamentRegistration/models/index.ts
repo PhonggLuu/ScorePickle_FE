@@ -13,3 +13,18 @@ export interface CreateTournamentRegistrationResponse {
   partnerId: number;
   registeredAt: Date;
 }
+
+export interface TournamentInvitation {
+  id: number;
+  registrationId: number;
+  requesterId: number;
+  partnerId: number;
+  status: InvitationStatus;
+  createdAt: Date;
+}
+
+export enum InvitationStatus {
+  Pending = 1,
+  Accepted = 2,
+  Rejected = 3,
+}

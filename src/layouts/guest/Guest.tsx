@@ -1,9 +1,12 @@
 import {
+  Badge,
   Button,
   Drawer,
   Flex,
   FloatButton,
   Layout,
+  Modal,
+  Tabs,
   theme,
   Tooltip,
 } from 'antd';
@@ -21,6 +24,7 @@ import {
   LogoutOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
+  NotificationOutlined,
   TrophyOutlined,
   UserAddOutlined,
 } from '@ant-design/icons';
@@ -36,9 +40,16 @@ import {
 import { RootState } from '@src/redux/store';
 import { useSelector } from 'react-redux';
 import useLogout from '@src/modules/User/hooks/useLogout';
-import { Calendar } from 'lucide-react';
+import TabPane from 'antd/es/tabs/TabPane';
+import TournamentInvitation from '@src/pages/tournamentPage/containers/TournamentInvitation';
 
 const { Header, Content } = Layout;
+
+interface Notification {
+  id: number;
+  message: string;
+  description: string;
+}
 
 export const GuestLayout = () => {
   const {
@@ -75,6 +86,34 @@ export const GuestLayout = () => {
       }
     });
   }, []);
+
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [notifications] = useState<Notification[]>([
+    {
+      id: 1,
+      message: 'New comment',
+      description: 'You have a new comment on your post.',
+    },
+    {
+      id: 2,
+      message: 'System update',
+      description: 'There is a new system update available.',
+    },
+    {
+      id: 3,
+      message: 'Message received',
+      description: 'You have a new message.',
+    },
+  ]);
+
+  // Toggle the modal visibility
+  const showNotification = () => {
+    setIsModalVisible(true);
+  };
+
+  const handleCancel = () => {
+    setIsModalVisible(false);
+  };
 
   return (
     <>
@@ -162,6 +201,18 @@ export const GuestLayout = () => {
                     </Link>
                     <Link to="#">
                       <Button
+                        icon={
+                          <Badge count={1}>
+                            <NotificationOutlined />
+                          </Badge>
+                        }
+                        type="link"
+                        className="text-black"
+                        onClick={showNotification}
+                      ></Button>
+                    </Link>
+                    <Link to="#">
+                      <Button
                         icon={<LogoutOutlined />}
                         type="link"
                         className="text-black"
@@ -211,6 +262,42 @@ export const GuestLayout = () => {
               />
             </Tooltip>
           )}
+          <Modal
+            title="Notifications"
+            visible={isModalVisible}
+            onCancel={handleCancel}
+            footer={null}
+          >
+            <Tabs defaultActiveKey="1">
+              <TabPane tab="Lời mời tham gia giải đấu" key="1">
+                <TournamentInvitation playerId={user?.id} />
+              </TabPane>
+              <TabPane tab="Lịch thi đấu" key="2">
+                <p>Thông báo lịch thi đấu</p>
+                <ul>
+                  <li>
+                    <strong>Giải đấu 1</strong>
+                    <p>Thời gian: 20/10/2023</p>
+                  </li>
+                  <li>
+                    <strong>Giải đấu 2</strong>
+                    <p>Thời gian: 25/10/2023</p>
+                  </li>
+                </ul>
+              </TabPane>
+              <TabPane tab="Thông báo" key="3">
+                <p>Thông báo từ hệ thống</p>
+                <ul>
+                  {notifications.map((notification) => (
+                    <li key={notification.id}>
+                      <strong>{notification.message}</strong>
+                      <p>{notification.description}</p>
+                    </li>
+                  ))}
+                </ul>
+              </TabPane>
+            </Tabs>
+          </Modal>
         </Header>
         <Content
           style={{
