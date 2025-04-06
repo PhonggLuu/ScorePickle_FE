@@ -7,6 +7,8 @@ import {
   getLocalStorageItem,
   setLocalStorageItem,
 } from '@src/utils/localStorageUtils';
+import { useNavigate } from 'react-router-dom';
+import { PATH_DASHBOARD, PATH_LANDING } from '@src/constants';
 
 // integration with redux for login user
 const login = async (request: LoginRequest): Promise<LoginResponse> => {
@@ -20,12 +22,15 @@ const login = async (request: LoginRequest): Promise<LoginResponse> => {
 
 export function useLogin() {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   return useMutation({
     mutationFn: login,
     onSuccess: () => {
       getUser().then((user) => {
         dispatch(setUser(user));
         dispatch(isAuth());
+        if (user.roleId === 1) navigate(PATH_LANDING.root);
+        else navigate(PATH_DASHBOARD.default);
       });
     },
     onError: (error) => {

@@ -57,7 +57,6 @@ export const SignInPage = () => {
           if (values.remember) {
             saveRefreshToken();
           }
-          navigate(PATH_DASHBOARD.default);
         },
         onError: () => {
           message.open({
