@@ -16,7 +16,9 @@ import { Link, Outlet, useLocation } from 'react-router-dom';
 import { useEffect, useRef, useState } from 'react';
 import {
   ApartmentOutlined,
+  ClockCircleOutlined,
   LoginOutlined,
+  LogoutOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
   TrophyOutlined,
@@ -31,6 +33,10 @@ import {
   PATH_RANKING_PAGE,
   PATH_RULE_PAGE,
 } from '@src/constants/routes';
+import { RootState } from '@src/redux/store';
+import { useSelector } from 'react-redux';
+import useLogout from '@src/modules/User/hooks/useLogout';
+import { Calendar } from 'lucide-react';
 
 const { Header, Content } = Layout;
 
@@ -44,6 +50,13 @@ export const GuestLayout = () => {
   const nodeRef = useRef(null);
   const [navFill, setNavFill] = useState(false);
   const [open, setOpen] = useState(false);
+  const user = useSelector((state: RootState) => state.auth.user);
+
+  const { logout } = useLogout();
+
+  const handleLogout = () => {
+    logout();
+  };
 
   const showDrawer = () => {
     setOpen(true);
@@ -136,24 +149,50 @@ export const GuestLayout = () => {
                     Luật chơi
                   </Button>
                 </Link>
-                <Link to={PATH_AUTH.signin}>
-                  <Button
-                    icon={<LoginOutlined />}
-                    type="primary"
-                    className="bg-light text-black border border-1 border-dark"
-                  >
-                    Đăng nhập
-                  </Button>
-                </Link>
-                <Link to={PATH_AUTH.signup}>
-                  <Button
-                    icon={<UserAddOutlined />}
-                    type="primary"
-                    className="bg-dark text-white"
-                  >
-                    Đăng ký
-                  </Button>
-                </Link>
+                {user ? (
+                  <>
+                    <Link to="match-calendar">
+                      <Button
+                        icon={<ClockCircleOutlined />}
+                        type="link"
+                        className="text-black"
+                      >
+                        Lịch cá nhân
+                      </Button>
+                    </Link>
+                    <Link to="#">
+                      <Button
+                        icon={<LogoutOutlined />}
+                        type="link"
+                        className="text-black"
+                        onClick={handleLogout}
+                      >
+                        Đăng xuất
+                      </Button>
+                    </Link>
+                  </>
+                ) : (
+                  <>
+                    <Link to={PATH_AUTH.signin}>
+                      <Button
+                        icon={<LoginOutlined />}
+                        type="primary"
+                        className="bg-light text-black border border-1 border-dark"
+                      >
+                        Đăng nhập
+                      </Button>
+                    </Link>
+                    <Link to={PATH_AUTH.signup}>
+                      <Button
+                        icon={<UserAddOutlined />}
+                        type="primary"
+                        className="bg-dark text-white"
+                      >
+                        Đăng ký
+                      </Button>
+                    </Link>
+                  </>
+                )}
               </Flex>
             </>
           ) : (

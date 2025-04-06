@@ -1,4 +1,14 @@
-import { Button, Col, Flex, Image, Row, theme, Typography } from 'antd';
+import {
+  Button,
+  Col,
+  ColorPicker,
+  Flex,
+  Image,
+  Menu,
+  Row,
+  theme,
+  Typography,
+} from 'antd';
 import { useMediaQuery } from 'react-responsive';
 import {
   PATH_AUTH,
@@ -11,21 +21,24 @@ import {
 import { Link } from 'react-router-dom';
 import {
   AntDesignOutlined,
+  ApartmentOutlined,
   AppstoreOutlined,
   BorderOutlined,
   CalendarOutlined,
   EditOutlined,
   FileOutlined,
   FormatPainterOutlined,
-  GithubOutlined,
-  LoginOutlined,
+  FormOutlined,
   MergeCellsOutlined,
   PieChartOutlined,
-  RocketFilled,
+  RightOutlined,
   TableOutlined,
 } from '@ant-design/icons';
 import { Card, Container } from '../components';
 import { createElement, CSSProperties } from 'react';
+import { PATH_RULE_PAGE, PATH_TOURNAMENT_PAGE } from '@src/constants/routes';
+import scorePickleImage from '@src/assets/images/ScorePickle.png';
+import Item from 'antd/es/list/Item';
 
 const { Title, Text } = Typography;
 
@@ -186,17 +199,8 @@ export const HomePage = () => {
         }}
       >
         <Container>
-          <Row style={{ alignItems: 'center' }}>
+          <Row style={{ alignItems: 'center' }} className="me-2">
             <Col lg={12}>
-              <Text
-                style={{
-                  color: colorPrimary,
-                  fontSize: 16,
-                  fontWeight: 700,
-                }}
-              >
-                <RocketFilled /> Kick start your project with
-              </Text>
               <Title
                 style={{
                   fontSize: isMobile ? 36 : 40,
@@ -204,53 +208,66 @@ export const HomePage = () => {
                   margin: '1.5rem 0',
                 }}
               >
-                A dynamic and versatile multipurpose{' '}
-                <span className="text-highlight">dashboard</span> template built
-                using <span className="text-highlight">React</span>,{' '}
-                <span className="text-highlight">Vite</span>,{' '}
-                <span className="text-highlight">Ant Design</span>, and{' '}
-                <span className="text-highlight">Storybook</span>{' '}
+                <span className="text-highlight">ScorePickle</span> - Pickleball
+                Tournament and Level Progression System
               </Title>
               <Text style={{ fontSize: 20, marginBottom: '1.5rem' }}>
-                <span className="text-highlight fw-bolder">60+</span> ready made
-                components to use.
+                Find matches, join tournaments, and connect with players who
+                share your passion for pickleball.
               </Text>
               <Flex
                 gap="middle"
                 vertical={isMobile}
                 style={{ marginTop: '1.5rem' }}
               >
-                <Link to={PATH_AUTH.signin}>
+                <Link to={PATH_RULE_PAGE.root}>
                   <Button
-                    icon={<LoginOutlined />}
+                    icon={<FormOutlined />}
                     type="primary"
                     size="large"
                     block={isMobile}
                   >
-                    Live preview
+                    ScorePickle Rule
                   </Button>
                 </Link>
-                <Link to={PATH_GITHUB.repo}>
+                <Link to={PATH_TOURNAMENT_PAGE.root}>
                   <Button
-                    icon={<GithubOutlined />}
+                    icon={<ApartmentOutlined />}
                     type="default"
                     size="large"
                     block={isMobile}
                   >
-                    Give us a star
+                    View Tournaments
                   </Button>
                 </Link>
               </Flex>
             </Col>
             {!isTablet && (
               <Col lg={12}>
-                <Image src="/landing-frame.png" alt="dashboard image snippet" />
+                <Image src={scorePickleImage} alt="ScorePickle Image" />
               </Col>
             )}
           </Row>
         </Container>
       </Flex>
-      <Container style={sectionStyles}>
+      <Container>
+        <Title level={2}>
+          <Link to={PATH_TOURNAMENT_PAGE.root} className="text-decoration-none">
+            <Typography
+              style={{ fontSize: 16, color: colorPrimary }}
+              className="d-inline mt-5 color-primary"
+            >
+              View Tournaments
+            </Typography>
+
+            <RightOutlined
+              style={{ fontSize: 14, color: colorPrimary }}
+              className="ml-2"
+            />
+          </Link>
+        </Title>
+      </Container>
+      {/* <Container style={sectionStyles}>
         <Title
           level={2}
           className="text-center"
@@ -355,7 +372,7 @@ export const HomePage = () => {
             Submit an issue
           </Button>
         </Flex>
-      </Card>
+      </Card> */}
     </div>
   );
 };
