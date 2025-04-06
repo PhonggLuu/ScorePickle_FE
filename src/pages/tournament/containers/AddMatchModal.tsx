@@ -20,6 +20,7 @@ import { useGetTournamentById } from '@src/modules/Tournament/hooks/useGetTourna
 import { useGetVenueBySponserId } from '@src/modules/Venues/hooks/useGetVenueBySponserId';
 import { useCreateMatch } from '@src/modules/Match/hooks/useCreateMatch';
 import { DeleteOutlined, InfoCircleOutlined } from '@ant-design/icons';
+import { RegistrationDetail } from '@src/modules/Tournament/models';
 
 const { Option } = Select;
 const { Panel } = Collapse;
@@ -214,7 +215,7 @@ const AddMatchModal: React.FC<AddMatchModalProps> = ({
     const newSeed = Math.random().toString();
     const rng = seedrandom(newSeed);
     const shuffledTeams = [...teams].sort(() => rng() - 0.5);
-    const pairs = [];
+    const pairs: [RegistrationDetail, RegistrationDetail][] = [];
     for (let i = 0; i < shuffledTeams.length; i += 2) {
       if (shuffledTeams[i + 1]) {
         pairs.push([shuffledTeams[i], shuffledTeams[i + 1]]);

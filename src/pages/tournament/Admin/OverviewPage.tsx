@@ -251,8 +251,8 @@ export const OverviewAdminPage = () => {
     {
       title: 'Action',
       key: 'action',
-      render: (text, record) => (
-        <Link to={`/tournament/admin/${record.id}`}>Detail</Link>
+      render: (record) => (
+        <Link to={`/admin/tournament/${record.id}`}>Detail</Link>
       ),
     },
   ];

@@ -58,7 +58,6 @@ class Api {
     config: AxiosRequestConfig = {}
   ) {
     const _url = url + convertObjectToHeader(queryParams);
-    console.log('Making GET request to URL:', _url);
     return axiosInstance.get<T>(_url, { ...config }) as unknown as Promise<
       ApiResponse<T>
     >;
@@ -70,7 +69,6 @@ class Api {
     config: AxiosRequestConfig = {}
   ) {
     const _url = url + convertObjectToQueryParams(queryParams);
-    console.log('Making GET request to URL:', _url);
     return axiosInstance.get<T>(_url, { ...config }) as unknown as Promise<
       ApiResponse<T>
     >;
