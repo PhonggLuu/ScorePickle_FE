@@ -26,7 +26,6 @@ export function useLogin() {
       getUser().then((user) => {
         dispatch(setUser(user));
         dispatch(isAuth());
-        console.log('user', user);
       });
     },
     onError: (error) => {

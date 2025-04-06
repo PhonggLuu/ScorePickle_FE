@@ -41,7 +41,6 @@ export const SignInPage = () => {
   const { mutate: login } = useLogin();
 
   const onFinish = (values: FieldType) => {
-    console.log('Success:', values);
     setLoading(true);
 
     login(

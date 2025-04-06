@@ -75,6 +75,8 @@ import { TournamentAdminLayout } from '@src/layouts/tournament/index.admin.tsx';
 import { UserAdminLayout } from '@src/layouts/user/index.admin.tsx';
 import ManageSponsor from '@src/pages/user/ManageSponsor.tsx';
 import BlockUser from '@src/pages/user/BlockUser.tsx';
+import TournamentDetailPage from '@src/pages/tournamentPage/TournamentDetailPage.tsx';
+import MatchCalendar from '@src/pages/tournamentPage/MatchCalendar.tsx';
 
 // Custom scroll restoration function
 export const ScrollToTop: React.FC = () => {
@@ -132,6 +134,16 @@ const router = createBrowserRouter([
         path: 'rule-page',
         element: <RulePage />,
       },
+      {
+        index: true,
+        path: 'tournament-detail/:id',
+        element: <TournamentDetailPage />,
+      },
+      {
+        index: true,
+        path: 'match-calendar',
+        element: <MatchCalendar />,
+      },
     ],
   },
   {
@@ -175,6 +187,11 @@ const router = createBrowserRouter([
         index: true,
         path: 'referees',
         element: <RefereesPage />,
+      },
+      {
+        index: true,
+        path: ':id',
+        element: <TournamentDetail />,
       },
     ],
   },

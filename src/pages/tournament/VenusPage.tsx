@@ -47,7 +47,9 @@ export const VenusPage = () => {
   const { mutate: updateVenue } = useUpdateVenue();
   const searchInput = useRef<InputRef>(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [, setSearchText] = useState('');
   const [isUpdateModalVisible, setIsUpdateModalVisible] = useState(false);
+  const [, setSearchedColumn] = useState<DataIndex>('');
   const [currentVenue, setCurrentVenue] = useState<any>(null);
   const [isImageModalVisible, setIsImageModalVisible] = useState(false);
   const [currentImage, setCurrentImage] = useState<string>('');

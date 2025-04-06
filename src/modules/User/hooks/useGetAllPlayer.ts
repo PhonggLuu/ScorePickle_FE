@@ -15,7 +15,6 @@ const fetchPlayers = async (
       PageSize,
       isOrderbyCreateAt,
     });
-    console.log('Pagination Player Response: ', response);
     const pagination: Pagination<Player> = {
       data: response.data as Player[],
       currentPage: PageNumber ?? 1,
@@ -23,7 +22,6 @@ const fetchPlayers = async (
       totalItems: response.totalItems ?? 0,
       totalPages: response.totalPages ?? 0,
     };
-    console.log('Pagination: ', pagination);
     return pagination as Pagination<Player>;
   } catch (error) {
     throw new Error('Error fetching players');

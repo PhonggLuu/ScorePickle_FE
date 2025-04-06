@@ -1,6 +1,6 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'antd/dist/reset.css'; // CSS của Antd
-import { Button, Checkbox, Input, Slider } from 'antd';
+import { Button, Checkbox, Input, Pagination, Slider } from 'antd';
 import {
   CalendarOutlined,
   EnvironmentOutlined,
@@ -8,8 +8,11 @@ import {
   TeamOutlined,
 } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
+import { useState } from 'react';
+import { useGetAllTournamentsByCreateAt } from '@src/modules/Tournament/hooks/useGetAllTournaments';
 
 const TournamentCard = ({
+  id,
   title,
   dates,
   location,
@@ -64,16 +67,7 @@ const TournamentCard = ({
               {description}
             </span>
             <span className="d-flex align-items-center mb-2">
-              {skillLevels.map((skill, index) => (
-                <span
-                  key={index}
-                  className="border border-black pr-1 pl-1 rounded-pill mr-1"
-                >
-                  <strong style={{ fontSize: '.75rem', fontWeight: '600' }}>
-                    {skill}
-                  </strong>
-                </span>
-              ))}
+              {skillLevels}
             </span>
             <span className="d-flex align-items-center mb-2">
               <strong>Entry Fee: {entryFee}</strong>
@@ -87,7 +81,7 @@ const TournamentCard = ({
         <div className="col-6">
           <div className="d-flex justify-content-start">
             <Link
-              to={`/tournament-detail/`}
+              to={`/tournament-detail/${id}`}
               style={{ textDecoration: 'none' }}
               className="border border-dark bg-light text-dark py-2 px-3 rounded fw-bold"
             >
@@ -112,6 +106,32 @@ const TournamentCard = ({
 );
 
 export const TournamentPage = () => {
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [pageSize, setPageSize] = useState<number>(10);
+  const { data, isLoading } = useGetAllTournamentsByCreateAt(
+    currentPage,
+    pageSize
+  );
+
+  const handlePaginationChange = (page: number, pageSize: number) => {
+    setCurrentPage(page);
+    setPageSize(pageSize);
+  };
+  const formatDates = (startDate: string, endDate: string) => {
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+
+    const options: Intl.DateTimeFormatOptions = {
+      month: 'long',
+      day: 'numeric',
+      year: 'numeric',
+    };
+
+    const formattedStartDate = start.toLocaleDateString('en-US', options);
+    const formattedEndDate = end.toLocaleDateString('en-US', options);
+
+    return `${formattedStartDate} - ${formattedEndDate}`;
+  };
   return (
     <div className="d-flex flex-column min-vh-100">
       <main className="flex-grow-1 container py-4">
@@ -199,41 +219,38 @@ export const TournamentPage = () => {
 
           {/* Tournament Listings - 9/12 columns */}
           <div className="col-md-9">
-            <TournamentCard
-              title="Summer Slam Open"
-              dates="August 15-17, 2024"
-              location="Phoenix, AZ"
-              type="Open"
-              registeredCount={64}
-              description="Join us for the biggest summer tournament in the Southwest. Cash prizes for winners in all divisions."
-              skillLevels={['3.5+', '4.0+', '5.0+']}
-              entryFee="$75"
-              status="Registration Open"
-            />
+            {isLoading ? (
+              <p>Loading...</p>
+            ) : (
+              data?.data?.map((tournament) => (
+                <TournamentCard
+                  key={tournament.id}
+                  id={tournament.id}
+                  title={tournament.name}
+                  dates={formatDates(tournament.startDate, tournament.endDate)}
+                  location={tournament.location}
+                  type={tournament.type}
+                  registeredCount={tournament.maxPlayer}
+                  description={tournament.description}
+                  skillLevels={
+                    tournament.isMinRanking + ' - ' + tournament.isMaxRanking
+                  }
+                  entryFee={tournament.entryFee}
+                  status={tournament.status}
+                />
+              ))
+            )}
 
-            <TournamentCard
-              title="Regional Championship"
-              dates="September 5-7, 2024"
-              location="Denver, CO"
-              type="Invitational"
-              registeredCount={32}
-              description="Invitation-only tournament for top-ranked players in the region. Qualification required."
-              skillLevels={['4.5+', '5.0+']}
-              entryFee="$95"
-              status="Registration Open"
-            />
-
-            <TournamentCard
-              title="Fall Classic"
-              dates="October 12-14, 2024"
-              location="Austin, TX"
-              type="Amateur"
-              registeredCount={0}
-              description="Perfect for players of all skill levels. Multiple divisions with round-robin format."
-              skillLevels={['2.5-3.0', '3.5-4.0', '4.5+']}
-              entryFee="$60"
-              status="Coming Soon"
-            />
+            <div className="pagination-container">
+              <Pagination
+                current={currentPage}
+                total={data?.totalItems}
+                pageSize={pageSize}
+                onChange={handlePaginationChange}
+                pageSizeOptions={['10', '20', '50']}
+                showSizeChanger
+              />
+            </div>
           </div>
         </div>
       </main>
