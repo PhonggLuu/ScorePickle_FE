@@ -1,4 +1,4 @@
-import { SearchOutlined } from '@ant-design/icons';
+import { SearchOutlined, UserOutlined } from '@ant-design/icons';
 import {
   Button,
   DatePicker,
@@ -11,6 +11,7 @@ import {
   Row,
   Col,
   message,
+  Avatar,
 } from 'antd';
 import type { ColumnsType, ColumnType } from 'antd/es/table';
 import type { FilterDropdownProps } from 'antd/es/table/interface';
@@ -31,6 +32,17 @@ enum UserRole {
   Staff = 6,
   AdminClub = 7,
 }
+
+// Define role colors
+const roleColors: Record<number, string> = {
+  [UserRole.Player]: '#1890ff', // Blue
+  [UserRole.Admin]: '#722ed1', // Purple
+  [UserRole.Sponsor]: '#faad14', // Gold
+  [UserRole.Referee]: '#eb2f96', // Pink
+  [UserRole.User]: '#52c41a', // Green
+  [UserRole.Staff]: '#13c2c2', // Cyan
+  [UserRole.AdminClub]: '#fa541c', // Orange
+};
 
 // Map role IDs to names for display
 const roleNames: Record<number, string> = {
@@ -79,7 +91,7 @@ export const BlockUser: React.FC = () => {
       // Mock roleId for demonstration since your actual data might not have it yet
       const extendedData: ExtendedUser[] = rawData.data.map((user: User) => ({
         ...user,
-        roleId: (Math.floor(Math.random() * 7) + 1) as UserRole, // Random role for demo
+        roleId: user.roleId ? user.roleId : UserRole.User,
       }));
 
       setData(extendedData);
@@ -233,6 +245,14 @@ export const BlockUser: React.FC = () => {
 
   const columns: ColumnsType<ExtendedUser> = [
     {
+      title: 'Avatar',
+      dataIndex: 'avatarUrl',
+      key: 'avatarUrl',
+      render: (avatarUrl: string) => (
+        <Avatar src={avatarUrl} size={40} icon={<UserOutlined />} />
+      ),
+    },
+    {
       title: 'First Name',
       dataIndex: 'firstName',
       key: 'firstName',
@@ -305,7 +325,9 @@ export const BlockUser: React.FC = () => {
       })),
       onFilter: (value, record) => record.roleId === value,
       render: (roleId: UserRole) => (
-        <Tag color="blue">{roleNames[roleId] || 'Unknown'}</Tag>
+        <Tag color={roleColors[roleId]} icon={<UserOutlined />}>
+          {roleNames[roleId] || `Role ${roleId}`}
+        </Tag>
       ),
     },
     {

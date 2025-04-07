@@ -7,7 +7,7 @@ const registerReferees = async (user: RegisterUserRequest): Promise<void> => {
     ...user,
     RoleId: RoleFactory.Refree,
   };
-  await Api.post('/Auth/refereesRegister', payload);
+  await Api.post('/User/create-referee', payload);
 };
 
 export function useRegisterReferees() {
