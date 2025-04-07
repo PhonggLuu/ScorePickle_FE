@@ -18,8 +18,7 @@ import {
 } from '@ant-design/icons';
 import { Logo } from '../../components';
 import { useMediaQuery } from 'react-responsive';
-import { PATH_AUTH, PATH_DASHBOARD } from '../../constants';
-import { useNavigate } from 'react-router-dom';
+import { PATH_AUTH } from '../../constants';
 import { useState } from 'react';
 import { useLogin, saveRefreshToken } from '@src/modules/User/hooks/useLogin';
 
@@ -36,7 +35,6 @@ export const SignInPage = () => {
     token: { colorPrimary },
   } = theme.useToken();
   const isMobile = useMediaQuery({ maxWidth: 769 });
-  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const { mutate: login } = useLogin();
 

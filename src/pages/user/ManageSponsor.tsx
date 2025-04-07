@@ -5,13 +5,13 @@ import type { FilterDropdownProps } from 'antd/es/table/interface';
 import moment from 'moment';
 import React, { useRef, useState } from 'react';
 import { useAcceptSponsor } from '@src/modules/Sponsor/hooks/useAcceptSponsor';
-import { useGetAllSponsor } from '@src/modules/User/hooks/useGetAllSponsor';
-import { Sponsor } from '@src/modules/User/models';
+import { useGetAllSponsors } from '@src/modules/Sponsor/hooks/useGetAllSponsor';
+import { Sponsor } from '@src/modules/Sponsor/models';
 
 type DataIndex = keyof Sponsor;
 
-const ManageSponsor: React.FC = () => {
-  const { data, isLoading, error } = useGetAllSponsor();
+const SponnerPage: React.FC = () => {
+  const { data, isLoading, error } = useGetAllSponsors();
   const { mutate: acceptSponsor } = useAcceptSponsor();
   const [, setSearchText] = useState<string>('');
   const [searchedColumn, setSearchedColumn] = useState<string>('');
@@ -229,8 +229,8 @@ const ManageSponsor: React.FC = () => {
   return (
     <div>
       <Table
-        dataSource={data}
         columns={columns}
+        dataSource={data}
         rowKey="sponsorId"
         style={{ backgroundColor: '#ffffff' }}
       />
@@ -238,4 +238,4 @@ const ManageSponsor: React.FC = () => {
   );
 };
 
-export default ManageSponsor;
+export default SponnerPage;

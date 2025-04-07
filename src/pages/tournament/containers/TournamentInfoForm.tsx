@@ -437,7 +437,7 @@ const TournamentInfoForm = ({ data, onSave }: TournamentInfoFormProps) => {
         <Form.Item name="description" label="Description">
           <TextArea
             rows={4}
-            placeholder="Enter tournament description here..."
+            placeholder={data.description || 'Enter tournament description...'}
           />
         </Form.Item>
       </Card>
