@@ -4,10 +4,10 @@ import { GET_FRIEND_BY_ID } from '../constants';
 import { GetFriendByUserIdResponse } from '../models';
 
 const getFriendById = async (
-  userId: number,
-  Gender?: string,
-  MinLevel?: number,
-  Maxlevel?: number
+  userId: number
+  // Gender?: string,
+  // MinLevel?: number,
+  // Maxlevel?: number
 ) => {
   try {
     const response = await api.getByQueryParams(`/Friend/GetFriend/${userId}`);
@@ -18,13 +18,14 @@ const getFriendById = async (
 };
 
 export function useGetFriendByUserId(
-  id: number,
-  Gender?: string,
-  MinLevel?: number,
-  Maxlevel?: number
+  id: number
+  // Gender?: string,
+  // MinLevel?: number,
+  // Maxlevel?: number
 ) {
   return useQuery<GetFriendByUserIdResponse[]>({
     queryKey: [GET_FRIEND_BY_ID, id],
-    queryFn: () => getFriendById(id, Gender, MinLevel, Maxlevel),
+    queryFn: () => getFriendById(id),
+    // queryFn: () => getFriendById(id, Gender, MinLevel, Maxlevel),
   });
 }

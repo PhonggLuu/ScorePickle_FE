@@ -11,7 +11,7 @@ import {
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '@src/redux/store';
-import { useGetTournamentById } from '@src/modules/Tournament/hooks/useGetTournamentById';
+//import { useGetTournamentById } from '@src/modules/Tournament/hooks/useGetTournamentById';
 import { UserOutlined, MinusCircleOutlined } from '@ant-design/icons';
 import { useGetFriendByUserId } from '@src/modules/Friend/hooks/useGetFriendByUserId';
 import { User } from '@src/modules/User/models';
@@ -42,12 +42,12 @@ export const RegistrationFormModal: React.FC<RegistrationFormModalProps> = ({
     (state: RootState) => state.auth.user
   ) as User | null;
 
-  const { data: tournamentData } = useGetTournamentById(tournamentId);
+  //const { data: tournamentData } = useGetTournamentById(tournamentId);
   const { data: friendData } = useGetFriendByUserId(
-    user?.id ?? 0,
-    undefined,
-    tournamentData?.isMinRanking,
-    tournamentData?.isMaxRanking
+    user?.id ?? 0
+    // undefined,
+    // tournamentData?.isMinRanking,
+    // tournamentData?.isMaxRanking
   );
 
   const [teamData, setTeamData] = useState<TeamData>({

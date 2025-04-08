@@ -44,11 +44,16 @@ const TournamentInvitation = ({ playerId }) => {
     <ul>
       {data.map((invitation, index) => (
         <li key={index} className="row mb-2">
-          <strong className="col-6">
-            Lời mời tham gia giải đấu bởi {invitation.requesterId}
+          <strong className="col-8">
+            Lời mời tham gia giải đấu{' '}
+            <span style={{ color: 'blueviolet' }}>
+              {invitation.tournamentName}
+            </span>{' '}
+            bởi{' '}
+            <span style={{ color: 'coral' }}>{invitation.requesterName}</span>
           </strong>
           {invitation.status === InvitationStatus.Pending && (
-            <div className="col-6 d-flex justify-content-end">
+            <div className="col-4 d-flex justify-content-end">
               <Button
                 style={{ borderColor: 'green', color: 'green' }}
                 onClick={() => {

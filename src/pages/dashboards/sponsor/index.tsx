@@ -273,11 +273,11 @@ export const PaymentSponsor = () => {
   ];
 
   if (isLoading) {
-    return <div>Loading bills...</div>;
+    return <div>Loading...</div>;
   }
 
   if (error) {
-    return <div>Error loading bills: {(error as Error).message}</div>;
+    return <div>Error loading: {(error as Error).message}</div>;
   }
 
   return (
@@ -305,7 +305,7 @@ export const PaymentSponsor = () => {
               precision={0}
               valueStyle={{ color: '#52c41a' }}
               prefix="₫"
-              suffix={`(${statistics.paidCount} bills)`}
+              suffix={`(${statistics.paidCount} sponsorships)`}
               formatter={(value) => value?.toLocaleString()}
             />
           </Card>
@@ -318,7 +318,7 @@ export const PaymentSponsor = () => {
               precision={0}
               valueStyle={{ color: '#faad14' }}
               prefix="₫"
-              suffix={`(${statistics.pendingCount} bills)`}
+              suffix={`(${statistics.pendingCount} sponsorships)`}
               formatter={(value) => value?.toLocaleString()}
             />
           </Card>
@@ -332,7 +332,7 @@ export const PaymentSponsor = () => {
         onClick={() => refetch()}
         style={{ marginBottom: 16 }}
       >
-        Refresh Bills
+        Refresh
       </Button>
       <Table
         columns={columns}

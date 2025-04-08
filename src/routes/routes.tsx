@@ -77,6 +77,7 @@ import ManageSponsor from '@src/pages/user/ManageSponsor.tsx';
 import BlockUser from '@src/pages/user/BlockUser.tsx';
 import TournamentDetailPage from '@src/pages/tournamentPage/TournamentDetailPage.tsx';
 import MatchCalendar from '@src/pages/tournamentPage/MatchCalendar.tsx';
+import { PaymentLayout } from '@src/layouts/payment/index.tsx';
 
 // Custom scroll restoration function
 export const ScrollToTop: React.FC = () => {
@@ -143,6 +144,18 @@ const router = createBrowserRouter([
         index: true,
         path: 'match-calendar',
         element: <MatchCalendar />,
+      },
+    ],
+  },
+  {
+    path: '/sponsor/payment',
+    element: <PageWrapper children={<PaymentLayout />} />,
+    errorElement: <ErrorPage />,
+    children: [
+      {
+        index: true,
+        path: '',
+        element: <PaymentSponsor />,
       },
     ],
   },

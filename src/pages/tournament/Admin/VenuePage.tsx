@@ -166,7 +166,7 @@ export const VenuePage = () => {
     {
       title: 'Action',
       key: 'action',
-      render: (text, record) => (
+      render: (record) => (
         <Button
           type="primary"
           onClick={() => {

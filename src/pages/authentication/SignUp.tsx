@@ -35,6 +35,7 @@ type FieldType = {
   cPassword: string;
   dateOfBirth: Date;
   gender: string;
+  phoneNumber: string;
 };
 
 export const SignUpPage = () => {
@@ -53,9 +54,10 @@ export const SignUpPage = () => {
         LastName: values.lastName,
         SecondName: values.secondName || '',
         Email: values.email,
-        PasswordHash: values.password,
+        Password: values.password,
         DateOfBirth: values.dateOfBirth.toISOString(),
         Gender: values.gender,
+        PhoneNumber: values.phoneNumber,
       },
       {
         onSuccess: () => {
@@ -195,6 +197,11 @@ export const SignUpPage = () => {
                     <Select.Option value="female">Nữ</Select.Option>
                     <Select.Option value="other">Khác</Select.Option>
                   </Select>
+                </Form.Item>
+              </Col>
+              <Col xs={24}>
+                <Form.Item<FieldType> label="PhoneNumber" name="phoneNumber">
+                  <Input />
                 </Form.Item>
               </Col>
               <Col xs={24}>

@@ -1,11 +1,7 @@
-import {
-  HomeOutlined,
-  DollarOutlined,
-  CreditCardOutlined,
-} from '@ant-design/icons';
+import { HomeOutlined, DollarOutlined } from '@ant-design/icons';
 import { Link, Outlet, useLocation } from 'react-router-dom';
 import { PageHeader } from '../../components/index.ts';
-import { PAYMENT_ITEMS } from '../../constants/index.ts';
+import { SPONSOR_PAYMENT_ITEMS } from '../../constants/index.ts';
 import { AppLayout } from '../index.ts';
 
 export const PaymentLayout = () => {
@@ -33,7 +29,7 @@ export const PaymentLayout = () => {
                 </>
               ),
               menu: {
-                items: PAYMENT_ITEMS.map((item) => ({
+                items: SPONSOR_PAYMENT_ITEMS.map((item) => ({
                   key: item.title,
                   title: <Link to={item.path}>{item.title}</Link>,
                 })),
