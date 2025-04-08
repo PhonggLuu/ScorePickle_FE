@@ -1,168 +1,16 @@
-import {
-  Button,
-  Col,
-  ColorPicker,
-  Flex,
-  Image,
-  Menu,
-  Row,
-  theme,
-  Typography,
-} from 'antd';
+import { Button, Col, Flex, Image, Row, theme, Typography } from 'antd';
 import { useMediaQuery } from 'react-responsive';
-import {
-  PATH_AUTH,
-  PATH_CORPORATE,
-  PATH_DASHBOARD,
-  PATH_ERROR,
-  PATH_GITHUB,
-  PATH_USER_PROFILE,
-} from '../constants';
 import { Link } from 'react-router-dom';
 import {
-  AntDesignOutlined,
   ApartmentOutlined,
-  AppstoreOutlined,
-  BorderOutlined,
-  CalendarOutlined,
-  EditOutlined,
-  FileOutlined,
-  FormatPainterOutlined,
   FormOutlined,
-  MergeCellsOutlined,
-  PieChartOutlined,
   RightOutlined,
-  TableOutlined,
 } from '@ant-design/icons';
-import { Card, Container } from '../components';
-import { createElement, CSSProperties } from 'react';
+import { Container } from '../components';
 import { PATH_RULE_PAGE, PATH_TOURNAMENT_PAGE } from '@src/constants/routes';
 import scorePickleImage from '@src/assets/images/ScorePickle.png';
-import Item from 'antd/es/list/Item';
 
 const { Title, Text } = Typography;
-
-const DASHBOARDS = [
-  {
-    title: 'bidding',
-    link: PATH_DASHBOARD.bidding,
-    image: '/showcase/dashboard/bidding.png',
-  },
-  {
-    title: 'default',
-    link: PATH_DASHBOARD.default,
-    image: '/showcase/dashboard/default.png',
-  },
-  {
-    title: 'ecommerce',
-    link: PATH_DASHBOARD.ecommerce,
-    image: '/showcase/dashboard/ecommerce.png',
-  },
-  {
-    title: 'learning',
-    link: PATH_DASHBOARD.learning,
-    image: '/showcase/dashboard/learning.png',
-  },
-  {
-    title: 'logistics',
-    link: PATH_DASHBOARD.logistics,
-    image: '/showcase/dashboard/logistics.png',
-  },
-  {
-    title: 'marketing',
-    link: PATH_DASHBOARD.marketing,
-    image: '/showcase/dashboard/marketing.png',
-  },
-  {
-    title: 'projects',
-    link: PATH_DASHBOARD.projects,
-    image: '/showcase/dashboard/projects.png',
-  },
-  {
-    title: 'social',
-    link: PATH_DASHBOARD.social,
-    image: '/showcase/dashboard/social.png',
-  },
-];
-
-const APPS = [
-  {
-    title: 'corporate',
-    link: PATH_CORPORATE.team,
-    image: '/showcase/corporate/team.png',
-  },
-  {
-    title: 'user profile',
-    link: PATH_USER_PROFILE.details,
-    image: '/showcase/profile/details.png',
-  },
-  {
-    title: 'auth',
-    link: PATH_AUTH.signin,
-    image: '/showcase/auth/login.png',
-  },
-  {
-    title: 'errors',
-    link: PATH_ERROR.error400,
-    image: '/showcase/errors/400.png',
-  },
-];
-
-const FEATURES = [
-  {
-    title: 'customizable theme',
-    description:
-      'We have included a configurable theme provider to customize your elegant admin.',
-    icon: FormatPainterOutlined,
-  },
-  {
-    title: '50+ Page Templates',
-    description: 'We have 50+ pages to make your development easier.',
-    icon: FileOutlined,
-  },
-  {
-    title: '60+ UI components',
-    description: 'Almost 60+ UI Components being given with Antd Admin Pack.',
-    icon: AppstoreOutlined,
-  },
-  {
-    title: 'Ant Design',
-    description: 'Its been made with Ant Design and full responsive layout.',
-    icon: AntDesignOutlined,
-  },
-  {
-    title: '500+ font icons',
-    description:
-      'Lots of Icon Fonts are included here in the package of Antd Admin.',
-    icon: BorderOutlined,
-  },
-  {
-    title: 'Slick Carousel',
-    description: 'The Last React Carousel You will Ever Need!.',
-    icon: MergeCellsOutlined,
-  },
-  {
-    title: 'Easy to Customize',
-    description: 'Customization will be easy as we understand your pain.',
-    icon: EditOutlined,
-  },
-  {
-    title: 'Lots of Chart Options',
-    description:
-      'You name it and we have it, Yes lots of variations for Charts.',
-    icon: PieChartOutlined,
-  },
-  {
-    title: 'Lots of Table Examples',
-    description: 'Data Tables are initial requirement and we added them.',
-    icon: TableOutlined,
-  },
-  {
-    title: 'Calendar Design',
-    description: 'Calendar is available with our package & in nice design.',
-    icon: CalendarOutlined,
-  },
-];
 
 export const HomePage = () => {
   const {
@@ -170,13 +18,6 @@ export const HomePage = () => {
   } = theme.useToken();
   const isMobile = useMediaQuery({ maxWidth: 769 });
   const isTablet = useMediaQuery({ maxWidth: 992 });
-
-  const sectionStyles: CSSProperties = {
-    paddingTop: isMobile ? 40 : 80,
-    paddingBottom: isMobile ? 40 : 80,
-    paddingRight: isMobile ? '1rem' : 0,
-    paddingLeft: isMobile ? '1rem' : 0,
-  };
 
   return (
     <div

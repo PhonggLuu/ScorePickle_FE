@@ -30,6 +30,7 @@ import {
   PATH_USER,
   PATH_CONTENT,
   PATH_ADMIN_TOURNAMENT,
+  PATH_SPONSOR_PAYMENT,
 } from './routes.ts';
 
 const DASHBOARD_ITEMS = [
@@ -120,6 +121,7 @@ export {
   PATH_CONTENT,
   CONTENT_ITEMS,
   TOURNAMENT_ADMIN_ITEMS,
+  SPONSOR_PAYMENT_ITEMS,
 };
 
 //New path
@@ -142,3 +144,7 @@ const USER_ITEMS = [
 ];
 
 const CONTENT_ITEMS = [{ title: 'Content', path: PATH_CONTENT.root }];
+
+const SPONSOR_PAYMENT_ITEMS = [
+  { title: 'Overview', path: PATH_SPONSOR_PAYMENT.root },
+];

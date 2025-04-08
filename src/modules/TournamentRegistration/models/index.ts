@@ -18,7 +18,10 @@ export interface TournamentInvitation {
   id: number;
   registrationId: number;
   requesterId: number;
+  requesterName: string;
   partnerId: number;
+  tournamentId: number;
+  tournamentName: string;
   status: InvitationStatus;
   createdAt: Date;
 }

@@ -31,6 +31,7 @@ const ROOTS_RULE_PAGE = '/rule-page';
 const ROOTS_CONTENT = '/content';
 const ROOTS_PAYMENT = '/payment';
 const ROOTS_ADMIN = '/admin';
+const ROOTS_SPONSOR = '/sponsor';
 
 export const PATH_LANDING = {
   root: ROOTS_LANDING,
@@ -289,6 +290,6 @@ export const PATH_ADMIN_TOURNAMENT = {
   referees: path(ROOTS_ADMIN, `${ROOTS_TOURNAMENT}/referees`),
 };
 
-export const PATH_PAYMENT = {
-  root: ROOTS_PAYMENT,
+export const PATH_SPONSOR_PAYMENT = {
+  root: `${ROOTS_SPONSOR}${ROOTS_PAYMENT}`,
 };

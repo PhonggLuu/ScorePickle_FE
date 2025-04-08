@@ -8,8 +8,11 @@ import {
   setLocalStorageItem,
 } from '@src/utils/localStorageUtils';
 import { useNavigate } from 'react-router-dom';
-import { PATH_DASHBOARD, PATH_LANDING } from '@src/constants';
-import { PATH_ADMIN_PAYMENT, PATH_PAYMENT } from '@src/constants/routes';
+import { PATH_LANDING } from '@src/constants';
+import {
+  PATH_ADMIN_PAYMENT,
+  PATH_SPONSOR_PAYMENT,
+} from '@src/constants/routes';
 
 // integration with redux for login user
 const login = async (request: LoginRequest): Promise<LoginResponse> => {
@@ -32,7 +35,7 @@ export function useLogin() {
         dispatch(isAuth());
         if (user.roleId === 1) navigate(PATH_LANDING.root);
         else if (user.roleId === 2) navigate(PATH_ADMIN_PAYMENT.root);
-        else navigate(PATH_PAYMENT.root);
+        else navigate(PATH_SPONSOR_PAYMENT.root);
       });
     },
     onError: (error) => {

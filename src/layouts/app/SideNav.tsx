@@ -15,7 +15,7 @@ import {
   PATH_ADMIN_TOURNAMENT,
   PATH_USER,
   PATH_CONTENT,
-  PATH_PAYMENT,
+  PATH_SPONSOR_PAYMENT,
   PATH_TOURNAMENT,
 } from '../../constants/routes.ts';
 import { useSelector } from 'react-redux';
@@ -120,7 +120,7 @@ const SideNav = ({ ...others }: SiderProps) => {
             ),
           ]),
           getItem('Payments', 'payment', <PieChartOutlined />, [
-            getItem(<Link to={PATH_PAYMENT.root}>List</Link>, 'List'),
+            getItem(<Link to={PATH_SPONSOR_PAYMENT.root}>List</Link>, 'List'),
           ]),
         ]),
   ];
