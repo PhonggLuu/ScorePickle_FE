@@ -62,6 +62,7 @@ export interface User {
   phoneNumber: string;
   createAt?: Date;
   refreshTokenExpiryTime: Date;
+  userDetails?: Player;
 }
 
 export interface GetNewAccessToken {

@@ -193,9 +193,8 @@ export const SignUpPage = () => {
               <Col xs={24} lg={12}>
                 <Form.Item<FieldType> label="Gender" name="gender">
                   <Select>
-                    <Select.Option value="male">Nam</Select.Option>
-                    <Select.Option value="female">Nữ</Select.Option>
-                    <Select.Option value="other">Khác</Select.Option>
+                    <Select.Option value="Male">Nam</Select.Option>
+                    <Select.Option value="Female">Nữ</Select.Option>
                   </Select>
                 </Form.Item>
               </Col>

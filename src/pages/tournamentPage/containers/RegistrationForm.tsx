@@ -16,6 +16,7 @@ import { UserOutlined, MinusCircleOutlined } from '@ant-design/icons';
 import { useGetFriendByUserId } from '@src/modules/Friend/hooks/useGetFriendByUserId';
 import { User } from '@src/modules/User/models';
 import { useCreateRegistration } from '@src/modules/TournamentRegistration/hooks/useCreateRegistration';
+import { useGetTournamentById } from '@src/modules/Tournament/hooks/useGetTournamentById';
 
 interface Player {
   userId: number;
@@ -42,21 +43,24 @@ export const RegistrationFormModal: React.FC<RegistrationFormModalProps> = ({
     (state: RootState) => state.auth.user
   ) as User | null;
 
-  //const { data: tournamentData } = useGetTournamentById(tournamentId);
+  const { data: tournamentData } = useGetTournamentById(tournamentId);
   const { data: friendData } = useGetFriendByUserId(
-    user?.id ?? 0
-    // undefined,
-    // tournamentData?.isMinRanking,
-    // tournamentData?.isMaxRanking
+    user?.id ?? 0,
+    tournamentData?.type.includes('Mix')
+      ? undefined
+      : tournamentData?.type.includes('Male')
+        ? 'Male'
+        : 'Female',
+    tournamentData?.isMinRanking,
+    tournamentData?.isMaxRanking
   );
-
   const [teamData, setTeamData] = useState<TeamData>({
     teamPlayers: user
       ? [
           {
             userId: user.id,
             name: user.firstName + ' ' + user.lastName,
-            rating: 3.0,
+            rating: user.userDetails?.experienceLevel ?? 0,
           },
         ]
       : [],
@@ -73,7 +77,7 @@ export const RegistrationFormModal: React.FC<RegistrationFormModalProps> = ({
       newTeamPlayers[index] = {
         userId: selectedFriend.userFriendId ?? 0, // Assuming userFriendId exists in friendData
         name: selectedFriend.userFriendName ?? '',
-        rating: 3.0,
+        rating: selectedFriend.exeprienceLevel ?? 0, // Assuming exeprienceLevel exists in friendData
       }; // You can modify the rating here if it's part of friendData
       setTeamData({ ...teamData, teamPlayers: newTeamPlayers });
     }
@@ -148,7 +152,7 @@ export const RegistrationFormModal: React.FC<RegistrationFormModalProps> = ({
                     <Avatar icon={<UserOutlined />} className="player-avatar" />
                     <span className="player-name ms-2">{player.name}</span>
                     <Tag color="blue" className="player-rating ms-3">
-                      {player.rating.toFixed(3)}
+                      {player.rating}
                     </Tag>
                     {index !== 0 && ( // Only show the remove button if it's not the first player
                       <Button

@@ -48,8 +48,6 @@ const SideNav = ({ ...others }: SiderProps) => {
   const [current, setCurrent] = useState<string>('');
   const user = useSelector((state: RootState) => state.auth.user);
 
-  console.log('user', user);
-
   const onClick: MenuProps['onClick'] = (e) => {
     setCurrent(e.key);
   };

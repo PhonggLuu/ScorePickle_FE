@@ -170,7 +170,7 @@ export const GuestLayout = () => {
                     Giải đấu
                   </Button>
                 </Link>
-                <Link to={PATH_RANKING_PAGE.root}>
+                {/* <Link to={PATH_RANKING_PAGE.root}>
                   <Button
                     icon={<ApartmentOutlined />}
                     type="link"
@@ -178,7 +178,7 @@ export const GuestLayout = () => {
                   >
                     Bảng xếp hạng
                   </Button>
-                </Link>
+                </Link> */}
                 <Link to={PATH_RULE_PAGE.root}>
                   <Button
                     icon={<ApartmentOutlined />}
