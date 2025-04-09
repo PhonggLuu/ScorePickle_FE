@@ -67,10 +67,18 @@ const TournamentCard = ({
               {description}
             </span>
             <span className="d-flex align-items-center mb-2">
-              {skillLevels}
+              {skillLevels !== 'null - null' ? (
+                <span>
+                  <strong>Skill Levels: {skillLevels}</strong>
+                </span>
+              ) : (
+                <span>
+                  <strong>Skill Levels: All</strong>
+                </span>
+              )}
             </span>
             <span className="d-flex align-items-center mb-2">
-              <strong>Entry Fee: {entryFee}</strong>
+              <strong>Entry Fee: {entryFee.toLocaleString('vi-VN')}</strong>
             </span>
           </p>
         </div>
@@ -86,17 +94,6 @@ const TournamentCard = ({
               className="border border-dark bg-light text-dark py-2 px-3 rounded fw-bold"
             >
               View Details
-            </Link>
-          </div>
-        </div>
-        <div className="col-6">
-          <div className="d-flex justify-content-end">
-            <Link
-              to={`/register-tournament/`}
-              style={{ textDecoration: 'none' }}
-              className="border bg-dark text-white py-2 px-3 rounded fw-bold"
-            >
-              Register Now
             </Link>
           </div>
         </div>

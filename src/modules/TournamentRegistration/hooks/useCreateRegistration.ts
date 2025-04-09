@@ -6,7 +6,7 @@ import {
 import Api from '@src/api/api';
 import { message } from 'antd';
 
-const createRegistration = async (
+export const createRegistration = async (
   registration: CreateTournamentRegistrationPayload
 ): Promise<CreateTournamentRegistrationResponse> => {
   const response = await Api.post(

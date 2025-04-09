@@ -11,3 +11,23 @@ export interface Bill {
   paymentDate?: string;
   transactionId?: string;
 }
+
+export interface PaymentResponse {
+  responseCodeMessage: string;
+  transactionStatusMessage: string;
+  vnPayResponse: VnPayResponse;
+}
+
+export interface VnPayResponse {
+  bankTranNo: string;
+  payDate: string;
+  orderInfo: string;
+  responseCode: string;
+  transactionId: string;
+  transactionStatus: string;
+  cardType: number;
+  txnRef: string;
+  amount: number;
+  bankCode: string;
+  note: string;
+}

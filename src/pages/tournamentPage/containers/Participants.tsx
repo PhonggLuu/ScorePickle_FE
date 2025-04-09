@@ -4,6 +4,7 @@ import { Button, Input, Space, Table } from 'antd';
 import type { ColumnsType, ColumnType } from 'antd/es/table';
 import { useRef, useState } from 'react';
 import { RegistrationDetail } from '@src/modules/Tournament/models';
+import { useSelector } from 'react-redux';
 
 type DataIndex = string;
 
@@ -19,6 +20,8 @@ export const Participants = ({ registrations = [] }: PlayersTableProps) => {
   const [searchedColumn, setSearchedColumn] = useState<string>('');
   const searchInput = useRef<InputRef>(null);
   const [filteredRegistrations] = useState<RegistrationDetail[]>(registrations);
+
+  const user = useSelector((state: any) => state.auth.user);
 
   const handleSearch = (
     selectedKeys: string[],
@@ -139,16 +142,34 @@ export const Participants = ({ registrations = [] }: PlayersTableProps) => {
     },
   ];
 
+  const rowClassName = (record: RegistrationDetail) => {
+    // Check if the player's id or the partner's id matches the user id and highlight the row
+    if (record.playerId === user?.id || record.partnerId === user?.id) {
+      return 'highlight-row';
+    }
+    return '';
+  };
+
   return (
-    <div>
-      <Table
-        columns={columns}
-        dataSource={filteredRegistrations}
-        rowKey="id"
-        style={{ backgroundColor: '#ffffff' }}
-        pagination={{ pageSize: 10 }}
-      />
-    </div>
+    <>
+      <style>
+        {`
+          .highlight-row {
+            background-color:rgb(250, 215, 166) !important;
+          }
+        `}
+      </style>
+      <div>
+        <Table
+          columns={columns}
+          dataSource={filteredRegistrations}
+          rowKey="id"
+          style={{ backgroundColor: '#ffffff' }}
+          pagination={{ pageSize: 10 }}
+          rowClassName={rowClassName}
+        />
+      </div>
+    </>
   );
 };
 

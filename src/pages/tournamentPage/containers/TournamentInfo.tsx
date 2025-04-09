@@ -145,7 +145,10 @@ export const TournamentInfo: React.FC<TournamentInfoProps> = ({ id }) => {
             <div>
               <Text strong>Entry Fee</Text>
               <div>
-                ${tournament.isFree ? 'Free registration' : tournament.entryFee}
+                $
+                {!tournament.isFree
+                  ? 'Free registration'
+                  : tournament.entryFee.toLocaleString('vi-VN')}
               </div>
             </div>
           </div>
@@ -156,7 +159,7 @@ export const TournamentInfo: React.FC<TournamentInfoProps> = ({ id }) => {
             <DollarOutlined className="detail-icon" />
             <div>
               <Text strong>Total Prize</Text>
-              <div>${tournament.totalPrize}</div>
+              <div>${tournament.totalPrize.toLocaleString('vi-VN')}</div>
             </div>
           </div>
 

@@ -7,6 +7,8 @@ export interface GetFriendByUserIdResponse {
   userFriendAvatar?: string | null;
   status: FriendStatus;
   createdAt: Date;
+  gender: string;
+  exeprienceLevel: number;
 }
 
 enum FriendStatus {
