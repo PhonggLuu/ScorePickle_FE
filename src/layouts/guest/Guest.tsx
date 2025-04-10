@@ -167,7 +167,7 @@ export const GuestLayout = () => {
                 </Link>
                 {user ? (
                   <>
-                    <Link to="match-calendar">
+                    {/* <Link to="match-calendar">
                       <Button
                         icon={<ClockCircleOutlined />}
                         type="link"
@@ -175,14 +175,14 @@ export const GuestLayout = () => {
                       >
                         Calendar
                       </Button>
-                    </Link>
+                    </Link> */}
                     <Link to="my-tournament">
                       <Button
                         icon={<TrophyOutlined />}
                         type="link"
                         className="text-black"
                       >
-                        My-Tournament-Registration
+                        Joined-Tournament
                       </Button>
                     </Link>
                     <Link to="#">
@@ -207,6 +207,7 @@ export const GuestLayout = () => {
                         Log out
                       </Button>
                     </Link>
+                    <Link to="#"></Link>
                   </>
                 ) : (
                   <>
@@ -258,6 +259,7 @@ export const GuestLayout = () => {
               <TabPane tab="Request doubles tournament" key="1">
                 <TournamentInvitation playerId={user?.id} />
               </TabPane>
+              <TabPane tab="Add friend request" key="2"></TabPane>
               {/* <TabPane tab="Lịch thi đấu" key="2">
                 <p>Thông báo lịch thi đấu</p>
                 <ul>
@@ -349,7 +351,7 @@ export const GuestLayout = () => {
                 type="link"
                 className="text-black"
               >
-                Giải đấu
+                Tournaments
               </Button>
             </Link>
             <Link to={PATH_RANKING_PAGE.root}>
@@ -370,24 +372,62 @@ export const GuestLayout = () => {
                 Platform Rule
               </Button>
             </Link>
-            <Link to={PATH_AUTH.signin}>
-              <Button
-                icon={<LoginOutlined />}
-                type="link"
-                className="text-black"
-              >
-                Login
-              </Button>
-            </Link>
-            <Link to={PATH_AUTH.signup}>
-              <Button
-                icon={<UserAddOutlined />}
-                type="link"
-                className="text-black"
-              >
-                Register
-              </Button>
-            </Link>
+            {user ? (
+              <>
+                <Link to="my-tournament">
+                  <Button
+                    icon={<TrophyOutlined />}
+                    type="link"
+                    className="text-black"
+                  >
+                    Joined-Tournament
+                  </Button>
+                </Link>
+                <Link to="#">
+                  <Button
+                    icon={
+                      <Badge count={1}>
+                        <NotificationOutlined />
+                      </Badge>
+                    }
+                    type="link"
+                    className="text-black"
+                    onClick={showNotification}
+                  ></Button>
+                </Link>
+                <Link to="#">
+                  <Button
+                    icon={<LogoutOutlined />}
+                    type="link"
+                    className="text-black"
+                    onClick={handleLogout}
+                  >
+                    Log out
+                  </Button>
+                </Link>
+              </>
+            ) : (
+              <>
+                <Link to={PATH_AUTH.signin}>
+                  <Button
+                    icon={<LoginOutlined />}
+                    type="link"
+                    className="text-black"
+                  >
+                    Login
+                  </Button>
+                </Link>
+                <Link to={PATH_AUTH.signup}>
+                  <Button
+                    icon={<UserAddOutlined />}
+                    type="link"
+                    className="text-black"
+                  >
+                    Register
+                  </Button>
+                </Link>
+              </>
+            )}
           </Flex>
         </>
       </Drawer>

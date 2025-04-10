@@ -22,7 +22,11 @@ import { useMediaQuery } from 'react-responsive';
 import { PATH_AUTH } from '../../constants';
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
-import { useRegisterUser } from '@src/modules/User/hooks/useRegisterUser';
+import {
+  createPlayer,
+  useRegisterUser,
+} from '@src/modules/User/hooks/useRegisterUser';
+import { RoleFactory } from '@src/modules/User/models';
 
 const { Title, Text, Link } = Typography;
 
@@ -31,7 +35,7 @@ type FieldType = {
   secondName?: string;
   lastName: string;
   email: string;
-  password: string;
+  passwordHash: string;
   cPassword: string;
   dateOfBirth: Date;
   gender: string;
@@ -54,10 +58,11 @@ export const SignUpPage = () => {
         LastName: values.lastName,
         SecondName: values.secondName || '',
         Email: values.email,
-        Password: values.password,
+        PasswordHash: values.passwordHash,
         DateOfBirth: values.dateOfBirth.toISOString(),
         Gender: values.gender,
         PhoneNumber: values.phoneNumber,
+        RoleId: RoleFactory.Player,
       },
       {
         onSuccess: () => {
@@ -65,7 +70,6 @@ export const SignUpPage = () => {
             type: 'success',
             content: 'Sign up successful',
           });
-
           navigate(PATH_AUTH.signin);
         },
         onError: (error) => {
@@ -103,18 +107,6 @@ export const SignUpPage = () => {
               alignContent: 'center',
               background: colorPrimary,
             }}
-            cover={
-              <iframe
-                src="https://www.youtube.com/embed/JMwKyO4-WYU?autoplay=1&loop=1&playlist=JMwKyO4-WYU"
-                frameBorder="0"
-                allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-                style={{
-                  objectFit: 'cover',
-                  height: '300px',
-                }}
-              />
-            }
           />
         </Flex>
       </Col>
@@ -193,8 +185,8 @@ export const SignUpPage = () => {
               <Col xs={24} lg={12}>
                 <Form.Item<FieldType> label="Gender" name="gender">
                   <Select>
-                    <Select.Option value="Male">Nam</Select.Option>
-                    <Select.Option value="Female">Nữ</Select.Option>
+                    <Select.Option value="Male">Male</Select.Option>
+                    <Select.Option value="Female">Female</Select.Option>
                   </Select>
                 </Form.Item>
               </Col>
@@ -217,7 +209,7 @@ export const SignUpPage = () => {
               <Col xs={24}>
                 <Form.Item<FieldType>
                   label="Password"
-                  name="password"
+                  name="passwordHash"
                   rules={[
                     { required: true, message: 'Please input your password!' },
                   ]}

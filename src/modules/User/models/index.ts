@@ -103,3 +103,32 @@ export interface UpdateUserRequest {
   avatarUrl: string;
   status: boolean;
 }
+
+export interface RegisterUser {
+  FirstName: string;
+  LastName: string;
+  SecondName: string;
+  Email: string;
+  PasswordHash: string;
+  DateOfBirth: string;
+  Gender: string;
+  PhoneNumber: string;
+  RoleId: RoleFactory;
+}
+
+export interface CreatePlayerRequest {
+  PlayerId: number;
+  Province: string;
+  City: string;
+}
+
+export interface CreatePlayerResponse {
+  Province: string;
+  City: string;
+  Cccd?: string | null;
+  totalMatch: number;
+  totalWins: number;
+  rankingPoint: number;
+  experienceLevel: number;
+  joinedAt: Date;
+}
