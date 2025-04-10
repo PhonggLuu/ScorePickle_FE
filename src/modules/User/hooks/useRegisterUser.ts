@@ -4,14 +4,15 @@ import {
   CreatePlayerRequest,
   CreatePlayerResponse,
   RegisterUser,
+  RegisterUserRequest,
   RegisterUserResponse,
   RoleFactory,
 } from '../models';
 
 const registerUser = async (
-  user: RegisterUser
+  user: RegisterUserRequest
 ): Promise<RegisterUserResponse> => {
-  const payload: RegisterUser = {
+  const payload: RegisterUserRequest = {
     ...user,
     RoleId: RoleFactory.Player,
   };

@@ -22,10 +22,7 @@ import { useMediaQuery } from 'react-responsive';
 import { PATH_AUTH } from '../../constants';
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
-import {
-  createPlayer,
-  useRegisterUser,
-} from '@src/modules/User/hooks/useRegisterUser';
+import { useRegisterUser } from '@src/modules/User/hooks/useRegisterUser';
 import { RoleFactory } from '@src/modules/User/models';
 
 const { Title, Text, Link } = Typography;

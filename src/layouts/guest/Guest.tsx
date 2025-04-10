@@ -19,7 +19,6 @@ import { Link, Outlet, useLocation } from 'react-router-dom';
 import { useEffect, useRef, useState } from 'react';
 import {
   ApartmentOutlined,
-  ClockCircleOutlined,
   LoginOutlined,
   LogoutOutlined,
   MenuFoldOutlined,
