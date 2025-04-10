@@ -1,16 +1,13 @@
 import { useState } from 'react';
 import { Tabs, Card, Table, Alert } from 'antd';
-import {
-  InfoCircleOutlined,
-  ExclamationCircleOutlined,
-} from '@ant-design/icons';
+import { ExclamationCircleOutlined } from '@ant-design/icons';
 
 export const RulePage = () => {
   const [activeTab, setActiveTab] = useState('scoring');
 
   return (
     <div className="container mt-4">
-      <h1 className="display-4 mb-4">Platform Rules</h1>
+      <h1 className="display-4 fw-bold mb-4">Platform Rules</h1>
 
       <Tabs defaultActiveKey={activeTab} onChange={setActiveTab}>
         <Tabs.TabPane tab="Scoring System" key="scoring">
@@ -19,30 +16,24 @@ export const RulePage = () => {
         <Tabs.TabPane tab="Challenge Rules" key="challenge">
           <ChallengeRules />
         </Tabs.TabPane>
-        <Tabs.TabPane tab="Revised Matches" key="revised">
+        {/* <Tabs.TabPane tab="Revised Matches" key="revised">
           <Card>
             <h2 className="h5">Revised Matches</h2>
             <p>Revised matches content would go here.</p>
           </Card>
-        </Tabs.TabPane>
+        </Tabs.TabPane> */}
         <Tabs.TabPane tab="Tournament Rules" key="tournament">
-          <Card>
-            <h2 className="h5">Tournament Rules</h2>
-            <p>Tournament rules content would go here.</p>
-          </Card>
+          <TournamentRules />
         </Tabs.TabPane>
-        <Tabs.TabPane tab="Code of Conduct" key="conduct">
-          <Card>
-            <h2 className="h5">Code of Conduct</h2>
-            <p>Code of conduct content would go here.</p>
-          </Card>
+        <Tabs.TabPane tab="Rating Level Rules" key="conduct">
+          <RankingLevelRules />
         </Tabs.TabPane>
-        <Tabs.TabPane tab="Financial Rules" key="financial">
+        {/* <Tabs.TabPane tab="Financial Rules" key="financial">
           <Card>
             <h2 className="h5">Financial Rules</h2>
             <p>Financial rules content would go here.</p>
           </Card>
-        </Tabs.TabPane>
+        </Tabs.TabPane> */}
       </Tabs>
     </div>
   );
@@ -53,65 +44,26 @@ function ScoringSystem() {
     {
       key: '1',
       matchType: 'Singles',
-      scoringFormat: 'Rally scoring to 11 points',
+      scoringFormat: 'Rally scoring to 11-15-21 points',
       winCondition: 'Win by 2 points, best of 3 games',
     },
     {
       key: '2',
       matchType: 'Doubles',
-      scoringFormat: 'Rally scoring to 11 points',
+      scoringFormat: 'Rally scoring to 11-15-21 points',
       winCondition: 'Win by 2 points, best of 3 games',
     },
     {
       key: '3',
       matchType: 'Mixed Doubles',
-      scoringFormat: 'Rally scoring to 11 points',
+      scoringFormat: 'Rally scoring to 11-15-21 points',
       winCondition: 'Win by 2 points, best of 3 games',
     },
     {
       key: '4',
       matchType: 'Tournament Finals',
-      scoringFormat: 'Rally scoring to 15 points',
+      scoringFormat: 'Rally scoring to 11-15-21 points',
       winCondition: 'Win by 2 points, best of 3 games',
-    },
-    {
-      key: '5',
-      matchType: 'Quick Match',
-      scoringFormat: 'Rally scoring to 7 points',
-      winCondition: 'Win by 2 points, single game',
-    },
-  ];
-
-  const ratingData = [
-    {
-      key: '1',
-      skillLevel: 'Beginner',
-      ratingRange: '2.0 - 2.5',
-      description: 'New to the sport, developing basic skills',
-    },
-    {
-      key: '2',
-      skillLevel: 'Intermediate',
-      ratingRange: '3.0 - 3.5',
-      description: 'Consistent play with developing strategy',
-    },
-    {
-      key: '3',
-      skillLevel: 'Advanced',
-      ratingRange: '4.0 - 4.5',
-      description: 'Strong skills, strategy, and shot selection',
-    },
-    {
-      key: '4',
-      skillLevel: 'Expert',
-      ratingRange: '5.0 - 5.5',
-      description: 'Advanced strategy, consistent execution',
-    },
-    {
-      key: '5',
-      skillLevel: 'Professional',
-      ratingRange: '5.0+',
-      description: 'Tournament-level play, exceptional skills',
     },
   ];
 
@@ -119,12 +71,6 @@ function ScoringSystem() {
     { title: 'Match Type', dataIndex: 'matchType' },
     { title: 'Scoring Format', dataIndex: 'scoringFormat' },
     { title: 'Win Condition', dataIndex: 'winCondition' },
-  ];
-
-  const ratingColumns = [
-    { title: 'Skill Level', dataIndex: 'skillLevel' },
-    { title: 'Rating Range', dataIndex: 'ratingRange' },
-    { title: 'Description', dataIndex: 'description' },
   ];
 
   return (
@@ -147,52 +93,7 @@ function ScoringSystem() {
         />
       </section>
 
-      <section className="mb-4">
-        <h3 className="h6">Rating Calculation</h3>
-        <p>
-          Player ratings are calculated using a modified ELO rating system
-          specifically adapted for pickleball:
-        </p>
-        <p>
-          <strong>Rating Formula:</strong> New Rating = Current Rating + K ×
-          (Actual Result - Expected Result)
-        </p>
-        <ul>
-          <li>
-            <strong>K factor:</strong> Varies based on match type and player
-            experience
-          </li>
-          <ul>
-            <li>Tournament matches: K = 32</li>
-            <li>Revised matches: K = 24</li>
-            <li>Challenge matches: K = 16</li>
-            <li>Practice matches: K = 8</li>
-          </ul>
-          <li>
-            <strong>Expected Result:</strong> Calculated based on rating
-            difference between players
-          </li>
-          <li>
-            <strong>Actual Result:</strong> 1 for win, 0 for loss, with score
-            differential modifier
-          </li>
-        </ul>
-      </section>
-
-      <section className="mb-4">
-        <h3 className="h6">Rating Levels</h3>
-        <p>
-          Players are categorized into skill levels based on their numerical
-          rating:
-        </p>
-        <Table
-          columns={ratingColumns}
-          dataSource={ratingData}
-          pagination={false}
-        />
-      </section>
-
-      <section>
+      {/* <section>
         <Alert
           message={
             <>
@@ -202,7 +103,7 @@ function ScoringSystem() {
           description="Players have a 10-match grace period after reaching a new level before they can be demoted to a lower level."
           type="info"
         />
-      </section>
+      </section> */}
     </Card>
   );
 }
@@ -213,26 +114,26 @@ function ChallengeRules() {
       penalty: 'No penalty',
       ratingImpact: 'No impact',
     },
-    {
-      timing: '24-48 hours before match',
-      penalty: 'Warning',
-      ratingImpact: 'No impact',
-    },
-    {
-      timing: 'Less than 24 hours before match',
-      penalty: 'Challenge restriction (3 days)',
-      ratingImpact: 'No impact',
-    },
-    {
-      timing: 'No-show without notice',
-      penalty: 'Challenge restriction (7 days)',
-      ratingImpact: '-0.1 rating points',
-    },
-    {
-      timing: 'Repeated cancellations (3+ in 30 days)',
-      penalty: 'Challenge restriction (14 days)',
-      ratingImpact: '-0.2 rating points',
-    },
+    // {
+    //   timing: '24-48 hours before match',
+    //   penalty: 'Warning',
+    //   ratingImpact: 'No impact',
+    // },
+    // {
+    //   timing: 'Less than 24 hours before match',
+    //   penalty: 'Challenge restriction (3 days)',
+    //   ratingImpact: 'No impact',
+    // },
+    // {
+    //   timing: 'No-show without notice',
+    //   penalty: 'Challenge restriction (7 days)',
+    //   ratingImpact: '-0.1 rating points',
+    // },
+    // {
+    //   timing: 'Repeated cancellations (3+ in 30 days)',
+    //   penalty: 'Challenge restriction (14 days)',
+    //   ratingImpact: '-0.2 rating points',
+    // },
   ];
 
   const columns = [
@@ -272,24 +173,16 @@ function ChallengeRules() {
 
           <ul className="list-unstyled">
             <li>
-              <strong>Rating Restrictions:</strong> Players can challenge others
-              within ±1.0 rating points of their own rating
+              <strong>Level Restrictions:</strong> Players can challenge others
+              within ±1.0 level of their own level
             </li>
             <li>
-              <strong>Challenge Frequency:</strong> Players can issue up to 5
-              active challenges at once
+              <strong>How to challenge:</strong> Players will create a match
+              room and other players will join and will be scheduled.
             </li>
             <li>
-              <strong>Repeat Challenges:</strong> Players cannot challenge the
-              same opponent more than once every 7 days
-            </li>
-            <li>
-              <strong>Challenge Response Time:</strong> Challenged players have
-              72 hours to accept or decline a challenge
-            </li>
-            <li>
-              <strong>Challenge Scheduling:</strong> Once accepted, the match
-              must be scheduled within 14 days
+              <strong>Challenge Scheduling:</strong> Players cannot challenge
+              multiple people at the same time
             </li>
           </ul>
         </section>
@@ -344,8 +237,8 @@ function ChallengeRules() {
             <>
               <p>
                 In case of disputes about match results or conduct, both players
-                can request a review by the platform's dispute resolution team.
-                Decisions made by the dispute resolution team are final.
+                can that the match result be annulled and the platform will
+                remove it.
               </p>
             </>
           }
@@ -358,4 +251,198 @@ function ChallengeRules() {
     </Card>
   );
 }
+function TournamentRules() {
+  return (
+    <Card>
+      <div className="container my-5 p-4 border rounded">
+        <h1 className="display-5 font-weight-bold mb-2">Tournament Rules</h1>
+        <p className="text-muted mb-4">Rules for tournament</p>
+
+        <section className="mb-5">
+          <h2 className="h4 font-weight-semibold mb-3">Knockout Tournament</h2>
+          <p>
+            The tournament is organized in the form of knock-out competition.
+          </p>
+
+          <ul className="list-unstyled">
+            <li>
+              <strong>BO3 format:</strong> Win by 2 points, best of 3 games
+            </li>
+            <li>
+              <strong>Score match:</strong> Rally scoring to 11-15-21 points
+            </li>
+            <li>
+              <strong>Scheduling:</strong> Each tournament will have a start
+              date and end date. Players will be notified of their match times.
+            </li>
+            <li>
+              <strong>Referee:</strong> Each tournament match will have a
+              referee assigned to ensure fair play and adherence to rules.
+            </li>
+            <li>
+              <strong>Venue:</strong> Each match of a tournament will be held at
+              a same venue and verified location registered on the platform
+            </li>
+          </ul>
+        </section>
+
+        <section className="mb-5">
+          <h2 className="h4 font-weight-semibold mb-3">
+            Tournament Requirements
+          </h2>
+          <p>Tournament registration must meet the following requirements:</p>
+
+          <ul className="list-unstyled">
+            <li>
+              <strong>Singles Tournament:</strong>
+              <ul>
+                <li>
+                  Players must register individually and pay the tournament fee.
+                </li>
+                <li>Player must qualify for tournament-appropriate gender.</li>
+                <li>
+                  Player must qualify for tournament-appropriate minimum level,
+                  and maximum level.
+                </li>
+              </ul>
+            </li>
+            <li>
+              <strong>Doubles Tournaments:</strong>
+              <ul>
+                <li>
+                  Players must register with friend (fill out the registration
+                  form) and pay the tournament fee.
+                </li>
+                <li>
+                  The player who fills out the form will be the one to pay the
+                  tournament entry fee.
+                </li>
+                <li>
+                  Players must confirm their participation in the tournament.
+                </li>
+                <li>Players must qualify for tournament-appropriate gender.</li>
+                <li>
+                  Players must qualify for tournament-appropriate minimum level,
+                  and maximum level.
+                </li>
+              </ul>
+            </li>
+          </ul>
+        </section>
+
+        <Alert
+          message="Tournament Cancellation"
+          description={
+            <>
+              <p>
+                In case of disputes about match results or conduct, players can
+                contact the tournament organizer for resolution.
+              </p>
+            </>
+          }
+          type="error"
+          showIcon
+          icon={<ExclamationCircleOutlined />}
+          className="mt-4"
+        />
+      </div>
+    </Card>
+  );
+}
+
+function RankingLevelRules() {
+  const ratingData = [
+    {
+      key: '1',
+      level: 'Level 1',
+      point: '0 - 200',
+      winPoint: '+20',
+      lossPoint: '-10',
+    },
+    {
+      key: '2',
+      level: 'Level 2',
+      point: '201 - 250',
+      winPoint: '+19',
+      lossPoint: '-11',
+    },
+    {
+      key: '3',
+      level: 'Level 3',
+      point: '251 - 300',
+      winPoint: '+18',
+      lossPoint: '-12',
+    },
+    {
+      key: '4',
+      level: 'Level 4',
+      point: '301 - 350',
+      winPoint: '+17',
+      lossPoint: '-13',
+    },
+    {
+      key: '5',
+      level: 'Level 5',
+      point: '351 - 400',
+      winPoint: '+16',
+      lossPoint: '-14',
+    },
+    {
+      key: '6',
+      level: 'Level 6',
+      point: '401 - 450',
+      winPoint: '+15',
+      lossPoint: '-15',
+    },
+    {
+      key: '7',
+      level: 'Level 7',
+      point: '451 - 500',
+      winPoint: '+14',
+      lossPoint: '-16',
+    },
+    {
+      key: '8',
+      level: 'Level 8',
+      point: '501 - 550',
+      winPoint: '+13',
+      lossPoint: '-17',
+    },
+    {
+      key: '9',
+      level: 'Level 9',
+      point: '550+',
+      winPoint: '+12',
+      lossPoint: '-18',
+    },
+  ];
+
+  const ratingColumns = [
+    { title: 'Level', dataIndex: 'level' },
+    { title: 'Point', dataIndex: 'point' },
+    { title: 'Win Point', dataIndex: 'winPoint' },
+    { title: 'Loss Point', dataIndex: 'lossPoint' },
+  ];
+
+  return (
+    <Card>
+      <h2 className="h5">Ranking Point - Level</h2>
+      <p className="text-muted mb-4">How level and ratings are calculated</p>
+
+      <section className="mb-4">
+        <h3 className="h6">Rating Levels</h3>
+        <p>
+          Players are categorized into skill levels based on their numerical
+          rating:
+        </p>
+        <Table
+          columns={ratingColumns}
+          dataSource={ratingData}
+          pagination={false}
+        />
+      </section>
+    </Card>
+  );
+}
+
 export default RulePage;

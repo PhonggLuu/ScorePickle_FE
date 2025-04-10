@@ -45,12 +45,6 @@ import TournamentInvitation from '@src/pages/tournamentPage/containers/Tournamen
 
 const { Header, Content } = Layout;
 
-interface Notification {
-  id: number;
-  message: string;
-  description: string;
-}
-
 export const GuestLayout = () => {
   const {
     token: { borderRadius },
@@ -88,23 +82,6 @@ export const GuestLayout = () => {
   }, []);
 
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [notifications] = useState<Notification[]>([
-    {
-      id: 1,
-      message: 'New comment',
-      description: 'You have a new comment on your post.',
-    },
-    {
-      id: 2,
-      message: 'System update',
-      description: 'There is a new system update available.',
-    },
-    {
-      id: 3,
-      message: 'Message received',
-      description: 'You have a new message.',
-    },
-  ]);
 
   // Toggle the modal visibility
   const showNotification = () => {
@@ -167,7 +144,7 @@ export const GuestLayout = () => {
                     type="link"
                     className="text-black"
                   >
-                    Giải đấu
+                    Tournaments
                   </Button>
                 </Link>
                 {/* <Link to={PATH_RANKING_PAGE.root}>
@@ -185,7 +162,7 @@ export const GuestLayout = () => {
                     type="link"
                     className="text-black"
                   >
-                    Luật chơi
+                    Platform Rule
                   </Button>
                 </Link>
                 {user ? (
@@ -196,7 +173,16 @@ export const GuestLayout = () => {
                         type="link"
                         className="text-black"
                       >
-                        Lịch cá nhân
+                        Calendar
+                      </Button>
+                    </Link>
+                    <Link to="my-tournament">
+                      <Button
+                        icon={<TrophyOutlined />}
+                        type="link"
+                        className="text-black"
+                      >
+                        My-Tournament-Registration
                       </Button>
                     </Link>
                     <Link to="#">
@@ -218,7 +204,7 @@ export const GuestLayout = () => {
                         className="text-black"
                         onClick={handleLogout}
                       >
-                        Đăng xuất
+                        Log out
                       </Button>
                     </Link>
                   </>
@@ -230,7 +216,7 @@ export const GuestLayout = () => {
                         type="primary"
                         className="bg-light text-black border border-1 border-dark"
                       >
-                        Đăng nhập
+                        Login
                       </Button>
                     </Link>
                     <Link to={PATH_AUTH.signup}>
@@ -239,7 +225,7 @@ export const GuestLayout = () => {
                         type="primary"
                         className="bg-dark text-white"
                       >
-                        Đăng ký
+                        Register
                       </Button>
                     </Link>
                   </>
@@ -269,10 +255,10 @@ export const GuestLayout = () => {
             footer={null}
           >
             <Tabs defaultActiveKey="1">
-              <TabPane tab="Lời mời tham gia giải đấu" key="1">
+              <TabPane tab="Request doubles tournament" key="1">
                 <TournamentInvitation playerId={user?.id} />
               </TabPane>
-              <TabPane tab="Lịch thi đấu" key="2">
+              {/* <TabPane tab="Lịch thi đấu" key="2">
                 <p>Thông báo lịch thi đấu</p>
                 <ul>
                   <li>
@@ -295,7 +281,7 @@ export const GuestLayout = () => {
                     </li>
                   ))}
                 </ul>
-              </TabPane>
+              </TabPane> */}
             </Tabs>
           </Modal>
         </Header>
@@ -372,7 +358,7 @@ export const GuestLayout = () => {
                 type="link"
                 className="text-black"
               >
-                Bảng xếp hạng
+                Ranking
               </Button>
             </Link>
             <Link to={PATH_RULE_PAGE.root}>
@@ -381,7 +367,7 @@ export const GuestLayout = () => {
                 type="link"
                 className="text-black"
               >
-                Luật chơi
+                Platform Rule
               </Button>
             </Link>
             <Link to={PATH_AUTH.signin}>
@@ -390,7 +376,7 @@ export const GuestLayout = () => {
                 type="link"
                 className="text-black"
               >
-                Đăng nhập
+                Login
               </Button>
             </Link>
             <Link to={PATH_AUTH.signup}>
@@ -399,7 +385,7 @@ export const GuestLayout = () => {
                 type="link"
                 className="text-black"
               >
-                Đăng ký
+                Register
               </Button>
             </Link>
           </Flex>

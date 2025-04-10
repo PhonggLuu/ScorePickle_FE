@@ -73,3 +73,21 @@ export function useGetAllTournamentsByCreateAt(
     refetchInterval: 3000,
   });
 }
+
+const fetchTournamentsForPlayer = async (): Promise<Tournament[]> => {
+  try {
+    const response = await api.getByQueryParams('/Tourament/GetAllTournament');
+    const tournaments = response.data as Tournament[];
+
+    // Lọc bỏ các tournament có status là 'Pending'
+    return tournaments.filter((tournament) => tournament.status !== 'Pending');
+  } catch (error) {
+    throw new Error('Error fetching tournaments');
+  }
+};
+export function useGetAllTournamentsForPlayer() {
+  return useQuery<Tournament[]>({
+    queryKey: [GET_ALL_TOURNAMENTS],
+    queryFn: () => fetchTournamentsForPlayer(),
+  });
+}

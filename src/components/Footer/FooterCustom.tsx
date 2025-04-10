@@ -100,8 +100,8 @@ const CustomFooter: React.FC = () => {
                 }}
               >
                 <Link to="/blog">Blog</Link>
-                <Link to="/rules">Luật chơi</Link>
-                <Link to="/news">Tin tức</Link>
+                <Link to="/rules">Platform Rules</Link>
+                <Link to="/news">News</Link>
               </Col>
               <Col
                 xs={12}
@@ -112,11 +112,10 @@ const CustomFooter: React.FC = () => {
                   fontWeight: '600',
                 }}
               >
-                <Link to="/about">Về chúng tôi</Link>
-                <Link to="/tournament-events">Danh sách giải đấu</Link>
-                <Link to="/ranking">Bảng xếp hạng</Link>
-                <Link to="/register-tournament">Tham gia giải đấu</Link>
-                <Link to="/support">Hỗ trợ</Link>
+                <Link to="/about">About us</Link>
+                <Link to="/tournament-page">Tournaments</Link>
+                <Link to="/ranking">Ranking</Link>
+                <Link to="/support">Support</Link>
               </Col>
             </Row>
           </div>
@@ -124,11 +123,11 @@ const CustomFooter: React.FC = () => {
 
         <Col xs={24} sm={24} md={5}>
           <div className="containerF">
-            <h4 className="title">Đăng ký tổ chức giải đấu</h4>
+            <h4 className="title">Register to organize a tournament</h4>
             <Input
               type="email"
               style={{ height: '45px', marginTop: '10px' }}
-              placeholder="Nhập email để chúng tôi liên hệ"
+              placeholder="Input email to contact"
             />
             <Button
               type="primary"
@@ -140,14 +139,14 @@ const CustomFooter: React.FC = () => {
                 padding: '10px',
               }}
             >
-              <p style={{ fontWeight: '600' }}>Đăng ký</p>
+              <p style={{ fontWeight: '600' }}>Register</p>
             </Button>
           </div>
         </Col>
 
         <Col xs={24} sm={24} md={5}>
           <div className="containerF">
-            <p className="title">Theo dõi chúng tôi</p>
+            <p className="title">Follow us</p>
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
               <div>
                 <p>
