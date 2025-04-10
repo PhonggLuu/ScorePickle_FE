@@ -11,6 +11,9 @@ import { useSelector } from 'react-redux';
 import { RootState } from '@src/redux/store';
 import { useGetAllTournamentsByPlayerId } from '@src/modules/Tournament/hooks/useGetTournamentByPlayerId';
 import { useState } from 'react';
+import { Tabs } from 'antd';
+
+const { TabPane } = Tabs;
 
 const TournamentCard = ({
   id,
@@ -103,7 +106,7 @@ const TournamentCard = ({
 export const TournamentPlayerPage = () => {
   const user = useSelector((state: RootState) => state.auth.user);
   const { data, isLoading } = useGetAllTournamentsByPlayerId(user?.id ?? 0);
-  const [filter, setFilter] = useState('All'); // State for filter selection
+  const [filter, setFilter] = useState('All');
 
   const formatDates = (startDate: string, endDate: string) => {
     const start = new Date(startDate);
@@ -121,7 +124,6 @@ export const TournamentPlayerPage = () => {
     return `${formattedStartDate} - ${formattedEndDate}`;
   };
 
-  // Filter tournaments based on the selected status
   const filteredTournaments = data?.filter((tournament) => {
     if (filter === 'All') return true;
     return tournament.status === filter;
@@ -130,67 +132,44 @@ export const TournamentPlayerPage = () => {
   return (
     <div className="d-flex flex-column min-vh-100">
       <main className="flex-grow-1 container py-4">
-        <h1 className="display-4 fw-bold mb-4">My Tournaments</h1>
+        <h1 className="display-4 fw-bold mb-4">My Joined Tournaments</h1>
 
-        {/* Filter Buttons */}
-        <div className="mb-4">
-          <button
-            onClick={() => setFilter('All')}
-            className={`btn ${
-              filter === 'All' ? 'btn-primary' : 'btn-secondary'
-            } me-2`}
-          >
-            All
-          </button>
-          <button
-            onClick={() => setFilter('Scheduled')}
-            className={`btn ${
-              filter === 'Scheduled' ? 'btn-primary' : 'btn-secondary'
-            } me-2`}
-          >
-            Scheduled
-          </button>
-          <button
-            onClick={() => setFilter('OnGoing')}
-            className={`btn ${
-              filter === 'OnGoing' ? 'btn-primary' : 'btn-secondary'
-            } me-2`}
-          >
-            OnGoing
-          </button>
-          <button
-            onClick={() => setFilter('Completed')}
-            className={`btn ${
-              filter === 'Completed' ? 'btn-primary' : 'btn-secondary'
-            }`}
-          >
-            Completed
-          </button>
-        </div>
+        {/* Tabs for Filtering */}
+        <Tabs
+          defaultActiveKey="All"
+          onChange={(key) => setFilter(key)}
+          className="mb-4"
+        >
+          <TabPane tab="All" key="All" />
+          <TabPane tab="Scheduled" key="Scheduled" />
+          <TabPane tab="OnGoing" key="OnGoing" />
+          <TabPane tab="Completed" key="Completed" />
+        </Tabs>
 
         <div className="row">
           <div className="col-md-12">
-            {isLoading ? (
-              <p>Loading...</p>
-            ) : (
-              (filteredTournaments ?? []).map((tournament) => (
-                <TournamentCard
-                  key={tournament.id}
-                  id={tournament.id}
-                  title={tournament.name}
-                  dates={formatDates(tournament.startDate, tournament.endDate)}
-                  location={tournament.location}
-                  type={tournament.type}
-                  registeredCount={tournament.maxPlayer}
-                  description={tournament.description}
-                  skillLevels={
-                    tournament.isMinRanking + ' - ' + tournament.isMaxRanking
-                  }
-                  entryFee={tournament.entryFee}
-                  status={tournament.status}
-                />
-              ))
-            )}
+            {isLoading
+              ? "You haven't joined any tournament"
+              : (filteredTournaments ?? []).map((tournament) => (
+                  <TournamentCard
+                    key={tournament.id}
+                    id={tournament.id}
+                    title={tournament.name}
+                    dates={formatDates(
+                      tournament.startDate,
+                      tournament.endDate
+                    )}
+                    location={tournament.location}
+                    type={tournament.type}
+                    registeredCount={tournament.maxPlayer}
+                    description={tournament.description}
+                    skillLevels={
+                      tournament.isMinRanking + ' - ' + tournament.isMaxRanking
+                    }
+                    entryFee={tournament.entryFee}
+                    status={tournament.status}
+                  />
+                ))}
           </div>
         </div>
       </main>
