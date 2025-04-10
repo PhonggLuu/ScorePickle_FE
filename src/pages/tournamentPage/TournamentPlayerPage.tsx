@@ -10,9 +10,7 @@ import { Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { RootState } from '@src/redux/store';
 import { useGetAllTournamentsByPlayerId } from '@src/modules/Tournament/hooks/useGetTournamentByPlayerId';
-import { useState } from 'react'; // Import useState for filter state management
-import { Tabs } from 'antd';
-import TabPane from 'antd/es/tabs/TabPane';
+import { useState } from 'react';
 
 const TournamentCard = ({
   id,

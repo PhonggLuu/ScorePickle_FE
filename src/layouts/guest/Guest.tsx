@@ -45,12 +45,6 @@ import TournamentInvitation from '@src/pages/tournamentPage/containers/Tournamen
 
 const { Header, Content } = Layout;
 
-interface Notification {
-  id: number;
-  message: string;
-  description: string;
-}
-
 export const GuestLayout = () => {
   const {
     token: { borderRadius },
@@ -88,23 +82,6 @@ export const GuestLayout = () => {
   }, []);
 
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [notifications] = useState<Notification[]>([
-    {
-      id: 1,
-      message: 'New comment',
-      description: 'You have a new comment on your post.',
-    },
-    {
-      id: 2,
-      message: 'System update',
-      description: 'There is a new system update available.',
-    },
-    {
-      id: 3,
-      message: 'Message received',
-      description: 'You have a new message.',
-    },
-  ]);
 
   // Toggle the modal visibility
   const showNotification = () => {

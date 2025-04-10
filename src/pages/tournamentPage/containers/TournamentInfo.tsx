@@ -1,5 +1,5 @@
 import type React from 'react';
-import { Card, Typography, Divider, Button } from 'antd';
+import { Card, Typography, Divider } from 'antd';
 import {
   CalendarOutlined,
   EnvironmentOutlined,
