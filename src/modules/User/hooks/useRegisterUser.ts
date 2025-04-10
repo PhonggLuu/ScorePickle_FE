@@ -3,7 +3,6 @@ import Api from '../../../api/api';
 import {
   CreatePlayerRequest,
   CreatePlayerResponse,
-  RegisterUser,
   RegisterUserRequest,
   RegisterUserResponse,
   RoleFactory,

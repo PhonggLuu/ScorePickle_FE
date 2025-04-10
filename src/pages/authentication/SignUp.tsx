@@ -55,7 +55,7 @@ export const SignUpPage = () => {
         LastName: values.lastName,
         SecondName: values.secondName || '',
         Email: values.email,
-        PasswordHash: values.passwordHash,
+        Password: values.passwordHash,
         DateOfBirth: values.dateOfBirth.toISOString(),
         Gender: values.gender,
         PhoneNumber: values.phoneNumber,
