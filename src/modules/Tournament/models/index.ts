@@ -107,3 +107,8 @@ export enum TouramentregistrationStatus {
   Waiting = 4,
   Eliminated = 5,
 }
+
+export interface PlayerTournament {
+  touramentId: number;
+  status: number;
+}

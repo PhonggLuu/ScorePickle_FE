@@ -165,7 +165,7 @@ const PaymentReturn: React.FC = () =>
               className="w-100"
               style={{ backgroundColor: '#0d6efd', borderColor: '#0d6efd' }}
               onClick={() => {
-                window.location.href = '/';
+                window.location.href = '/my-tournament';
               }}
             >
               Quay về trang chủ

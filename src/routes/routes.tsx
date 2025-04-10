@@ -79,6 +79,7 @@ import TournamentDetailPage from '@src/pages/tournamentPage/TournamentDetailPage
 import MatchCalendar from '@src/pages/tournamentPage/MatchCalendar.tsx';
 import { PaymentLayout } from '@src/layouts/payment/index.tsx';
 import PaymentReturn from '@src/pages/tournamentPage/PaymentReturn.tsx';
+import { TournamentPlayerPage } from '@src/pages/tournamentPage/TournamentPlayerPage.tsx';
 
 // Custom scroll restoration function
 export const ScrollToTop: React.FC = () => {
@@ -150,6 +151,11 @@ const router = createBrowserRouter([
         index: true,
         path: 'payment-return',
         element: <PaymentReturn />,
+      },
+      {
+        index: true,
+        path: 'my-tournament',
+        element: <TournamentPlayerPage />,
       },
     ],
   },

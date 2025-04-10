@@ -1,6 +1,7 @@
+import { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import 'antd/dist/reset.css'; // CSS của Antd
-import { Button, Checkbox, Input, Pagination, Slider } from 'antd';
+import 'antd/dist/reset.css';
+import { Button, Checkbox, message } from 'antd';
 import {
   CalendarOutlined,
   EnvironmentOutlined,
@@ -8,8 +9,9 @@ import {
   TeamOutlined,
 } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
-import { useState } from 'react';
-import { useGetAllTournamentsByCreateAt } from '@src/modules/Tournament/hooks/useGetAllTournaments';
+import { useGetAllTournamentsForPlayer } from '@src/modules/Tournament/hooks/useGetAllTournaments';
+import { useSelector } from 'react-redux';
+import { RootState } from '@src/redux/store';
 
 const TournamentCard = ({
   id,
@@ -26,7 +28,6 @@ const TournamentCard = ({
   <div className="card mb-4">
     <div className="card-body">
       <div className="row ml-2">
-        {/* Phần 3: Dates, Location, Type, Registered */}
         <div className="col-4">
           <h5 className="card-title mb-4" style={{ fontWeight: 'bold' }}>
             {title}
@@ -50,9 +51,7 @@ const TournamentCard = ({
             </span>
           </p>
         </div>
-
         <div className="col-2"></div>
-
         <div className="col-6">
           <div className="d-flex justify-content-end mb-2 mr-2">
             <span
@@ -103,17 +102,19 @@ const TournamentCard = ({
 );
 
 export const TournamentPage = () => {
-  const [currentPage, setCurrentPage] = useState<number>(1);
-  const [pageSize, setPageSize] = useState<number>(10);
-  const { data, isLoading } = useGetAllTournamentsByCreateAt(
-    currentPage,
-    pageSize
-  );
+  const { data, isLoading } = useGetAllTournamentsForPlayer();
+  const [filters, setFilters] = useState<{
+    tournamentType: string[];
+    skillLevel: string[];
+    status: string[];
+  }>({
+    tournamentType: [],
+    skillLevel: [],
+    status: [],
+  });
 
-  const handlePaginationChange = (page: number, pageSize: number) => {
-    setCurrentPage(page);
-    setPageSize(pageSize);
-  };
+  const user = useSelector((state: RootState) => state.auth.user);
+
   const formatDates = (startDate: string, endDate: string) => {
     const start = new Date(startDate);
     const end = new Date(endDate);
@@ -129,17 +130,69 @@ export const TournamentPage = () => {
 
     return `${formattedStartDate} - ${formattedEndDate}`;
   };
+
+  // Hàm lọc dữ liệu
+  const filterTournaments = (data) => {
+    return data.filter((tournament) => {
+      const isTypeMatch =
+        filters.tournamentType.length === 0 ||
+        tournament.type.toLowerCase().includes(filters.tournamentType);
+      const isSkillLevelMatch =
+        filters.skillLevel.length === 0 ||
+        (filters.skillLevel >= tournament.isMinRanking &&
+          filters.skillLevel <= tournament.isMaxRanking);
+      const isStatusMatch =
+        filters.status.length === 0 ||
+        filters.status.includes(tournament.status);
+
+      return isTypeMatch && isSkillLevelMatch && isStatusMatch;
+    });
+  };
+
+  const handleCheckboxChange = (category, value) => {
+    setFilters((prevFilters) => {
+      const updatedCategory = prevFilters[category].includes(value)
+        ? prevFilters[category].filter((item) => item !== value)
+        : [...prevFilters[category], value];
+
+      return { ...prevFilters, [category]: updatedCategory };
+    });
+  };
+
+  const recommendTournaments = () => {
+    // Áp dụng bộ lọc đặc biệt cho "Recommend Tournament" dựa trên level và gender của người dùng
+    setFilters({
+      tournamentType: [],
+      skillLevel: [user?.userDetails?.experienceLevel?.toString() ?? '0'],
+      status: ['Scheduled'],
+    });
+    message.success('Filter follow your level and gender succesfully');
+  };
+
+  const handleResetFilters = () => {
+    window.location.reload();
+  };
+
   return (
     <div className="d-flex flex-column min-vh-100">
       <main className="flex-grow-1 container py-4">
         <h1 className="display-4 fw-bold mb-4">Tournaments</h1>
 
         <div className="row">
-          {/* Filters - 3/12 columns */}
           <div className="col-md-3 mb-4">
             <div className="mb-4">
+              <h2 className="h5 fw-medium mb-3">Recommend Tournament</h2>
+              <Button
+                className="w-100 mb-4 btn-primary"
+                onClick={recommendTournaments}
+              >
+                Recommend Tournament
+              </Button>
+            </div>
+
+            <div className="mb-4">
               <h2 className="h5 fw-medium mb-3">Filters</h2>
-              <Button className="w-100 mb-4" block>
+              <Button className="w-100 mb-4" block onClick={handleResetFilters}>
                 Reset Filters
               </Button>
             </div>
@@ -147,33 +200,21 @@ export const TournamentPage = () => {
             <div className="mb-4">
               <h3 className="h6 fw-medium">Tournament Type</h3>
               <div className="d-flex flex-column gap-2">
-                <Checkbox id="singles">Singles</Checkbox>
-                <Checkbox id="doubles">Doubles</Checkbox>
+                <Checkbox
+                  onChange={() =>
+                    handleCheckboxChange('tournamentType', 'singles')
+                  }
+                >
+                  Singles
+                </Checkbox>
+                <Checkbox
+                  onChange={() =>
+                    handleCheckboxChange('tournamentType', 'doubles')
+                  }
+                >
+                  Doubles
+                </Checkbox>
               </div>
-            </div>
-
-            <div className="mb-4">
-              <h3 className="h6 fw-medium">Location</h3>
-              <Input placeholder="City, State, or Zip" />
-            </div>
-
-            <div className="mb-4">
-              <h3 className="h6 fw-medium">Distance (km)</h3>
-              <Input type="number" defaultValue={5} className="mb-2" />
-              <div className="d-flex justify-content-between text-muted small">
-                <span>0 km</span>
-                <span>10 km</span>
-                <span>20 km</span>
-              </div>
-            </div>
-
-            <div className="mb-4">
-              <h3 className="h6 fw-medium">Date Range</h3>
-              <div className="d-flex justify-content-between align-items-center mb-2">
-                <span className="small">Next 6 weeks</span>
-                <Button size="small" icon={<CalendarOutlined />} />
-              </div>
-              <Slider range defaultValue={[6]} max={12} step={1} />
             </div>
 
             <div className="mb-4">
@@ -181,18 +222,53 @@ export const TournamentPage = () => {
               <div className="d-flex flex-column gap-2">
                 <div className="row">
                   <div className="col-6">
-                    <Checkbox id="skill-10-20">1.0 - 2.0</Checkbox>
-                    <Checkbox id="skill-20-25">2.0 - 2.5</Checkbox>
-                    <Checkbox id="skill-25-30">2.5 - 3.0</Checkbox>
-                    <Checkbox id="skill-30-35">3.0 - 3.5</Checkbox>
-                    <Checkbox id="skill-35-40">3.5 - 4.0</Checkbox>
+                    <Checkbox
+                      onChange={() => handleCheckboxChange('skillLevel', '1')}
+                    >
+                      Level 1
+                    </Checkbox>
+                    <Checkbox
+                      onChange={() => handleCheckboxChange('skillLevel', '2')}
+                    >
+                      Level 2
+                    </Checkbox>
+                    <Checkbox
+                      onChange={() => handleCheckboxChange('skillLevel', '3')}
+                    >
+                      Level 3
+                    </Checkbox>
+                    <Checkbox
+                      onChange={() => handleCheckboxChange('skillLevel', '4')}
+                    >
+                      Level 4
+                    </Checkbox>
+                    <Checkbox
+                      onChange={() => handleCheckboxChange('skillLevel', '5')}
+                    >
+                      Level 5
+                    </Checkbox>
                   </div>
                   <div className="col-6">
-                    <Checkbox id="skill-40-45">4.0 - 4.5</Checkbox>
-                    <Checkbox id="skill-45-50">4.5 - 5.0</Checkbox>
-                    <Checkbox id="skill-50-55">5.0 - 5.5</Checkbox>
-                    <br />
-                    <Checkbox id="skill-55-plus">5.5+</Checkbox>
+                    <Checkbox
+                      onChange={() => handleCheckboxChange('skillLevel', '6')}
+                    >
+                      Level 6
+                    </Checkbox>
+                    <Checkbox
+                      onChange={() => handleCheckboxChange('skillLevel', '7')}
+                    >
+                      Level 7
+                    </Checkbox>
+                    <Checkbox
+                      onChange={() => handleCheckboxChange('skillLevel', '8')}
+                    >
+                      Level 8
+                    </Checkbox>
+                    <Checkbox
+                      onChange={() => handleCheckboxChange('skillLevel', '9')}
+                    >
+                      Level 9
+                    </Checkbox>
                   </div>
                 </div>
               </div>
@@ -201,11 +277,21 @@ export const TournamentPage = () => {
             <div className="mb-4">
               <h3 className="h6 fw-medium">Status</h3>
               <div className="d-flex flex-column gap-2">
-                <Checkbox id="registration-open" defaultChecked>
-                  Registration Open
+                <Checkbox
+                  onChange={() => handleCheckboxChange('status', 'Scheduled')}
+                >
+                  Coming Soon
                 </Checkbox>
-                <Checkbox id="coming-soon">Coming Soon</Checkbox>
-                <Checkbox id="past-tournaments">Past Tournaments</Checkbox>
+                <Checkbox
+                  onChange={() => handleCheckboxChange('status', 'Ongoing')}
+                >
+                  Ongoing
+                </Checkbox>
+                <Checkbox
+                  onChange={() => handleCheckboxChange('status', 'Completed')}
+                >
+                  Past Tournaments
+                </Checkbox>
               </div>
             </div>
 
@@ -214,12 +300,11 @@ export const TournamentPage = () => {
             </Button>
           </div>
 
-          {/* Tournament Listings - 9/12 columns */}
           <div className="col-md-9">
             {isLoading ? (
               <p>Loading...</p>
             ) : (
-              data?.data?.map((tournament) => (
+              filterTournaments(data).map((tournament) => (
                 <TournamentCard
                   key={tournament.id}
                   id={tournament.id}
@@ -237,17 +322,6 @@ export const TournamentPage = () => {
                 />
               ))
             )}
-
-            <div className="pagination-container">
-              <Pagination
-                current={currentPage}
-                total={data?.totalItems}
-                pageSize={pageSize}
-                onChange={handlePaginationChange}
-                pageSizeOptions={['10', '20', '50']}
-                showSizeChanger
-              />
-            </div>
           </div>
         </div>
       </main>
