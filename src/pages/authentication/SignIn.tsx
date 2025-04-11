@@ -17,7 +17,6 @@ import {
   GoogleOutlined,
   TwitterOutlined,
 } from '@ant-design/icons';
-import { Logo } from '../../components';
 import { useMediaQuery } from 'react-responsive';
 import { PATH_AUTH } from '../../constants';
 import { useState } from 'react';
