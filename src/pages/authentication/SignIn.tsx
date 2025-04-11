@@ -1,5 +1,6 @@
 import {
   Button,
+  Card,
   Checkbox,
   Col,
   Divider,
@@ -79,16 +80,18 @@ export const SignInPage = () => {
           align="center"
           justify="center"
           className="text-center"
-          style={{ background: colorPrimary, height: '100%', padding: '1rem' }}
+          style={{ background: colorPrimary, height: '100%' }}
         >
-          <Logo color="white" />
-          <Title level={2} className="text-white">
-            Welcome back to Antd Admin
-          </Title>
-          <Text className="text-white" style={{ fontSize: 18 }}>
-            A dynamic and versatile multipurpose dashboard utilizing Ant Design,
-            React, TypeScript, and Vite.
-          </Text>
+          <Card
+            hoverable
+            style={{
+              border: '0px !important',
+              width: '100%',
+              height: '100%',
+              alignContent: 'center',
+              background: colorPrimary,
+            }}
+          />
         </Flex>
       </Col>
       <Col xs={24} lg={12}>

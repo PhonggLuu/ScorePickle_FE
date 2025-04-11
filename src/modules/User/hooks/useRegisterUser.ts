@@ -3,6 +3,7 @@ import Api from '../../../api/api';
 import {
   CreatePlayerRequest,
   CreatePlayerResponse,
+  RegisterUser,
   RegisterUserRequest,
   RegisterUserResponse,
   RoleFactory,
@@ -23,9 +24,6 @@ const registerUser = async (
 export function useRegisterUser() {
   return useMutation({
     mutationFn: registerUser,
-    onSuccess: (data) => {
-      createPlayer(data.id);
-    },
     onError: (error) => {
       console.error('Error registering user:', error);
     },
@@ -44,3 +42,23 @@ export const createPlayer = async (
   const data = response.data as CreatePlayerResponse;
   return data;
 };
+
+const registerPlayer = async (
+  user: RegisterUser
+): Promise<RegisterUserResponse> => {
+  const response = await Api.post('Auth/register', user);
+  const data = response.data as RegisterUserResponse;
+  return data;
+};
+
+export function useRegisterPlayer() {
+  return useMutation({
+    mutationFn: registerPlayer,
+    onSuccess: (data) => {
+      createPlayer(data.id);
+    },
+    onError: (error) => {
+      console.error('Error registering player:', error);
+    },
+  });
+}

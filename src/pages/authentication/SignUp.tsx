@@ -22,8 +22,9 @@ import { useMediaQuery } from 'react-responsive';
 import { PATH_AUTH } from '../../constants';
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
-import { useRegisterUser } from '@src/modules/User/hooks/useRegisterUser';
+import { useRegisterPlayer } from '@src/modules/User/hooks/useRegisterUser';
 import { RoleFactory } from '@src/modules/User/models';
+import dayjs from 'dayjs';
 
 const { Title, Text, Link } = Typography;
 
@@ -46,7 +47,7 @@ export const SignUpPage = () => {
   const isMobile = useMediaQuery({ maxWidth: 769 });
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-  const { mutate: registerUser } = useRegisterUser();
+  const { mutate: registerUser } = useRegisterPlayer();
 
   const onFinish = (values: FieldType) => {
     registerUser(
@@ -55,7 +56,7 @@ export const SignUpPage = () => {
         LastName: values.lastName,
         SecondName: values.secondName || '',
         Email: values.email,
-        Password: values.passwordHash,
+        PasswordHash: values.passwordHash,
         DateOfBirth: values.dateOfBirth.toISOString(),
         Gender: values.gender,
         PhoneNumber: values.phoneNumber,
@@ -175,7 +176,28 @@ export const SignUpPage = () => {
                 </Form.Item>
               </Col>
               <Col xs={24} lg={12}>
-                <Form.Item<FieldType> label="DateOfBirth" name="dateOfBirth">
+                <Form.Item<FieldType>
+                  label="DateOfBirth"
+                  name="dateOfBirth"
+                  rules={[
+                    {
+                      validator: (_, value) => {
+                        if (!value) {
+                          return Promise.reject(
+                            new Error('Select your date of birth')
+                          );
+                        }
+                        const sevenYearsAgo = dayjs().subtract(7, 'year');
+                        if (value.isAfter(sevenYearsAgo)) {
+                          return Promise.reject(
+                            new Error('Player must be at least 7 years old')
+                          );
+                        }
+                        return Promise.resolve();
+                      },
+                    },
+                  ]}
+                >
                   <DatePicker style={{ width: '100%' }} />
                 </Form.Item>
               </Col>
