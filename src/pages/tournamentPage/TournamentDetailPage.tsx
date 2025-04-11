@@ -113,7 +113,7 @@ export const TournamentDetailPage: React.FC = () => {
           style={{ width: '100%' }}
           disabled={true}
         >
-          Tournament is closed
+          The tournament has closed accepting applications
         </Button>
       );
     }
@@ -253,10 +253,10 @@ export const TournamentDetailPage: React.FC = () => {
                 {tournament.name}
               </Title>
               <Tag color="green" className="registration-tag">
-                {tournament.isAccept &&
+                {/* {tournament.isAccept &&
                 new Date(tournament.startDate) > new Date()
                   ? 'Registration Open'
-                  : 'Registration Closed'}
+                  : 'Registration Closed'} */}
               </Tag>
             </div>
             <div className="tournament-meta mt-2" style={{ fontSize: '20px' }}>
