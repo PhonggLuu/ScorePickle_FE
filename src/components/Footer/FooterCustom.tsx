@@ -14,7 +14,10 @@ const { Footer } = Layout;
 const CustomFooter: React.FC = () => {
   return (
     <Footer
-      style={{ backgroundColor: '#f0f2f5', padding: '20px 50px 80px 50px' }}
+      style={{
+        background: 'linear-gradient(to right, #1e3a8a, #3b82f6)',
+        padding: '20px 50px 80px 50px',
+      }}
     >
       <div
         style={{
@@ -37,24 +40,21 @@ const CustomFooter: React.FC = () => {
       >
         <Col xs={24} sm={24} md={5}>
           <div className="containerF">
-            <p className="title">Liên hệ</p>
+            <h3
+              className="fw-bold"
+              style={{ color: 'rgba(0, 247, 255, 0.85)' }}
+            >
+              Contact
+            </h3>
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
               <div>
                 <p>
-                  <PhoneFilled
-                    style={{
-                      fontSize: '22px',
-                      color: '#fff',
-                      padding: '12px',
-                      backgroundColor: '#727375',
-                      borderRadius: '50%',
-                    }}
-                  />
+                  <PhoneFilled style={{ fontSize: '30px', color: 'white' }} />
                 </p>
               </div>
               <div>
-                <p className="subtitle">Gọi chúng tôi</p>
-                <p>0912312312</p>
+                <p className="text-white m-0">Gọi chúng tôi</p>
+                <p className="text-white">0912312312</p>
               </div>
             </div>
             <div
@@ -67,20 +67,12 @@ const CustomFooter: React.FC = () => {
             >
               <div>
                 <p>
-                  <SendOutlined
-                    style={{
-                      fontSize: '22px',
-                      color: '#fff',
-                      padding: '12px',
-                      backgroundColor: '#1c4c93 ',
-                      borderRadius: '50%',
-                    }}
-                  />
+                  <SendOutlined style={{ fontSize: '30px', color: 'white' }} />
                 </p>
               </div>
               <div>
-                <p className="subtitle">Gửi email đến ScorePickle</p>
-                <p>scorepickle@gmail.com</p>
+                <p className="text-white m-0">Gửi email đến ScorePickle</p>
+                <p className="text-white">scorepickle@gmail.com</p>
               </div>
             </div>
           </div>
@@ -88,7 +80,12 @@ const CustomFooter: React.FC = () => {
 
         <Col xs={24} sm={24} md={5}>
           <div className="containerF">
-            <p className="title">Về ScorePickle</p>
+            <h3
+              className="fw-bold"
+              style={{ color: 'rgba(0, 247, 255, 0.85)' }}
+            >
+              Về ScorePickle
+            </h3>
             <Row>
               <Col
                 xs={12}
@@ -96,12 +93,17 @@ const CustomFooter: React.FC = () => {
                   display: 'flex',
                   flexDirection: 'column',
                   gap: '10px',
-                  fontWeight: '600',
                 }}
               >
-                <Link to="/blog">Blog</Link>
-                <Link to="/rules">Platform Rules</Link>
-                <Link to="/news">News</Link>
+                <Link to="/blog" className="text-white">
+                  Blog
+                </Link>
+                <Link to="/news" className="text-white">
+                  News
+                </Link>
+                <Link to="/rules" className="text-white">
+                  Rules
+                </Link>
               </Col>
               <Col
                 xs={12}
@@ -109,21 +111,28 @@ const CustomFooter: React.FC = () => {
                   display: 'flex',
                   flexDirection: 'column',
                   gap: '10px',
-                  fontWeight: '600',
                 }}
               >
-                <Link to="/about">About us</Link>
-                <Link to="/tournament-page">Tournaments</Link>
-                <Link to="/ranking">Ranking</Link>
-                <Link to="/support">Support</Link>
+                <Link to="/about" className="text-white">
+                  About us
+                </Link>
+                <Link to="/support" className="text-white">
+                  Support
+                </Link>
+                <Link to="/rule-page" className="text-white">
+                  Platform Rules
+                </Link>
               </Col>
             </Row>
           </div>
         </Col>
 
         <Col xs={24} sm={24} md={5}>
-          <div className="containerF">
-            <h4 className="title">Register to organize a tournament</h4>
+          <div
+            className="containerF"
+            style={{ color: 'rgba(0, 247, 255, 0.85)' }}
+          >
+            <h3 className="fw-bold">Register to organize a tournament</h3>
             <Input
               type="email"
               style={{ height: '45px', marginTop: '10px' }}
@@ -132,7 +141,7 @@ const CustomFooter: React.FC = () => {
             <Button
               type="primary"
               style={{
-                backgroundColor: '#1c4c93',
+                backgroundColor: 'rgba(0, 46, 96, 0.85)',
                 height: '45px',
                 width: '120px',
                 marginTop: '20px',
@@ -146,25 +155,22 @@ const CustomFooter: React.FC = () => {
 
         <Col xs={24} sm={24} md={5}>
           <div className="containerF">
-            <p className="title">Follow us</p>
+            <h3
+              className="fw-bold"
+              style={{ color: 'rgba(0, 247, 255, 0.85)' }}
+            >
+              Follow us
+            </h3>
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
               <div>
-                <p>
-                  <FacebookFilled
-                    style={{
-                      fontSize: '22px',
-                      color: '#fff',
-                      padding: '12px',
-                      backgroundColor: '#0866ff',
-                      borderRadius: '50%',
-                    }}
-                  />
-                </p>
+                <FacebookFilled style={{ fontSize: '40px', color: 'white' }} />
               </div>
               <div>
-                <p className="subtitle">Facebook</p>
-                <a href="https://www.facebook.com/pickleball/">
-                  facebook.com/pickleball/
+                <a
+                  href="https://www.facebook.com/pickleball/"
+                  className="text-white"
+                >
+                  facebook.com/pickleball
                 </a>
               </div>
             </div>
@@ -177,23 +183,15 @@ const CustomFooter: React.FC = () => {
               }}
             >
               <div>
-                <p>
-                  <InstagramFilled
-                    style={{
-                      fontSize: '22px',
-                      color: '#fff',
-                      padding: '12px',
-                      backgroundColor: '#ff0268 ',
-                      borderRadius: '50%',
-                    }}
-                  />
-                </p>
+                <InstagramFilled style={{ fontSize: '40px', color: 'white' }} />
               </div>
               <div>
-                <p className="subtitle">Instagram</p>
-                <a href="https://www.instagram.com/pickleball/">
-                  instagram.com/pickleball/
-                </a>
+                <Link
+                  to="https://www.instagram.com/pickleball/"
+                  className="text-white"
+                >
+                  instagram.com/pickleball
+                </Link>
               </div>
             </div>
           </div>
