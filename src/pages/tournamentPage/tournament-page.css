@@ -1,0 +1,12 @@
+.sidebar-hidden {
+  width: 0 !important;
+  min-width: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  overflow: hidden;
+}
+
+.main-content {
+  /* Đảm bảo nội dung không bị ảnh hưởng bởi transition */
+  backface-visibility: hidden;
+}
