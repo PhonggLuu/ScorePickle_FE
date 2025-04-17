@@ -25,7 +25,7 @@ const getFriendById = async (
 
     return filteredFriends;
   } catch (error) {
-    throw new Error('Error fetching tournament by ID');
+    throw new Error('Error fetching friend by ID');
   }
 };
 

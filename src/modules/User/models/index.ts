@@ -132,3 +132,8 @@ export interface CreatePlayerResponse {
   experienceLevel: number;
   joinedAt: Date;
 }
+
+export interface UpdatePasswordRequest {
+  userId: number;
+  newPassword: string;
+}

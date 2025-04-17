@@ -10,30 +10,30 @@ export const RulePage = () => {
       <h1 className="display-4 fw-bold mb-4">Platform Rules</h1>
 
       <Tabs defaultActiveKey={activeTab} onChange={setActiveTab}>
-        <Tabs.TabPane tab="Scoring System" key="scoring">
+        <Tabs.TabPane
+          tab={<span className="text-white">Scoring System</span>}
+          key="scoring"
+        >
           <ScoringSystem />
         </Tabs.TabPane>
-        <Tabs.TabPane tab="Challenge Rules" key="challenge">
+        <Tabs.TabPane
+          tab={<span className="text-white">Challenge Rules</span>}
+          key="challenge"
+        >
           <ChallengeRules />
         </Tabs.TabPane>
-        {/* <Tabs.TabPane tab="Revised Matches" key="revised">
-          <Card>
-            <h2 className="h5">Revised Matches</h2>
-            <p>Revised matches content would go here.</p>
-          </Card>
-        </Tabs.TabPane> */}
-        <Tabs.TabPane tab="Tournament Rules" key="tournament">
+        <Tabs.TabPane
+          tab={<span className="text-white">Tournament Rules</span>}
+          key="tournament"
+        >
           <TournamentRules />
         </Tabs.TabPane>
-        <Tabs.TabPane tab="Rating Level Rules" key="conduct">
+        <Tabs.TabPane
+          tab={<span className="text-white">Rating Level Rules</span>}
+          key="conduct"
+        >
           <RankingLevelRules />
         </Tabs.TabPane>
-        {/* <Tabs.TabPane tab="Financial Rules" key="financial">
-          <Card>
-            <h2 className="h5">Financial Rules</h2>
-            <p>Financial rules content would go here.</p>
-          </Card>
-        </Tabs.TabPane> */}
       </Tabs>
     </div>
   );
@@ -75,25 +75,26 @@ function ScoringSystem() {
 
   return (
     <Card>
-      <h2 className="h5">Scoring System</h2>
-      <p className="text-muted mb-4">
-        How matches are scored and how ratings are calculated
-      </p>
-
-      <section className="mb-4">
-        <h3 className="h6">Match Scoring</h3>
-        <p>
-          Score/Pulse follows standard pickleball scoring rules with some
-          platform-specific adaptations:
+      <div className="container my-5 p-4 border rounded">
+        <h1 className="display-5 font-weight-bold mb-2">Scoring System</h1>
+        <p className="text-muted mb-4">
+          How matches are scored and how ratings are calculated
         </p>
-        <Table
-          columns={matchColumns}
-          dataSource={matchData}
-          pagination={false}
-        />
-      </section>
 
-      {/* <section>
+        <section className="mb-4">
+          <h3 className="h6">Match Scoring</h3>
+          <p>
+            Score/Pulse follows standard pickleball scoring rules with some
+            platform-specific adaptations:
+          </p>
+          <Table
+            columns={matchColumns}
+            dataSource={matchData}
+            pagination={false}
+          />
+        </section>
+
+        {/* <section>
         <Alert
           message={
             <>
@@ -104,6 +105,7 @@ function ScoringSystem() {
           type="info"
         />
       </section> */}
+      </div>
     </Card>
   );
 }
@@ -426,21 +428,25 @@ function RankingLevelRules() {
 
   return (
     <Card>
-      <h2 className="h5">Ranking Point - Level</h2>
-      <p className="text-muted mb-4">How level and ratings are calculated</p>
+      <div className="container my-5 p-4 border rounded">
+        <h1 className="display-5 font-weight-bold mb-2">
+          Ranking Point - Level
+        </h1>
+        <p className="text-muted mb-4">How level and ratings are calculated</p>
 
-      <section className="mb-4">
-        <h3 className="h6">Rating Levels</h3>
-        <p>
-          Players are categorized into skill levels based on their numerical
-          rating:
-        </p>
-        <Table
-          columns={ratingColumns}
-          dataSource={ratingData}
-          pagination={false}
-        />
-      </section>
+        <section className="mb-4">
+          <h3 className="h6">Rating Levels</h3>
+          <p>
+            Players are categorized into skill levels based on their numerical
+            rating:
+          </p>
+          <Table
+            columns={ratingColumns}
+            dataSource={ratingData}
+            pagination={false}
+          />
+        </section>
+      </div>
     </Card>
   );
 }
