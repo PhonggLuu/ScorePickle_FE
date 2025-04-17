@@ -30,6 +30,7 @@ import {
   MenuUnfoldOutlined,
   NotificationOutlined,
   ReadOutlined,
+  TeamOutlined,
   TrophyOutlined,
   UserAddOutlined,
   UserOutlined,
@@ -41,12 +42,15 @@ import {
   PATH_TOURNAMENT_PAGE,
   PATH_RANKING_PAGE,
   PATH_RULE_PAGE,
+  PATH_PLAYER_PAGE,
 } from '@src/constants/routes';
 import { RootState } from '@src/redux/store';
 import { useSelector } from 'react-redux';
 import useLogout from '@src/modules/User/hooks/useLogout';
 import TabPane from 'antd/es/tabs/TabPane';
 import TournamentInvitation from '@src/pages/tournamentPage/containers/TournamentInvitation';
+import { useCountNotification } from '@src/modules/Notification/hooks/useCountNoti';
+import FriendRequest from '@src/pages/friend/FriendRequest';
 
 const { Header, Content } = Layout;
 export const GuestLayout = () => {
@@ -59,6 +63,7 @@ export const GuestLayout = () => {
   const nodeRef = useRef(null);
   const [open, setOpen] = useState(false);
   const user = useSelector((state: RootState) => state.auth.user);
+  const { data: countNoti } = useCountNotification(user?.id ?? 0);
 
   const { logout } = useLogout();
   const items: MenuProps['items'] = [
@@ -72,7 +77,7 @@ export const GuestLayout = () => {
             <img
               src={
                 user?.avatarUrl ??
-                'https://images.icon-icons.com/3446/PNG/512/account_profile_user_avatar_icon_219236.png'
+                'https://inkythuatso.com/uploads/thumbnails/800/2023/03/9-anh-dai-dien-trang-inkythuatso-03-15-27-03.jpg'
               }
               alt="user avatar"
               style={{
@@ -93,10 +98,7 @@ export const GuestLayout = () => {
                   ', ' +
                   user?.userDetails?.city.toLocaleLowerCase()}
               </p>
-              <i
-                className="fas fa-circle me-1 ms-2 text-muted d-inline justify-content-center align-items-center"
-                style={{ fontSize: '5px' }}
-              ></i>
+              <span className="mx-1">•</span>
               <p
                 className="text-muted"
                 style={{ marginTop: 0, fontSize: '13px', display: 'inline' }}
@@ -108,7 +110,7 @@ export const GuestLayout = () => {
         </Card>
       ),
       key: 'profile',
-      style: { padding: '0' },
+      style: { padding: '0', marginBottom: '10px' },
     },
     {
       key: 'profile-gap',
@@ -129,7 +131,7 @@ export const GuestLayout = () => {
         padding: '0',
         margin: '0',
         paddingLeft: '10px',
-        backgroundColor: '#f0f0f0',
+        backgroundColor: 'rgb(224, 224, 224)',
       },
     },
     {
@@ -175,7 +177,19 @@ export const GuestLayout = () => {
         padding: '0',
         margin: '0',
         paddingLeft: '10px',
-        backgroundColor: '#f0f0f0',
+        backgroundColor: 'rgb(224, 224, 224)',
+      },
+    },
+    {
+      key: 'my-friend',
+      label: (
+        <Link to={`my-friend`} style={{ textDecoration: 'none' }}>
+          <TeamOutlined className="me-2" />
+          Friends
+        </Link>
+      ),
+      style: {
+        padding: '10px 0 10px 10px',
       },
     },
     {
@@ -296,6 +310,15 @@ export const GuestLayout = () => {
                     Tournaments
                   </Button>
                 </Link>
+                <Link to={PATH_PLAYER_PAGE.root}>
+                  <Button
+                    icon={<TeamOutlined />}
+                    type="link"
+                    className="text-black"
+                  >
+                    Players
+                  </Button>
+                </Link>
                 {/* <Link to={PATH_RANKING_PAGE.root}>
                   <Button
                     icon={<ApartmentOutlined />}
@@ -325,10 +348,10 @@ export const GuestLayout = () => {
                         Calendar
                       </Button>
                     </Link>*/}
-                    <Link to="" className="me-4">
+                    <Link to="#" className="me-4">
                       <Button
                         icon={
-                          <Badge count={1}>
+                          <Badge count={countNoti}>
                             <NotificationOutlined />
                           </Badge>
                         }
@@ -417,7 +440,9 @@ export const GuestLayout = () => {
               <TabPane tab="Request doubles tournament" key="1">
                 <TournamentInvitation playerId={user?.id} />
               </TabPane>
-              <TabPane tab="Add friend request" key="2"></TabPane>
+              <TabPane tab="Add friend request" key="2">
+                <FriendRequest userId={user?.id} />
+              </TabPane>
               {/* <TabPane tab="Lịch thi đấu" key="2">
                 <p>Thông báo lịch thi đấu</p>
                 <ul>
@@ -534,10 +559,19 @@ export const GuestLayout = () => {
                     Joined-Tournament
                   </Button>
                 </Link>
+                <Link to="my-tournament">
+                  <Button
+                    icon={<TrophyOutlined />}
+                    type="link"
+                    className="text-black"
+                  >
+                    Friends
+                  </Button>
+                </Link>
                 <Link to="#">
                   <Button
                     icon={
-                      <Badge count={1}>
+                      <Badge count={countNoti}>
                         <NotificationOutlined />
                       </Badge>
                     }

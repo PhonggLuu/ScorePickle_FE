@@ -33,6 +33,7 @@ const ROOTS_PAYMENT = '/payment';
 const ROOTS_ADMIN = '/admin';
 const ROOTS_SPONSOR = '/sponsor';
 const ROOTS_MY_TOURNAMENT = '/my-tournament';
+const ROOTS_PLAYER_PAGE = '/player-page';
 
 export const PATH_LANDING = {
   root: ROOTS_LANDING,
@@ -297,4 +298,8 @@ export const PATH_SPONSOR_PAYMENT = {
 
 export const PATH_MY_TOURNAMENT = {
   root: ROOTS_MY_TOURNAMENT,
+};
+
+export const PATH_PLAYER_PAGE = {
+  root: ROOTS_PLAYER_PAGE,
 };

@@ -81,6 +81,9 @@ import { PaymentLayout } from '@src/layouts/payment/index.tsx';
 import PaymentReturn from '@src/pages/tournamentPage/PaymentReturn.tsx';
 import { TournamentPlayerPage } from '@src/pages/tournamentPage/TournamentPlayerPage.tsx';
 import EditProfile from '@src/pages/profilePage/ProfilePage.tsx';
+import { PlayersPage } from '@src/pages/playerPage/PlayerPage.tsx';
+import FriendPage from '@src/pages/friend/FriendPage.tsx';
+import UpdatePassword from '@src/pages/authentication/UpdatePassword.tsx';
 
 // Custom scroll restoration function
 export const ScrollToTop: React.FC = () => {
@@ -162,6 +165,21 @@ const router = createBrowserRouter([
         index: true,
         path: 'my-profile',
         element: <EditProfile />,
+      },
+      {
+        index: true,
+        path: 'player-page',
+        element: <PlayersPage />,
+      },
+      {
+        index: true,
+        path: 'my-friend',
+        element: <FriendPage />,
+      },
+      {
+        index: true,
+        path: 'update-password',
+        element: <UpdatePassword />,
       },
     ],
   },

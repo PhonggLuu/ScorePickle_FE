@@ -74,19 +74,28 @@ export function useGetAllTournamentsByCreateAt(
   });
 }
 
-// const fetchTournamentsForPlayer = async (): Promise<Tournament[]> => {
-//   try {
-//     const response = await api.getByQueryParams('/Tourament/GetAllTournament');
-//     const tournaments = response.data as Tournament[];
+const fetchTournamentsForPlayer = async (): Promise<Tournament[]> => {
+  try {
+    const response = await api.getByQueryParams('/Tourament/GetAllTournament');
+    const tournaments = response.data as Tournament[];
 
-//     // Lọc bỏ các tournament có status là 'Pending'
-//     return tournaments
-//             .filter((tournament) => tournament.status !== 'Pending')
-//             .sort((a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime());
-//   } catch (error) {
-//     throw new Error('Error fetching tournaments');
-//   }
-// };
+    // Lọc bỏ các tournament có status là 'Pending'
+    return tournaments
+      .filter((tournament) => tournament.status !== 'Pending')
+      .sort(
+        (a, b) =>
+          new Date(a.startDate).getTime() - new Date(b.startDate).getTime()
+      );
+  } catch (error) {
+    throw new Error('Error fetching tournaments');
+  }
+};
+export function useGetAllTournamentsForPlayer() {
+  return useQuery<Tournament[]>({
+    queryKey: [GET_ALL_TOURNAMENTS],
+    queryFn: () => fetchTournamentsForPlayer(),
+  });
+}
 
 const fetchTournamentsForHomePage = async (): Promise<Tournament[]> => {
   try {
@@ -104,7 +113,7 @@ const fetchTournamentsForHomePage = async (): Promise<Tournament[]> => {
     throw new Error('Error fetching tournaments');
   }
 };
-export function useGetAllTournamentsForPlayer() {
+export function useGetAllTournamentsForHomePage() {
   return useQuery<Tournament[]>({
     queryKey: [GET_ALL_TOURNAMENTS],
     queryFn: () => fetchTournamentsForHomePage(),

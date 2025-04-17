@@ -45,12 +45,13 @@ const TournamentInvitation = ({ playerId }) => {
       {data.map((invitation, index) => (
         <li key={index} className="row mb-2">
           <strong className="col-8">
-            Lời mời tham gia giải đấu{' '}
+            Team Request Tournament{' '}
             <span style={{ color: 'blueviolet' }}>
               {invitation.tournamentName}
             </span>{' '}
-            bởi{' '}
-            <span style={{ color: 'coral' }}>{invitation.requesterName}</span>
+            By{' '}
+            <span style={{ color: 'coral' }}>{invitation.requesterName}</span>{' '}
+            {/* <span>{invitation.status === InvitationStatus.Accepted ? "was accepted" : "was rejected"}</span> */}
           </strong>
           {invitation.status === InvitationStatus.Pending && (
             <div className="col-4 d-flex justify-content-end">
@@ -70,6 +71,29 @@ const TournamentInvitation = ({ playerId }) => {
                 className="ms-2"
               >
                 Reject
+              </Button>
+            </div>
+          )}
+          {invitation.status === InvitationStatus.Accepted ? (
+            <div className="col-4 d-flex justify-content-end">
+              <Button
+                style={{ borderColor: 'green', color: 'green' }}
+                onClick={() => {
+                  handleAcceptInvitation(invitation.id);
+                }}
+              >
+                <span>Accepted</span>
+              </Button>
+            </div>
+          ) : (
+            <div className="col-4 d-flex justify-content-end">
+              <Button
+                style={{ borderColor: 'red', color: 'red' }}
+                onClick={() => {
+                  handleAcceptInvitation(invitation.id);
+                }}
+              >
+                <span>Rejected</span>
               </Button>
             </div>
           )}

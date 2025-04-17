@@ -6,7 +6,7 @@ import { Container } from '../components';
 import { PATH_RULE_PAGE, PATH_TOURNAMENT_PAGE } from '@src/constants/routes';
 import scorePickleImage from '@src/assets/images/ScorePickle.png';
 import { UpcomingEvent } from './home/UpcomingEvent';
-import { useGetAllTournamentsForPlayer } from '@src/modules/Tournament/hooks/useGetAllTournaments';
+import { useGetAllTournamentsForHomePage } from '@src/modules/Tournament/hooks/useGetAllTournaments';
 import FooterCustom from '@components/Footer/FooterCustom';
 
 const { Title, Text } = Typography;
@@ -17,7 +17,7 @@ export const HomePage = () => {
   // } = theme.useToken();
   const isMobile = useMediaQuery({ maxWidth: 769 });
   const isTablet = useMediaQuery({ maxWidth: 992 });
-  const { data } = useGetAllTournamentsForPlayer();
+  const { data } = useGetAllTournamentsForHomePage();
   const tournaments = (data ?? []).slice(0, 6); // Only load first 6 tournaments
 
   return (
