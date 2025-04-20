@@ -41,7 +41,7 @@ import { useSelector } from 'react-redux';
 import { useUpdateReferee } from '@src/modules/Referee/hooks/useUpdateRefee';
 import { RefereeResponse } from '@src/modules/Referee/models';
 import { RootState } from '@src/redux/store';
-import { useGetAllReferees } from '@src/modules/User/hooks/useGetAllReferee';
+import { useGetRefereeBySponsorId } from '@src/modules/User/hooks/useGetAllReferee';
 
 const { Text, Title } = Typography;
 const { Option } = Select;
@@ -65,7 +65,12 @@ interface EditRefereeFormData {
 export const RefereesPage: React.FC = () => {
   const queryClient = useQueryClient();
   const user = useSelector((state: RootState) => state.auth.user);
-  const { data: referees, isLoading, error } = useGetAllReferees();
+  const {
+    data: referees,
+    isLoading,
+    error,
+    refetch,
+  } = useGetRefereeBySponsorId(user?.id.toString() || '');
   const [, setSearchText] = useState<string>('');
   const [searchedColumn, setSearchedColumn] = useState<string>('');
   const [refreshing, setRefreshing] = useState(false);

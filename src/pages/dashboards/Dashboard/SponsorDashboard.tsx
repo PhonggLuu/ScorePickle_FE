@@ -24,10 +24,7 @@ import {
   DollarOutlined,
   InfoCircleOutlined,
   PlusOutlined,
-  RiseOutlined,
-  LineChartOutlined,
   EnvironmentOutlined,
-  UserOutlined,
   CheckCircleOutlined,
   ClockCircleOutlined,
 } from '@ant-design/icons';

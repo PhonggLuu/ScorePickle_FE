@@ -318,7 +318,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = () => {
       case 'tournament':
         // Calculate percentage based on total possible tournaments (assuming a reasonable max)
         //const maxTournaments = 100; // Adjust this based on your business logic
-        return 100;
+        return value;
       case 'user':
         // Calculate percentage based on target user count
         //const targetUsers = 500; // Adjust based on your business goals
