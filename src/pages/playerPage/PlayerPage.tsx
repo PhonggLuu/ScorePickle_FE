@@ -26,8 +26,8 @@ const PlayerCard = ({
   level,
   onAddFriendClick,
 }) => (
-  <Card className="profile-card border rounded shadow-sm mb-2">
-    <div className="d-flex align-items-center" style={{ padding: '10px' }}>
+  <Card className="profile-card border rounded shadow-sm mb-2 card">
+    <div className="d-flex align-items-center">
       <div className="avatar-container">
         <Avatar
           style={{ marginLeft: '10px' }}

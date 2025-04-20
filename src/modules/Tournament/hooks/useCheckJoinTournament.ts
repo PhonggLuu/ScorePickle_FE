@@ -3,7 +3,7 @@ import api from '@src/api/api';
 import { GET_TOURNAMENT_BY_USER_ID_AND_TOURNAMENT_ID } from '../constants';
 import { PlayerTournament } from '../models';
 
-const fetchTournamentStatusByPlayerIdAndTournamentId = async (
+export const fetchTournamentStatusByPlayerIdAndTournamentId = async (
   playerId: number,
   tournamentId
 ) => {

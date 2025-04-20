@@ -8,10 +8,13 @@ const fetchBlogCategories = async (
   pageSize?: number
 ): Promise<BlogCategoryResponse> => {
   try {
-    const response = await api.getByQueryParams('/blog-categories', {
-      currentPage,
-      pageSize,
-    });
+    let response: any = null;
+    if (currentPage !== undefined && pageSize !== undefined)
+      response = await api.getByQueryParams('/blog-categories', {
+        currentPage,
+        pageSize,
+      });
+    else response = await api.get('/blog-categories');
 
     const data = response.data as BlogCategoryResponse;
 
@@ -35,6 +38,14 @@ export function useGetBlogCategories(
   return useQuery<BlogCategoryResponse>({
     queryKey: [GET_BLOG_CATEGORIES, PageNumber, PageSize],
     queryFn: () => fetchBlogCategories(PageNumber, PageSize),
+    refetchInterval: 3000,
+  });
+}
+
+export function useGetAllBlogCategories() {
+  return useQuery<BlogCategoryResponse>({
+    queryKey: [GET_BLOG_CATEGORIES],
+    queryFn: () => fetchBlogCategories(),
     refetchInterval: 3000,
   });
 }

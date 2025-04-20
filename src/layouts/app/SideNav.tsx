@@ -1,5 +1,6 @@
 import {
   FormOutlined,
+  FundOutlined,
   PieChartOutlined,
   TrophyOutlined,
   UserOutlined,
@@ -17,6 +18,8 @@ import {
   PATH_CONTENT,
   PATH_SPONSOR_PAYMENT,
   PATH_TOURNAMENT,
+  PATH_DASHBOARD,
+  PATH_REFEREE,
 } from '../../constants/routes.ts';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../redux/store.ts';
@@ -69,8 +72,17 @@ const SideNav = ({ ...others }: SiderProps) => {
   const items: MenuProps['items'] = [
     ...(user?.roleId === 2
       ? [
-          getItem('Dashboard', 'admin/payment', <PieChartOutlined />, [
-            getItem(<Link to={PATH_ADMIN_PAYMENT.root}>Default</Link>, 'List'),
+          getItem('Dashboard', 'dashboard/default', <PieChartOutlined />, [
+            getItem(
+              <Link to={PATH_DASHBOARD.default}>Default</Link>,
+              'Default'
+            ),
+          ]),
+          getItem('Transactions', 'admin/payment', <FundOutlined />, [
+            getItem(
+              <Link to={PATH_ADMIN_PAYMENT.root}>Default</Link>,
+              'Transactions'
+            ),
           ]),
           getItem('User', 'user', <UserOutlined />, [
             getItem(
@@ -102,25 +114,35 @@ const SideNav = ({ ...others }: SiderProps) => {
             <FormOutlined />
           ),
         ]
-      : [
-          getItem('Tournament', 'tournament', <TrophyOutlined />, [
+      : user?.roleId === 4
+        ? [
             getItem(
-              <Link to={PATH_TOURNAMENT.overview}>List</Link>,
-              'overview'
+              <Link to={PATH_REFEREE.root}>Dashboard</Link>,
+              'refOverview'
             ),
-            getItem(
-              <Link to={PATH_TOURNAMENT.venues}>Venues</Link>,
-              'schedule'
-            ),
-            getItem(
-              <Link to={PATH_TOURNAMENT.referees}>Referees</Link>,
-              'referees'
-            ),
+          ]
+        : [
+            getItem('Tournament', 'tournament', <TrophyOutlined />, [
+              getItem(
+                <Link to={PATH_TOURNAMENT.overview}>List</Link>,
+                'overview'
+              ),
+              getItem(
+                <Link to={PATH_TOURNAMENT.venues}>Venues</Link>,
+                'schedule'
+              ),
+              getItem(
+                <Link to={PATH_TOURNAMENT.referees}>Referees</Link>,
+                'referees'
+              ),
+            ]),
+            getItem('Payments', 'payment', <PieChartOutlined />, [
+              getItem(
+                <Link to={PATH_SPONSOR_PAYMENT.root}>Transactions</Link>,
+                'List'
+              ),
+            ]),
           ]),
-          getItem('Payments', 'payment', <PieChartOutlined />, [
-            getItem(<Link to={PATH_SPONSOR_PAYMENT.root}>List</Link>, 'List'),
-          ]),
-        ]),
   ];
 
   const rootSubmenuKeys = [

@@ -84,6 +84,7 @@ import EditProfile from '@src/pages/profilePage/ProfilePage.tsx';
 import { PlayersPage } from '@src/pages/playerPage/PlayerPage.tsx';
 import FriendPage from '@src/pages/friend/FriendPage.tsx';
 import UpdatePassword from '@src/pages/authentication/UpdatePassword.tsx';
+import AddMatches from '@src/pages/matchPage/AddMatch.tsx';
 
 // Custom scroll restoration function
 export const ScrollToTop: React.FC = () => {
@@ -180,6 +181,11 @@ const router = createBrowserRouter([
         index: true,
         path: 'update-password',
         element: <UpdatePassword />,
+      },
+      {
+        index: true,
+        path: 'add-match',
+        element: <AddMatches />,
       },
     ],
   },

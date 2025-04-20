@@ -119,3 +119,20 @@ export function useGetAllTournamentsForHomePage() {
     queryFn: () => fetchTournamentsForHomePage(),
   });
 }
+
+const fetchAllTournament = async (): Promise<Tournament[]> => {
+  try {
+    const response = await api.get('/Tourament/GetAllTournament');
+    return response.data as Tournament[];
+  } catch (error) {
+    throw new Error('Error fetching tournaments');
+  }
+};
+
+export function useGetTournaments() {
+  return useQuery<Tournament[]>({
+    queryKey: [GET_ALL_TOURNAMENTS],
+    queryFn: fetchAllTournament,
+    refetchInterval: 3000,
+  });
+}

@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { FETCH_ALL_USERS } from '../constants';
+import { FETCH_ALL_USERS, GET_ALL_USER } from '../constants';
 import { User } from '../models';
 import api from '@src//api/api';
 import { Pagination } from '@src/modules/Pagination/models';
@@ -36,6 +36,19 @@ export function useGetAllUsers(
   return useQuery<Pagination<User>>({
     queryKey: [FETCH_ALL_USERS, PageNumber, PageSize, isOrderByCreateAt],
     queryFn: () => fetchUsers(PageNumber, PageSize, isOrderByCreateAt),
+    refetchInterval: 3000,
+  });
+}
+
+export const fetchAllUsers = async (): Promise<User[]> => {
+  const response = await api.get('/User/GetAllUser');
+  return response.data as User[];
+};
+
+export function useGetAllUser() {
+  return useQuery<User[]>({
+    queryKey: [GET_ALL_USER],
+    queryFn: fetchAllUsers,
     refetchInterval: 3000,
   });
 }

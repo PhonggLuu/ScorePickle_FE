@@ -12,15 +12,21 @@ import {
   Col,
   message,
   Avatar,
+  Typography,
 } from 'antd';
 import type { ColumnsType, ColumnType } from 'antd/es/table';
 import type { FilterDropdownProps } from 'antd/es/table/interface';
 import moment from 'moment';
 import React, { useRef, useState, useEffect } from 'react';
-import { useGetAllUsers } from '@src/modules/User/hooks/useGetAllUser';
+import {
+  useGetAllUser,
+  useGetAllUsers,
+} from '@src/modules/User/hooks/useGetAllUser';
 import { useUpdateUser } from '@src/modules/User/hooks/useUpdateUser';
 import { User } from '@src/modules/User/models';
 import { Pie } from '@ant-design/plots';
+
+const { Title } = Typography;
 
 // Define UserRole enum
 enum UserRole {
@@ -71,6 +77,7 @@ export const BlockUser: React.FC = () => {
     error,
     refetch,
   } = useGetAllUsers(currentPage, pageSize);
+  const { data: allData } = useGetAllUser();
   const { mutate: updateUser } = useUpdateUser();
   const [, setSearchText] = useState<string>('');
   const [searchedColumn, setSearchedColumn] = useState<string>('');
@@ -87,9 +94,9 @@ export const BlockUser: React.FC = () => {
   };
 
   useEffect(() => {
-    if (rawData) {
+    if (allData) {
       // Mock roleId for demonstration since your actual data might not have it yet
-      const extendedData: ExtendedUser[] = rawData.data.map((user: User) => ({
+      const extendedData: ExtendedUser[] = allData.map((user: User) => ({
         ...user,
         roleId: user.roleId ? user.roleId : UserRole.User,
       }));
@@ -118,7 +125,7 @@ export const BlockUser: React.FC = () => {
         { type: 'Inactive', value: inactiveCount },
       ]);
     }
-  }, [rawData]);
+  }, [allData]);
 
   if (isLoading) {
     return <div>Loading...</div>;
@@ -370,17 +377,30 @@ export const BlockUser: React.FC = () => {
     },
   ];
 
+  // Define custom colors for role pie chart
+  const roleColorMap: Record<string, string> = {};
+  Object.entries(roleNames).forEach(([id, name]) => {
+    roleColorMap[name] = roleColors[Number(id)];
+  });
+
+  const roleColorsArray = usersByRole.map(
+    (item) => roleColorMap[item.type] || '#1890ff'
+  );
+
   return (
     <div>
-      <h2>User Statistics</h2>
+      <Title level={2}>User Statistics</Title>
       <Row gutter={[16, 16]} style={{ marginBottom: 20 }}>
         <Col xs={24} md={12}>
-          <Card title="Users by Role" bordered={false}>
-            <Pie {...pieConfig} data={usersByRole} />
+          <Card title={<Title level={4}>Users by Role</Title>} bordered={false}>
+            <Pie {...pieConfig} data={usersByRole} color={roleColorsArray} />
           </Card>
         </Col>
         <Col xs={24} md={12}>
-          <Card title="Users by Status" bordered={false}>
+          <Card
+            title={<Title level={4}>Users by Status</Title>}
+            bordered={false}
+          >
             <Pie
               {...pieConfig}
               data={usersByStatus}
@@ -391,12 +411,13 @@ export const BlockUser: React.FC = () => {
         </Col>
       </Row>
 
-      <h2>User List</h2>
+      <Title level={2}>User List</Title>
       <Table
-        columns={[...columns]}
+        columns={columns}
         dataSource={data}
         loading={isLoading}
         rowKey="id"
+        style={{ backgroundColor: '#ffffff' }}
         pagination={{
           current: rawData?.currentPage,
           total: rawData?.totalItems,

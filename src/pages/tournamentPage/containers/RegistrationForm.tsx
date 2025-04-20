@@ -17,7 +17,6 @@ import { useGetFriendByUserId } from '@src/modules/Friend/hooks/useGetFriendByUs
 import { User } from '@src/modules/User/models';
 import { useCreateRegistration } from '@src/modules/TournamentRegistration/hooks/useCreateRegistration';
 import { useGetTournamentById } from '@src/modules/Tournament/hooks/useGetTournamentById';
-
 interface Player {
   userId: number;
   name: string;
@@ -54,6 +53,7 @@ export const RegistrationFormModal: React.FC<RegistrationFormModalProps> = ({
     tournamentData?.isMinRanking,
     tournamentData?.isMaxRanking
   );
+  //const [friendData, setFriendData] = useState<GetFriendByUserIdResponse[]>(data ?? []);
   const [teamData, setTeamData] = useState<TeamData>({
     teamPlayers: user
       ? [
@@ -185,7 +185,14 @@ export const RegistrationFormModal: React.FC<RegistrationFormModalProps> = ({
               <AutoComplete
                 options={handleSearch(searchText)?.map((f) => ({
                   value: f.userFriendName ?? '',
-                  label: f.userFriendName ?? '',
+                  label: (
+                    <div className="d-flex flex-column my-2">
+                      <span className="fw-bold">{f.userFriendName}</span>
+                      <small className="text-muted">
+                        Gender: {f.gender} | Level: {f.exeprienceLevel}
+                      </small>
+                    </div>
+                  ),
                 }))}
                 onSelect={(value) =>
                   handlePlayerSelect(value, teamData.teamPlayers.length)
