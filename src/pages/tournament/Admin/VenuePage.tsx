@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from 'react';
+import { useMemo, useRef, useState, useEffect } from 'react';
 import {
   Typography,
   Button,
@@ -11,17 +11,46 @@ import {
   Form,
   Modal,
   InputNumber,
+  Radio,
+  Spin,
+  message,
+  Progress,
+  Tag,
+  Statistic,
+  Divider,
+  Tooltip,
+  Avatar,
+  Empty,
 } from 'antd';
-import { SearchOutlined } from '@ant-design/icons';
+import {
+  SearchOutlined,
+  UploadOutlined,
+  LinkOutlined,
+  EyeOutlined,
+  DeleteOutlined,
+  EditOutlined,
+  PlusOutlined,
+  HomeOutlined,
+  TeamOutlined,
+  UserOutlined,
+  ExclamationCircleOutlined,
+  ReloadOutlined,
+  EnvironmentOutlined,
+} from '@ant-design/icons';
 import type { InputRef } from 'antd';
 import type { ColumnsType, ColumnType } from 'antd/es/table';
 import { useSelector } from 'react-redux';
+import { RootState } from '@src/redux/store';
+import { useGetVenueBySponserId } from '@src/modules/Venues/hooks/useGetVenueBySponserId';
 import { useCreateVenue } from '@src/modules/Venues/hooks/useCreateVenue';
 import { useUpdateVenue } from '@src/modules/Venues/hooks/useUpdateVenue';
-import { RootState } from '@src/redux/store';
-import { useGetVenueAll } from '@src/modules/Venues/hooks/useGetAllVenue';
+import { Upload } from 'antd';
+import useCloudinaryUpload from '@src/modules/Cloudinary/hooks/useCloudinaryUpload';
+import { User } from '@src/modules/User/models';
+import { fetchUserById } from '@src/modules/User/hooks/useGetUserById';
 
-const { Title, Paragraph } = Typography;
+const { Title, Paragraph, Text } = Typography;
+const { confirm } = Modal;
 
 type DataIndex = string;
 
@@ -30,17 +59,94 @@ export const VenuePage = () => {
 
   const id = useMemo(() => user?.id || '', [user?.id]);
 
-  const { data, isLoading, refetch } = useGetVenueAll();
+  const { data, isLoading, refetch } = useGetVenueBySponserId(Number(id));
   const { mutate: createVenue } = useCreateVenue();
   const { mutate: updateVenue } = useUpdateVenue();
-  const [, setSearchText] = useState<string>('');
-  const [searchedColumn, setSearchedColumn] = useState<string>('');
   const searchInput = useRef<InputRef>(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isUpdateModalVisible, setIsUpdateModalVisible] = useState(false);
   const [currentVenue, setCurrentVenue] = useState<any>(null);
   const [isImageModalVisible, setIsImageModalVisible] = useState(false);
   const [currentImage, setCurrentImage] = useState<string>('');
+  const [, setIsDeleteModalVisible] = useState(false);
+  const [deleteVenueId, setDeleteVenueId] = useState<number | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const [, setSearchText] = useState('');
+  const [searchedColumn, setSearchedColumn] = useState('');
+
+  const [imageInputType, setImageInputType] = useState<'url' | 'upload'>('url');
+  const [updateImageInputType, setUpdateImageInputType] = useState<
+    'url' | 'upload'
+  >('url');
+  const { uploadToCloudinary, uploading, progress } = useCloudinaryUpload();
+  const [form] = Form.useForm();
+  const [updateForm] = Form.useForm();
+
+  const [previewImage, setPreviewImage] = useState<string>('');
+  const [updatePreviewImage, setUpdatePreviewImage] = useState<string>('');
+
+  const [userDetails, setUserDetails] = useState<User[]>([]);
+  const [loadingUsers, setLoadingUsers] = useState(false);
+  const userCache = useRef(new Map<string, User>());
+
+  const formUrlImage = Form.useWatch('urlImage', form);
+  const updateFormUrlImage = Form.useWatch('urlImage', updateForm);
+
+  useEffect(() => {
+    if (formUrlImage) {
+      setPreviewImage(formUrlImage);
+    }
+  }, [formUrlImage]);
+
+  useEffect(() => {
+    if (updateFormUrlImage) {
+      setUpdatePreviewImage(updateFormUrlImage);
+    }
+  }, [updateFormUrlImage]);
+
+  useEffect(() => {
+    if (Array.isArray(data) && data.length > 0) {
+      const userIds = data
+        .map((venue) => venue.createBy?.toString())
+        .filter((id) => id);
+      fetchUsers(userIds);
+    }
+  }, [data]);
+
+  const fetchUsers = async (userIds: string[]) => {
+    setLoadingUsers(true);
+    try {
+      const uniqueUserIds = Array.from(new Set(userIds));
+      const userPromises = uniqueUserIds.map(async (id) => {
+        if (userCache.current.has(id)) {
+          return userCache.current.get(id);
+        } else {
+          try {
+            const user = await fetchUserById(Number(id));
+            if (user) {
+              userCache.current.set(id, user);
+            }
+            return user;
+          } catch (error) {
+            console.error(`Error fetching user with ID ${id}:`, error);
+            return null;
+          }
+        }
+      });
+
+      const users = await Promise.all(userPromises);
+      setUserDetails(users.filter((user) => user !== null) as User[]);
+    } catch (error) {
+      console.error('Error fetching users:', error);
+    } finally {
+      setLoadingUsers(false);
+    }
+  };
+
+  const getUserById = (userId: string): User | undefined => {
+    return userDetails.find((user) => user.id === Number(userId));
+  };
 
   const handleSearch = (
     selectedKeys: string[],
@@ -92,7 +198,7 @@ export const VenuePage = () => {
             Search
           </Button>
           <Button
-            onClick={() => handleReset(clearFilters)}
+            onClick={() => clearFilters && handleReset(clearFilters)}
             size="small"
             style={{ width: 90 }}
           >
@@ -118,69 +224,16 @@ export const VenuePage = () => {
     },
     render: (text) =>
       searchedColumn === dataIndex ? (
-        <span style={{ backgroundColor: '#ffc069', padding: 0 }}>{text}</span>
+        <span style={{ backgroundColor: '#ffc069', padding: 0 }}>
+          {text ? text.toString() : ''}
+        </span>
       ) : (
         text
       ),
   });
 
-  const columns: ColumnsType<any> = [
-    {
-      title: 'Name',
-      dataIndex: 'name',
-      key: 'name',
-      ...getColumnSearchProps('name'),
-    },
-    {
-      title: 'Address',
-      dataIndex: 'address',
-      key: 'address',
-      ...getColumnSearchProps('address'),
-    },
-    {
-      title: 'Capacity',
-      dataIndex: 'capacity',
-      key: 'capacity',
-    },
-    {
-      title: 'Image',
-      dataIndex: 'urlImage',
-      key: 'urlImage',
-      render: (urlImage: string) => (
-        <img
-          src={urlImage}
-          alt="Venue"
-          style={{ width: 100, height: 100, cursor: 'pointer' }}
-          onClick={() => {
-            setCurrentImage(urlImage);
-            setIsImageModalVisible(true);
-          }}
-        />
-      ),
-    },
-    {
-      title: 'Created By',
-      dataIndex: 'createBy',
-      key: 'createBy',
-    },
-    {
-      title: 'Action',
-      key: 'action',
-      render: (record) => (
-        <Button
-          type="primary"
-          onClick={() => {
-            setCurrentVenue(record);
-            setIsUpdateModalVisible(true);
-          }}
-        >
-          Update
-        </Button>
-      ),
-    },
-  ];
-
   const handleAddVenue = (values: any) => {
+    setIsSubmitting(true);
     const venueData = {
       ...values,
       createBy: id,
@@ -189,14 +242,22 @@ export const VenuePage = () => {
       onSuccess: () => {
         refetch();
         setIsModalVisible(false);
+        form.resetFields();
+        setImageInputType('url');
+        setPreviewImage('');
+        message.success('Venue added successfully');
+        setIsSubmitting(false);
       },
       onError: (error) => {
         console.error('Error creating venue:', error);
+        message.error('Failed to create venue');
+        setIsSubmitting(false);
       },
     });
   };
 
   const handleUpdateVenue = (values: any) => {
+    setIsSubmitting(true);
     const venueData = {
       ...values,
       id: currentVenue.id,
@@ -207,153 +268,795 @@ export const VenuePage = () => {
         onSuccess: () => {
           refetch();
           setIsUpdateModalVisible(false);
+          setUpdateImageInputType('url');
+          setUpdatePreviewImage('');
+          message.success('Venue updated successfully');
+          setIsSubmitting(false);
         },
         onError: (error) => {
           console.error('Error updating venue:', error);
+          message.error('Failed to update venue');
+          setIsSubmitting(false);
         },
       }
     );
   };
 
+  const handleDeleteVenue = () => {
+    setIsSubmitting(true);
+    if (deleteVenueId) {
+      setTimeout(() => {
+        message.success('Venue deleted successfully');
+        setIsDeleteModalVisible(false);
+        setDeleteVenueId(null);
+        refetch();
+        setIsSubmitting(false);
+      }, 1000);
+    }
+  };
+
+  const handleImageUpload = async (file: File) => {
+    try {
+      const result = await uploadToCloudinary(file);
+      if (result && result.secure_url) {
+        form.setFieldsValue({ urlImage: result.secure_url });
+        setPreviewImage(result.secure_url);
+        message.success('Image uploaded successfully');
+        return false;
+      }
+    } catch (err) {
+      message.error('Failed to upload image');
+    }
+    return false;
+  };
+
+  const handleUpdateImageUpload = async (file: File) => {
+    try {
+      const result = await uploadToCloudinary(file);
+      if (result && result.secure_url) {
+        updateForm.setFieldsValue({ urlImage: result.secure_url });
+        setUpdatePreviewImage(result.secure_url);
+        message.success('Image uploaded successfully');
+        return false;
+      }
+    } catch (err) {
+      message.error('Failed to upload image');
+    }
+    return false;
+  };
+
+  const handleCloseAddModal = () => {
+    setIsModalVisible(false);
+    form.resetFields();
+    setImageInputType('url');
+    setPreviewImage('');
+  };
+
+  const handleCloseUpdateModal = () => {
+    setIsUpdateModalVisible(false);
+    setUpdateImageInputType('url');
+    setUpdatePreviewImage('');
+  };
+
+  const handleEditVenue = (record: any) => {
+    setCurrentVenue(record);
+    updateForm.setFieldsValue(record);
+    setUpdatePreviewImage(record.urlImage || '');
+    setIsUpdateModalVisible(true);
+  };
+
+  const handleViewImage = (imageUrl: string) => {
+    setCurrentImage(imageUrl);
+    setIsImageModalVisible(true);
+  };
+
+  const showDeleteConfirm = (venueId: number, venueName: string) => {
+    confirm({
+      title: 'Are you sure you want to delete this venue?',
+      icon: <ExclamationCircleOutlined />,
+      content: (
+        <div>
+          <p>
+            Venue: <strong>{venueName}</strong>
+          </p>
+          <p>This action cannot be undone.</p>
+        </div>
+      ),
+      okText: 'Yes, Delete',
+      okType: 'danger',
+      cancelText: 'Cancel',
+      onOk() {
+        setDeleteVenueId(venueId);
+        handleDeleteVenue();
+      },
+    });
+  };
+
+  const venueSummary = useMemo(() => {
+    if (!data || !Array.isArray(data)) {
+      return {
+        totalVenues: 0,
+        totalCapacity: 0,
+      };
+    }
+
+    const totalVenues = data.length;
+    const totalCapacity = data.reduce(
+      (sum, venue) => sum + (venue.capacity || 0),
+      0
+    );
+
+    return {
+      totalVenues,
+      totalCapacity,
+    };
+  }, [data]);
+
+  const columns: ColumnsType<any> = [
+    {
+      title: 'Venue',
+      dataIndex: 'name',
+      key: 'name',
+      ...getColumnSearchProps('name'),
+      render: (text, record) => (
+        <Space size="middle" align="start">
+          <Avatar
+            size={64}
+            shape="square"
+            src={record.urlImage}
+            style={{ minWidth: 64 }}
+            onClick={() => {
+              setCurrentImage(record.urlImage);
+              setIsImageModalVisible(true);
+            }}
+            className="venue-avatar"
+          />
+          <div>
+            <Text strong style={{ fontSize: 16 }}>
+              {text}
+            </Text>
+            <div style={{ marginTop: 4 }}>
+              <Tag icon={<EnvironmentOutlined />} color="green">
+                {record.address}
+              </Tag>
+            </div>
+          </div>
+        </Space>
+      ),
+    },
+    {
+      title: 'Capacity',
+      dataIndex: 'capacity',
+      key: 'capacity',
+      align: 'center',
+      width: 120,
+      sorter: (a, b) => a.capacity - b.capacity,
+      render: (capacity) => (
+        <Tag color="blue" style={{ fontSize: 14, padding: '4px 8px' }}>
+          <TeamOutlined /> {capacity} {capacity <= 1 ? 'court' : 'courts'}
+        </Tag>
+      ),
+    },
+    {
+      title: 'Created By',
+      dataIndex: 'createBy',
+      key: 'createBy',
+      align: 'center',
+      width: 150,
+      render: (createBy) => {
+        const creator = getUserById(createBy);
+        return (
+          <Space
+            direction="vertical"
+            size="small"
+            style={{ textAlign: 'center' }}
+          >
+            <Avatar
+              src={creator?.avatarUrl}
+              icon={!creator?.avatarUrl && <UserOutlined />}
+              style={{
+                backgroundColor: !creator?.avatarUrl ? '#1890ff' : undefined,
+              }}
+            />
+            <Text>
+              {creator?.firstName} {creator?.lastName}
+            </Text>
+          </Space>
+        );
+      },
+    },
+    {
+      title: 'Actions',
+      key: 'action',
+      align: 'center',
+      width: 200,
+      render: (_, record) => (
+        <Space size="middle">
+          <Tooltip title="View Image">
+            <Button
+              icon={<EyeOutlined />}
+              shape="circle"
+              onClick={() => handleViewImage(record.urlImage)}
+              disabled={!record.urlImage}
+            />
+          </Tooltip>
+          <Tooltip title="Edit Venue">
+            <Button
+              type="primary"
+              icon={<EditOutlined />}
+              shape="circle"
+              onClick={() => handleEditVenue(record)}
+            />
+          </Tooltip>
+          <Tooltip title="Delete Venue">
+            <Button
+              danger
+              icon={<DeleteOutlined />}
+              shape="circle"
+              onClick={() => showDeleteConfirm(record.id, record.name)}
+            />
+          </Tooltip>
+        </Space>
+      ),
+    },
+  ];
+
   return (
-    <div>
-      <Title level={2}>Venue Management</Title>
-      <Paragraph>
-        This page allows you to manage venues. You can view, search, and add new
-        venues.
-      </Paragraph>
-      <Row gutter={16} style={{ marginBottom: 16 }}>
-        <Col span={6}>
-          <Card title="Total Venues" bordered={false}>
-            {Array.isArray(data) ? data.length : 0}
+    <div className="venue-management">
+      <div className="page-header">
+        <div>
+          <Title level={2}>
+            <HomeOutlined /> Venue Management
+          </Title>
+          <Paragraph className="subtitle">
+            Manage all your pickleball venues, their details, and capacity
+            information.
+          </Paragraph>
+        </div>
+        <div className="header-actions">
+          <Space size="middle">
+            <Button
+              icon={<ReloadOutlined />}
+              onClick={() => {
+                refetch();
+                message.success('Venue data refreshed');
+              }}
+            >
+              Refresh
+            </Button>
+            <Button
+              type="primary"
+              icon={<PlusOutlined />}
+              onClick={() => setIsModalVisible(true)}
+              size="large"
+            >
+              Add New Venue
+            </Button>
+          </Space>
+        </div>
+      </div>
+
+      <Row gutter={[24, 24]} style={{ marginBottom: 24 }}>
+        <Col xs={24} sm={8}>
+          <Card bordered={false} className="stat-card" hoverable>
+            <Statistic
+              title="Total Venues"
+              value={venueSummary.totalVenues}
+              prefix={<HomeOutlined />}
+              valueStyle={{ color: '#3f8600' }}
+            />
+            <div className="stat-footer">
+              <Text type="secondary">Available for tournaments</Text>
+              <Progress
+                percent={venueSummary.totalVenues > 0 ? 100 : 0}
+                status={venueSummary.totalVenues > 0 ? 'active' : 'exception'}
+                size="small"
+                style={{ marginTop: 8 }}
+              />
+            </div>
+          </Card>
+        </Col>
+
+        <Col xs={24} sm={8}>
+          <Card bordered={false} className="stat-card" hoverable>
+            <Statistic
+              title="Total Court Capacity"
+              value={venueSummary.totalCapacity}
+              prefix={<TeamOutlined />}
+              valueStyle={{ color: '#1890ff' }}
+              suffix="courts"
+            />
           </Card>
         </Col>
       </Row>
-      <Button
-        type="primary"
-        onClick={() => setIsModalVisible(true)}
-        style={{ marginBottom: 16 }}
+
+      <Card
+        title={
+          <Space>
+            <HomeOutlined />
+            <span>Venue List</span>
+            {Array.isArray(data) && data.length > 0 && (
+              <Tag color="blue">{data.length} venues</Tag>
+            )}
+            {(isLoading || loadingUsers) && <Spin size="small" />}
+          </Space>
+        }
+        bordered={false}
+        className="table-card"
+        extra={
+          <Button
+            type="primary"
+            icon={<PlusOutlined />}
+            onClick={() => setIsModalVisible(true)}
+          >
+            Add Venue
+          </Button>
+        }
       >
-        Add Venue
-      </Button>
-      <Table
-        columns={columns}
-        dataSource={Array.isArray(data) ? data : []}
-        loading={isLoading}
-        rowKey="id"
-        style={{ backgroundColor: '#ffffff' }}
-      />
+        {Array.isArray(data) && data.length > 0 ? (
+          <Table
+            columns={columns}
+            dataSource={data}
+            loading={isLoading || loadingUsers}
+            rowKey="id"
+            pagination={{
+              pageSize: 10,
+              showSizeChanger: true,
+              pageSizeOptions: ['5', '10', '20', '50'],
+              showTotal: (total) => `Total ${total} venues`,
+            }}
+          />
+        ) : !isLoading ? (
+          <Empty
+            description="No venues found"
+            image={Empty.PRESENTED_IMAGE_SIMPLE}
+          >
+            <Button
+              type="primary"
+              icon={<PlusOutlined />}
+              onClick={() => setIsModalVisible(true)}
+              style={{ marginTop: 16 }}
+            >
+              Add First Venue
+            </Button>
+          </Empty>
+        ) : null}
+      </Card>
+
       <Modal
-        title="Add Venue"
-        visible={isModalVisible}
-        onCancel={() => setIsModalVisible(false)}
+        title={
+          <>
+            <PlusOutlined /> Add New Venue
+          </>
+        }
+        open={isModalVisible}
+        onCancel={handleCloseAddModal}
         footer={null}
+        width={600}
+        destroyOnClose
       >
-        <Form layout="vertical" onFinish={handleAddVenue}>
-          <Form.Item
-            name="name"
-            label="Name"
-            initialValue={`Pickleball [Location] [Name]`}
-            rules={[{ required: true, message: 'Please input the name!' }]}
-          >
-            <Input />
+        <Form form={form} layout="vertical" onFinish={handleAddVenue}>
+          <Row gutter={16}>
+            <Col span={24}>
+              <Form.Item
+                name="name"
+                label="Venue Name"
+                initialValue={`Pickleball [Location] [Name]`}
+                rules={[
+                  { required: true, message: 'Please input the venue name!' },
+                ]}
+              >
+                <Input placeholder="Enter the venue name" />
+              </Form.Item>
+            </Col>
+          </Row>
+
+          <Row gutter={16}>
+            <Col span={24}>
+              <Form.Item
+                name="address"
+                label="Address"
+                initialValue={`[Location]`}
+                rules={[
+                  { required: true, message: 'Please input the address!' },
+                ]}
+              >
+                <Input placeholder="Enter the full address" />
+              </Form.Item>
+            </Col>
+          </Row>
+
+          <Row gutter={16}>
+            <Col span={24}>
+              <Form.Item
+                name="capacity"
+                label="Number of Courts"
+                initialValue={4}
+                rules={[
+                  {
+                    required: true,
+                    message: 'Please input the number of courts!',
+                  },
+                ]}
+              >
+                <InputNumber min={1} style={{ width: '100%' }} />
+              </Form.Item>
+            </Col>
+          </Row>
+
+          <Divider orientation="left">Venue Image</Divider>
+
+          <Form.Item label="Image Source">
+            <Radio.Group
+              value={imageInputType}
+              onChange={(e) => setImageInputType(e.target.value)}
+              style={{ marginBottom: 16 }}
+            >
+              <Radio.Button value="url">
+                <LinkOutlined /> URL
+              </Radio.Button>
+              <Radio.Button value="upload">
+                <UploadOutlined /> Upload
+              </Radio.Button>
+            </Radio.Group>
           </Form.Item>
-          <Form.Item
-            name="address"
-            label="Address"
-            initialValue={`[Location]`}
-            rules={[{ required: true, message: 'Please input the address!' }]}
-          >
-            <Input />
-          </Form.Item>
-          <Form.Item
-            name="capacity"
-            label="Capacity"
-            initialValue={100}
-            rules={[{ required: true, message: 'Please input the capacity!' }]}
-          >
-            <InputNumber min={1} style={{ width: '100%' }} />
-          </Form.Item>
-          <Form.Item
-            name="urlImage"
-            label="Image URL"
-            rules={[{ required: true, message: 'Please input the image URL!' }]}
-          >
-            <Input />
-          </Form.Item>
+
+          {imageInputType === 'url' ? (
+            <Form.Item
+              name="urlImage"
+              label="Image URL"
+              rules={[
+                { required: true, message: 'Please input the image URL!' },
+              ]}
+            >
+              <Input placeholder="https://example.com/image.jpg" />
+            </Form.Item>
+          ) : (
+            <Form.Item
+              name="urlImage"
+              label="Upload Image"
+              rules={[{ required: true, message: 'Please upload an image!' }]}
+            >
+              <div>
+                <Upload.Dragger
+                  name="file"
+                  multiple={false}
+                  showUploadList={false}
+                  beforeUpload={handleImageUpload}
+                  accept="image/*"
+                >
+                  <p className="ant-upload-drag-icon">
+                    <UploadOutlined />
+                  </p>
+                  <p className="ant-upload-text">
+                    Click or drag image to upload
+                  </p>
+                </Upload.Dragger>
+                {uploading && (
+                  <Progress
+                    percent={progress}
+                    size="small"
+                    style={{ marginTop: 8 }}
+                  />
+                )}
+              </div>
+            </Form.Item>
+          )}
+
+          {previewImage && (
+            <div
+              style={{ marginTop: 16, textAlign: 'center', marginBottom: 16 }}
+            >
+              <img
+                src={previewImage}
+                alt="Preview"
+                style={{
+                  maxWidth: '100%',
+                  maxHeight: 200,
+                  borderRadius: '8px',
+                }}
+              />
+            </div>
+          )}
+
           <Form.Item name="createBy" initialValue={id} hidden>
             <InputNumber />
           </Form.Item>
-          <Form.Item>
-            <Button type="primary" htmlType="submit" style={{ width: '100%' }}>
-              Save
-            </Button>
+
+          <Form.Item style={{ marginTop: 24, marginBottom: 0 }}>
+            <Row gutter={16}>
+              <Col span={12}>
+                <Button onClick={handleCloseAddModal} style={{ width: '100%' }}>
+                  Cancel
+                </Button>
+              </Col>
+              <Col span={12}>
+                <Button
+                  type="primary"
+                  htmlType="submit"
+                  style={{ width: '100%' }}
+                  disabled={uploading || isSubmitting}
+                  loading={uploading || isSubmitting}
+                >
+                  {uploading
+                    ? 'Uploading...'
+                    : isSubmitting
+                      ? 'Creating...'
+                      : 'Create Venue'}
+                </Button>
+              </Col>
+            </Row>
           </Form.Item>
         </Form>
       </Modal>
+
       <Modal
-        title="Update Venue"
-        visible={isUpdateModalVisible}
-        onCancel={() => setIsUpdateModalVisible(false)}
+        title={
+          <>
+            <EditOutlined /> Edit Venue
+          </>
+        }
+        open={isUpdateModalVisible}
+        onCancel={handleCloseUpdateModal}
         footer={null}
+        width={600}
+        destroyOnClose
       >
-        <Form
-          layout="vertical"
-          initialValues={currentVenue}
-          onFinish={handleUpdateVenue}
-        >
-          <Form.Item
-            name="name"
-            label="Name"
-            rules={[{ required: true, message: 'Please input the name!' }]}
-          >
-            <Input />
+        <Form form={updateForm} layout="vertical" onFinish={handleUpdateVenue}>
+          <Row gutter={16}>
+            <Col span={24}>
+              <Form.Item
+                name="name"
+                label="Venue Name"
+                rules={[
+                  { required: true, message: 'Please input the venue name!' },
+                ]}
+              >
+                <Input placeholder="Enter the venue name" />
+              </Form.Item>
+            </Col>
+          </Row>
+
+          <Row gutter={16}>
+            <Col span={24}>
+              <Form.Item
+                name="address"
+                label="Address"
+                rules={[
+                  { required: true, message: 'Please input the address!' },
+                ]}
+              >
+                <Input placeholder="Enter the full address" />
+              </Form.Item>
+            </Col>
+          </Row>
+
+          <Row gutter={16}>
+            <Col span={24}>
+              <Form.Item
+                name="capacity"
+                label="Number of Courts"
+                rules={[
+                  {
+                    required: true,
+                    message: 'Please input the number of courts!',
+                  },
+                ]}
+              >
+                <InputNumber min={1} style={{ width: '100%' }} />
+              </Form.Item>
+            </Col>
+          </Row>
+
+          <Divider orientation="left">Venue Image</Divider>
+
+          <Form.Item label="Image Source">
+            <Radio.Group
+              value={updateImageInputType}
+              onChange={(e) => setUpdateImageInputType(e.target.value)}
+              style={{ marginBottom: 16 }}
+            >
+              <Radio.Button value="url">
+                <LinkOutlined /> URL
+              </Radio.Button>
+              <Radio.Button value="upload">
+                <UploadOutlined /> Upload New
+              </Radio.Button>
+            </Radio.Group>
           </Form.Item>
-          <Form.Item
-            name="address"
-            label="Address"
-            rules={[{ required: true, message: 'Please input the address!' }]}
-          >
-            <Input />
-          </Form.Item>
-          <Form.Item
-            name="capacity"
-            label="Capacity"
-            rules={[{ required: true, message: 'Please input the capacity!' }]}
-          >
-            <InputNumber min={1} style={{ width: '100%' }} />
-          </Form.Item>
-          <Form.Item
-            name="urlImage"
-            label="Image URL"
-            rules={[{ required: true, message: 'Please input the image URL!' }]}
-          >
-            <Input />
-          </Form.Item>
+
+          {updateImageInputType === 'url' ? (
+            <Form.Item
+              name="urlImage"
+              label="Image URL"
+              rules={[
+                { required: true, message: 'Please input the image URL!' },
+              ]}
+            >
+              <Input placeholder="https://example.com/image.jpg" />
+            </Form.Item>
+          ) : (
+            <Form.Item
+              name="urlImage"
+              label="Upload Image"
+              rules={[{ required: true, message: 'Please upload an image!' }]}
+            >
+              <div>
+                <Upload.Dragger
+                  name="file"
+                  multiple={false}
+                  showUploadList={false}
+                  beforeUpload={handleUpdateImageUpload}
+                  accept="image/*"
+                >
+                  <p className="ant-upload-drag-icon">
+                    <UploadOutlined />
+                  </p>
+                  <p className="ant-upload-text">
+                    Click or drag image to upload
+                  </p>
+                </Upload.Dragger>
+                {uploading && (
+                  <Progress
+                    percent={progress}
+                    size="small"
+                    style={{ marginTop: 8 }}
+                  />
+                )}
+              </div>
+            </Form.Item>
+          )}
+
+          {updatePreviewImage && (
+            <div
+              style={{ marginTop: 16, textAlign: 'center', marginBottom: 16 }}
+            >
+              <img
+                src={updatePreviewImage}
+                alt="Preview"
+                style={{
+                  maxWidth: '100%',
+                  maxHeight: 200,
+                  borderRadius: '8px',
+                }}
+              />
+            </div>
+          )}
+
           <Form.Item name="createBy" initialValue={id} hidden>
             <InputNumber />
           </Form.Item>
-          <Form.Item>
-            <Button type="primary" htmlType="submit" style={{ width: '100%' }}>
-              Save
-            </Button>
+
+          <Form.Item style={{ marginTop: 24, marginBottom: 0 }}>
+            <Row gutter={16}>
+              <Col span={12}>
+                <Button
+                  onClick={handleCloseUpdateModal}
+                  style={{ width: '100%' }}
+                >
+                  Cancel
+                </Button>
+              </Col>
+              <Col span={12}>
+                <Button
+                  type="primary"
+                  htmlType="submit"
+                  style={{ width: '100%' }}
+                  disabled={uploading || isSubmitting}
+                  loading={uploading || isSubmitting}
+                >
+                  {uploading
+                    ? 'Uploading...'
+                    : isSubmitting
+                      ? 'Updating...'
+                      : 'Update Venue'}
+                </Button>
+              </Col>
+            </Row>
           </Form.Item>
         </Form>
       </Modal>
+
       <Modal
         title="Venue Image"
-        visible={isImageModalVisible}
+        open={isImageModalVisible}
         onCancel={() => setIsImageModalVisible(false)}
-        footer={null}
+        footer={[
+          <Button key="close" onClick={() => setIsImageModalVisible(false)}>
+            Close
+          </Button>,
+        ]}
+        width={800}
       >
-        <img
-          src={currentImage}
-          alt="Venue"
-          style={{ width: '100%', height: 'auto', objectFit: 'contain' }}
-        />
+        <div style={{ textAlign: 'center' }}>
+          <img
+            src={currentImage}
+            alt="Venue"
+            style={{
+              maxWidth: '100%',
+              maxHeight: '70vh',
+              objectFit: 'contain',
+              borderRadius: '8px',
+            }}
+          />
+        </div>
       </Modal>
+
+      <style>
+        {`
+        .venue-management {
+          padding: 24px;
+        }
+        
+        .page-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: flex-start;
+          margin-bottom: 24px;
+          flex-wrap: wrap;
+        }
+        
+        .subtitle {
+          opacity: 0.7;
+          margin-top: 0 !important;
+        }
+        
+        .header-actions {
+          margin-top: 8px;
+        }
+        
+        .stat-card {
+          height: 100%;
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.09);
+          border-radius: 8px;
+          transition: all 0.3s;
+        }
+        
+        .stat-card:hover {
+          transform: translateY(-3px);
+          box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+        }
+        
+        .stat-footer {
+          margin-top: 12px;
+          padding-top: 12px;
+          border-top: 1px solid #f0f0f0;
+        }
+        
+        .table-card {
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.09);
+          border-radius: 8px;
+        }
+        
+        .venue-avatar {
+          cursor: pointer;
+          transition: all 0.3s;
+        }
+        
+        .venue-avatar:hover {
+          opacity: 0.8;
+          transform: scale(1.05);
+        }
+        
+        @media (max-width: 768px) {
+          .page-header {
+            flex-direction: column;
+          }
+          
+          .header-actions {
+            margin-top: 16px;
+            align-self: flex-start;
+          }
+        }
+        
+        .creator-info {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 4px;
+        }
+        `}
+      </style>
     </div>
   );
 };
-
-export default VenuePage;

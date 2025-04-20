@@ -22,6 +22,7 @@ import { Link, Outlet, useLocation } from 'react-router-dom';
 import { useRef, useState } from 'react';
 import {
   ApartmentOutlined,
+  DeleteColumnOutlined,
   EditOutlined,
   LockOutlined,
   LoginOutlined,
@@ -348,6 +349,15 @@ export const GuestLayout = () => {
                         Calendar
                       </Button>
                     </Link>*/}
+                    <Link to="add-match" className="me-4">
+                      <Button
+                        icon={<DeleteColumnOutlined />}
+                        type="link"
+                        className="text-black"
+                      >
+                        New Match
+                      </Button>
+                    </Link>
                     <Link to="#" className="me-4">
                       <Button
                         icon={
@@ -541,6 +551,15 @@ export const GuestLayout = () => {
             </Link>
             {user ? (
               <>
+                <Link to="add-match" className="me-4">
+                  <Button
+                    icon={<DeleteColumnOutlined />}
+                    type="link"
+                    className="text-black"
+                  >
+                    New Match
+                  </Button>
+                </Link>
                 <Link to="my-profile">
                   <Button
                     icon={<UserOutlined />}
@@ -561,7 +580,7 @@ export const GuestLayout = () => {
                 </Link>
                 <Link to="my-tournament">
                   <Button
-                    icon={<TrophyOutlined />}
+                    icon={<TeamOutlined />}
                     type="link"
                     className="text-black"
                   >

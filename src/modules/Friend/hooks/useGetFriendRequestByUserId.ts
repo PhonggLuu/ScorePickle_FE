@@ -18,5 +18,6 @@ export function useGetFriendRequestByUserId(id: number) {
   return useQuery<GetFriendByUserIdResponse[]>({
     queryKey: [GET_FRIEND_BY_ID, id],
     queryFn: () => getFriendRequestById(id),
+    refetchInterval: 3000,
   });
 }

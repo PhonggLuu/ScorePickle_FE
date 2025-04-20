@@ -76,3 +76,46 @@ export interface IMatchScope {
 }
 
 export interface EndTournamentMatchDTO extends IMatchScope {}
+
+export enum MatchCategory {
+  Competitive = 1,
+  Custom = 2,
+  Tournament = 3,
+}
+
+export enum MatchStatus {
+  Scheduled = 1,
+  Ongoing = 2,
+  Completed = 3,
+  Disabled = 4,
+}
+
+export enum TournamentType {
+  Single = 1,
+  Team = 2,
+}
+
+export enum MatchFormat {
+  SingleMale = 1,
+  SingleFemale = 2,
+  DoublesMale = 3,
+  DoublesFemale = 4,
+  DoublesMix = 5,
+}
+
+export enum MatchWinScore {
+  Score11 = 11,
+  Score15 = 15,
+  Score21 = 21,
+}
+
+export enum MatchPrivate {
+  Public = 1,
+  Private = 2,
+}
+
+export enum SendRequestStatus {
+  Accept = 1,
+  Reject = 2,
+  Pending = 3,
+}

@@ -11,4 +11,8 @@ export default defineConfig({
       '@src': path.resolve(__dirname, 'src/'),
     },
   },
+  base: '/', // <- cái này quan trọng khi deploy lên Vercel
+  build: {
+    outDir: 'dist',
+  },
 });

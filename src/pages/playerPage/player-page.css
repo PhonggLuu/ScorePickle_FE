@@ -1,8 +1,5 @@
-.ant-card {
+.card {
   border-radius: 20px !important;
-}
-.ant-card-body {
-  padding: 0 !important;
 }
 .user-info {
   margin: 0px !important;
