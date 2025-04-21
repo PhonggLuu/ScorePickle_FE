@@ -185,3 +185,13 @@ a:hover {
   border-radius: 20px;
   transform: scale(0.8); /* Giảm kích thước phần tử đi 20% */
 }
+
+header {
+  background-color: #f2f2f2;
+  padding: 20px;
+  text-align: center;
+}
+
+main {
+  padding-top: 50px;
+}

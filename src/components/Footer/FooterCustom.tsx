@@ -17,6 +17,7 @@ const CustomFooter: React.FC = () => {
       style={{
         background: 'linear-gradient(to right, #1e3a8a, #3b82f6)',
         padding: '20px 50px 80px 50px',
+        marginTop: '140px',
       }}
     >
       <div
@@ -27,11 +28,11 @@ const CustomFooter: React.FC = () => {
           marginBottom: '40px',
         }}
       >
-        <Image
+        {/* <Image
           style={{ height: '160px' }}
           src="/logo-no-background.png"
           preview={false}
-        />
+        /> */}
       </div>
       <Row
         justify={'space-between'}

@@ -217,16 +217,17 @@ export const TournamentPage = () => {
                 : 'translateX(0)',
             }}
           >
-            <div className="mb-4">
-              <h2 className="h5 fw-medium mb-3">Recommend Tournament</h2>
-              <Button
-                className="w-100 mb-4 btn-primary"
-                onClick={recommendTournaments}
-              >
-                Recommend Tournament
-              </Button>
-            </div>
-
+            {user?.id && (
+              <div className="mb-4">
+                <h2 className="h5 fw-medium mb-3">Recommend Tournament</h2>
+                <Button
+                  className="w-100 mb-4 btn-primary"
+                  onClick={recommendTournaments}
+                >
+                  Recommend Tournament
+                </Button>
+              </div>
+            )}
             <div className="mb-4">
               <h2 className="h5 fw-medium mb-3">Filters</h2>
               <Button className="w-100 mb-4" block onClick={handleResetFilters}>

@@ -51,19 +51,19 @@ export interface MatchRequest {
   title: string;
   description: string;
   matchDate: string;
-  venueId?: number;
+  venueId?: number | null;
   status: number;
   matchCategory: number;
-  matchFormat: number;
+  matchFormat: number | null;
   winScore: number;
   isPublic: boolean;
   roomOnwer: number;
   player1Id: number;
-  player2Id?: number;
-  player3Id?: number;
-  player4Id?: number;
-  refereeId?: number;
-  tournamentId?: number;
+  player2Id?: number | null;
+  player3Id?: number | null;
+  player4Id?: number | null;
+  refereeId?: number | null;
+  tournamentId?: number | null;
 }
 
 export interface IMatchScope {
@@ -118,4 +118,22 @@ export enum SendRequestStatus {
   Accept = 1,
   Reject = 2,
   Pending = 3,
+}
+
+export interface MatchResponse {
+  id: number;
+  title: string;
+  description: string;
+  matchDate: string;
+  venueId: number;
+  status: MatchStatus;
+  matchCategory: MatchCategory;
+  matchFormat: MatchFormat;
+  winScore: MatchWinScore;
+  roomOwner: number;
+  team1Score: number | null;
+  team2Score: number | null;
+  isPublic: boolean;
+  refereeId: number | null;
+  teams: any[];
 }

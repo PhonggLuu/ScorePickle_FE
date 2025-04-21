@@ -43,7 +43,7 @@ const UpdatePassword: React.FC = () => {
         }}
       >
         <div className="p-4 mt-3">
-          <h1 className="text-white mb-4 text-center">Edit Profile</h1>
+          <h1 className="text-white mb-4 text-center">Update Password</h1>
 
           {/* Form */}
           <Form form={form} layout="vertical" onFinish={onFinish}>

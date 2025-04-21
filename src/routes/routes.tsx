@@ -85,6 +85,8 @@ import { PlayersPage } from '@src/pages/playerPage/PlayerPage.tsx';
 import FriendPage from '@src/pages/friend/FriendPage.tsx';
 import UpdatePassword from '@src/pages/authentication/UpdatePassword.tsx';
 import AddMatches from '@src/pages/matchPage/AddMatch.tsx';
+import HomePagee from '@src/pages/Homee.tsx';
+import MyProfile from '@src/pages/profilePage/MyProfile.tsx';
 
 // Custom scroll restoration function
 export const ScrollToTop: React.FC = () => {
@@ -164,7 +166,7 @@ const router = createBrowserRouter([
       },
       {
         index: true,
-        path: 'my-profile',
+        path: 'edit-profile',
         element: <EditProfile />,
       },
       {
@@ -186,6 +188,16 @@ const router = createBrowserRouter([
         index: true,
         path: 'add-match',
         element: <AddMatches />,
+      },
+      {
+        index: true,
+        path: 'home',
+        element: <HomePagee />,
+      },
+      {
+        index: true,
+        path: 'my-profile',
+        element: <MyProfile />,
       },
     ],
   },

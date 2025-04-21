@@ -1,0 +1,222 @@
+.profile-container {
+  min-height: 100vh;
+  color: white;
+  padding: 20px;
+}
+
+/* profile-page.css */
+.profile-tabs .ant-tabs-nav-list {
+  display: flex;
+  width: 100%;
+}
+/* Mỗi tab giờ flex-basis 50% (= col-md-6) */
+.profile-tabs .ant-tabs-tab {
+  flex: 0 0 50%;
+  max-width: 50%;
+}
+/* Nút bên trong tab kéo full width và căn text giữa */
+.profile-tabs .ant-tabs-tab-btn {
+  width: 100%;
+  text-align: center;
+  color: #fff; /* nếu cần chắc chắn chữ trắng */
+}
+/* Ẩn đường gạch dưới mặc định nếu muốn */
+.profile-tabs .ant-tabs-ink-bar {
+  display: none;
+}
+
+.profile-header {
+  padding: 20px;
+}
+
+.profile-name {
+  margin: 0;
+  font-weight: bold;
+  color: white;
+}
+
+.profile-details {
+  margin: 0;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.stats-box {
+  text-align: center;
+}
+
+.stats-number {
+  font-size: 24px;
+  font-weight: bold;
+  margin: 0;
+  color: white;
+}
+
+.stats-label {
+  font-size: 14px;
+  margin: 0;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.id-box {
+  background-color: rgba(255, 255, 255, 0.1);
+  padding: 4px 12px;
+  border-radius: 4px;
+}
+
+.profile-content {
+  background-color: transparent;
+  border-radius: 8px;
+  padding: 20px;
+  color: #333;
+}
+
+/* Override Ant Design tab styles */
+.ant-tabs-nav::before {
+  border-bottom: none !important;
+  color: #fff;
+}
+
+.ant-tabs-tab {
+  font-weight: bold !important;
+}
+
+.rating-card,
+.matches-card {
+  height: 100%;
+}
+
+.rating-box {
+  background-color: #f5f5f5;
+  padding: 15px;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.rating-label {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 5px;
+}
+
+.rating-value {
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.stats-list {
+  margin-top: 20px;
+}
+
+.stats-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 5px;
+  padding-bottom: 5px;
+}
+
+.stats-icon {
+  width: 30px;
+  font-size: 18px;
+  color: white;
+}
+
+.stats-label {
+  flex: 1;
+  color: #666;
+}
+
+.stats-value {
+  font-weight: bold;
+}
+
+.month-heading {
+  margin-top: 10px;
+  margin-bottom: 15px;
+  font-weight: bold;
+}
+
+.match-card {
+  border-left: 3px solid #52c41a;
+}
+
+.match-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.match-type {
+  margin-right: 0;
+}
+
+.match-rating {
+  font-weight: bold;
+}
+
+.match-opponent {
+  margin-bottom: 5px;
+}
+
+.match-date {
+  color: #666;
+  font-size: 12px;
+  margin-bottom: 15px;
+}
+
+.match-players {
+  margin-bottom: 15px;
+}
+
+.player {
+  display: flex;
+  align-items: center;
+}
+
+.player-name {
+  margin-left: 10px;
+  flex: 1;
+}
+
+.player-rating {
+  font-weight: bold;
+}
+
+.match-score {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 15px;
+}
+
+.score-set {
+  font-weight: bold;
+}
+
+.match-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #666;
+  font-size: 12px;
+}
+
+.empty-activity {
+  text-align: center;
+  padding: 50px;
+  color: #999;
+}
+
+.col-md-4 .ant-card {
+  background-color: transparent;
+  border: 0;
+}
+
+.col-md-8 .ant-card {
+  background-color: transparent;
+  border: 0;
+}
+
+.col-md-8 .ant-card .match-card {
+  background-color: white;
+}

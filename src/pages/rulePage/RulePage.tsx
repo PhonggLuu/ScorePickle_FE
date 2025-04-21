@@ -7,7 +7,7 @@ export const RulePage = () => {
 
   return (
     <div className="container mt-4">
-      <h1 className="display-4 fw-bold mb-4">Platform Rules</h1>
+      <h1 className="display-4 fw-bold mb-4 text-white">Platform Rules</h1>
 
       <Tabs defaultActiveKey={activeTab} onChange={setActiveTab}>
         <Tabs.TabPane

@@ -74,40 +74,50 @@ export const GuestLayout = () => {
           style={{ width: 300, border: '0' }}
           bodyStyle={{ padding: 10, paddingBottom: '20px' }}
         >
-          <Flex>
-            <img
-              src={
-                user?.avatarUrl ??
-                'https://inkythuatso.com/uploads/thumbnails/800/2023/03/9-anh-dai-dien-trang-inkythuatso-03-15-27-03.jpg'
-              }
-              alt="user avatar"
-              style={{
-                width: 50,
-                height: 50,
-                borderRadius: '50%',
-                marginRight: '10px',
-              }}
-            />
-            <div style={{ whiteSpace: 'nowrap' }}>
-              <span>{user?.firstName + ' ' + user?.lastName}</span>
-              <br />
-              <p
-                className="text-muted"
-                style={{ marginTop: 0, fontSize: '13px', display: 'inline' }}
-              >
-                {user?.userDetails?.province.toLocaleLowerCase() +
-                  ', ' +
-                  user?.userDetails?.city.toLocaleLowerCase()}
-              </p>
-              <span className="mx-1">•</span>
-              <p
-                className="text-muted"
-                style={{ marginTop: 0, fontSize: '13px', display: 'inline' }}
-              >
-                {user?.gender}
-              </p>
-            </div>
-          </Flex>
+          <Link
+            to={`my-profile`}
+            className="d-flex align-items-center text-decoration-none text-reset"
+          >
+            <Flex>
+              <img
+                src={
+                  user?.avatarUrl ??
+                  'https://inkythuatso.com/uploads/thumbnails/800/2023/03/9-anh-dai-dien-trang-inkythuatso-03-15-27-03.jpg'
+                }
+                alt="user avatar"
+                style={{
+                  width: 50,
+                  height: 50,
+                  borderRadius: '50%',
+                  marginRight: '10px',
+                }}
+              />
+              <div style={{ whiteSpace: 'nowrap' }}>
+                <span>{user?.firstName + ' ' + user?.lastName}</span>
+                <br />
+                <p
+                  className="text-muted"
+                  style={{ marginTop: 0, fontSize: '13px', display: 'inline' }}
+                >
+                  {user?.userDetails?.province.toLocaleLowerCase() +
+                    ', ' +
+                    user?.userDetails?.city.toLocaleLowerCase()}
+                </p>
+                <span className="mx-1">•</span>
+                <p
+                  className="text-muted"
+                  style={{ marginTop: 0, fontSize: '13px', display: 'inline' }}
+                >
+                  {user?.gender}
+                </p>
+              </div>
+              <div style={{ whiteSpace: 'nowrap' }}>
+                <span className="bg-info border p-1 px-2 rounded">
+                  Level {user?.userDetails?.experienceLevel}
+                </span>
+              </div>
+            </Flex>
+          </Link>
         </Card>
       ),
       key: 'profile',
