@@ -125,8 +125,6 @@ export const FriendPage: React.FC = () => {
                   color: 'white',
                 }}
               >
-                <h1 className="mb-3 fw-bold">Friends</h1>
-
                 <div className="position-relative mb-3">
                   <Input
                     prefix={<SearchOutlined style={{ color: '#bfbfbf' }} />}

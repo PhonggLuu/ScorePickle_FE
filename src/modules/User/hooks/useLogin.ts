@@ -11,6 +11,7 @@ import { useNavigate } from 'react-router-dom';
 import { PATH_LANDING } from '@src/constants';
 import {
   PATH_ADMIN_PAYMENT,
+  PATH_DASHBOARD,
   PATH_SPONSOR_PAYMENT,
 } from '@src/constants/routes';
 
@@ -34,7 +35,7 @@ export function useLogin() {
         dispatch(setUser(user));
         dispatch(isAuth());
         if (user.roleId === 1) navigate(PATH_LANDING.root);
-        else if (user.roleId === 2) navigate(PATH_ADMIN_PAYMENT.root);
+        else if (user.roleId === 2) navigate(PATH_DASHBOARD.default);
         else navigate(PATH_SPONSOR_PAYMENT.root);
       });
     },

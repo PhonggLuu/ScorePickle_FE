@@ -250,6 +250,13 @@ const MatchRoom = ({ id }: MatchRoomProps) => {
         new Date(a.matchDate).getTime() - new Date(b.matchDate).getTime(),
       sortDirections: ['ascend', 'descend'],
       defaultSortOrder: 'ascend',
+      onHeaderCell: () => ({
+        style: {
+          backgroundColor: '#fff', // hoặc bất kỳ màu nền bạn muốn
+          // nếu muốn đè mọi thứ thì thêm !important:
+          // backgroundColor: '#fff !important',
+        },
+      }),
     },
     {
       title: 'Status',
@@ -512,7 +519,10 @@ const MatchRoom = ({ id }: MatchRoomProps) => {
         <Col span={6}>
           <Card
             bordered={false}
-            style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.09)', borderRadius: 8 }}
+            style={{
+              boxShadow: '0 2px 8px rgba(0,0,0,0.09)',
+              borderRadius: 8,
+            }}
           >
             <Statistic
               title={<Text strong>Total Matches</Text>}
@@ -525,7 +535,10 @@ const MatchRoom = ({ id }: MatchRoomProps) => {
         <Col span={6}>
           <Card
             bordered={false}
-            style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.09)', borderRadius: 8 }}
+            style={{
+              boxShadow: '0 2px 8px rgba(0,0,0,0.09)',
+              borderRadius: 8,
+            }}
           >
             <Statistic
               title={<Text strong>Scheduled</Text>}
@@ -546,7 +559,10 @@ const MatchRoom = ({ id }: MatchRoomProps) => {
         <Col span={6}>
           <Card
             bordered={false}
-            style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.09)', borderRadius: 8 }}
+            style={{
+              boxShadow: '0 2px 8px rgba(0,0,0,0.09)',
+              borderRadius: 8,
+            }}
           >
             <Statistic
               title={<Text strong>Ongoing</Text>}
@@ -567,7 +583,10 @@ const MatchRoom = ({ id }: MatchRoomProps) => {
         <Col span={6}>
           <Card
             bordered={false}
-            style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.09)', borderRadius: 8 }}
+            style={{
+              boxShadow: '0 2px 8px rgba(0,0,0,0.09)',
+              borderRadius: 8,
+            }}
           >
             <Statistic
               title={<Text strong>Completed</Text>}

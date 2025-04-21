@@ -22,6 +22,7 @@ import { useGetTournamentById } from '@src/modules/Tournament/hooks/useGetTourna
 import { getPaymentUrl } from '@src/modules/Payment/hooks/useGetPaymentUrl';
 import { createRegistration } from '@src/modules/TournamentRegistration/hooks/useCreateRegistration';
 import { useCheckJoinTournament } from '@src/modules/Tournament/hooks/useCheckJoinTournament';
+import MatchRoom from '../tournament/Admin/containers/MatchRoom';
 
 const { Title, Paragraph } = Typography;
 const { TabPane } = Tabs;
@@ -243,13 +244,13 @@ export const TournamentDetailPage: React.FC = () => {
     <>
       <div className="container mt-4 mb-5">
         {/* Tournament Header */}
-        <div className="row mb-3">
+        <div className="row mb-3 mt-5">
           <div className="col-md-8">
             <div
               className="d-flex align-items-center"
               style={{ fontWeight: 'bold' }}
             >
-              <Title level={2} className="mb-0 me-2">
+              <Title level={2} className="mb-0 me-2 text-white">
                 {tournament.name}
               </Title>
               <Tag color="green" className="registration-tag">
@@ -259,7 +260,10 @@ export const TournamentDetailPage: React.FC = () => {
                   : 'Registration Closed'} */}
               </Tag>
             </div>
-            <div className="tournament-meta mt-2" style={{ fontSize: '20px' }}>
+            <div
+              className="tournament-meta mt-2 text-white"
+              style={{ fontSize: '20px' }}
+            >
               <span className="meta-item">
                 <CalendarOutlined /> {formatDates(tournament.startDate)} -{' '}
                 {formatDates(tournament.endDate)}
@@ -283,11 +287,11 @@ export const TournamentDetailPage: React.FC = () => {
             <TournamentInfo id={tournament.id} />
           </TabPane>
           <TabPane tab="Schedule" key="schedule">
-            <Card>
+            {/* <Card>
               <Paragraph>
                 Schedule information will be displayed here.
               </Paragraph>
-            </Card>
+            </Card> */}
           </TabPane>
           <TabPane tab="Participants" key="participants">
             <Participants

@@ -8,7 +8,10 @@ export const updateProfile = async (
   data: UpdateProfile
 ): Promise<User> => {
   try {
-    const response = await api.patch<User>(`/User/UpdateUser/${id}`, data);
+    const response = await api.patch<User>(
+      `/User/UpdateUserWithUserDetails/${id}`,
+      data
+    );
     return response.data;
   } catch (error) {
     throw new Error('Error updating referee data');

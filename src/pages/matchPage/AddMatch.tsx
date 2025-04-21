@@ -13,6 +13,7 @@ import {
   Image,
   Tag,
   AutoComplete,
+  message,
 } from 'antd';
 import { UserOutlined, MinusCircleOutlined } from '@ant-design/icons';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -25,6 +26,13 @@ import { useGetFriendByUserId } from '@src/modules/Friend/hooks/useGetFriendByUs
 import { useGetReferees } from '@src/modules/User/hooks/useGetAllReferee';
 import { useGetVenueAll } from '@src/modules/Venues/hooks/useGetAllVenue';
 import { GetFriendByUserIdResponse } from '@src/modules/Friend/models';
+import {
+  MatchCategory,
+  MatchFormat,
+  MatchRequest,
+  MatchStatus,
+} from '@src/modules/Match/models';
+import { createMatch } from '@src/modules/Match/hooks/useCreateMatch';
 
 const { Title, Text } = Typography;
 //const { TabPane } = Tabs;
@@ -44,12 +52,15 @@ const AddMatches: React.FC = () => {
   const user = useSelector((state: RootState) => state.auth.user);
   const [activeKey, setActiveKey] = useState<string | string[]>(['1']);
   const [matchType, setMatchType] = useState<string>('team');
-  const [matchCategpory, setMatchCategpory] = useState<string>('custom');
+  const [matchCategory, setMatchCategory] = useState<string>('custom');
   const selectScore = [11, 15, 21];
   const [matchScore, setMatchScore] = useState<number>(selectScore[0]);
   const [selectedDate, setSelectedDate] = useState<dayjs.Dayjs>(
     dayjs(Date.now())
   );
+
+  const [title, setTitle] = useState<string>('');
+  const [description, setDescription] = useState<string>('');
 
   const { data: venueData } = useGetVenueAll();
   const [venue, setVenue] = useState<number>(venueData?.[0]?.id ?? 0);
@@ -65,6 +76,13 @@ const AddMatches: React.FC = () => {
       setFriendData(allFriend);
     }
   }, [allFriend]);
+
+  useEffect(() => {
+    if (matchCategory === 'competitive') {
+      setMatchType('single');
+      setPlayersSelected(getInitialPlayers());
+    }
+  }, [matchCategory]);
 
   const [playersSelected, setPlayersSelected] = useState<PlayersSelected>({
     players: user
@@ -133,6 +151,102 @@ const AddMatches: React.FC = () => {
     setSearchText(value); // Cập nhật từ khóa tìm kiếm khi người dùng gõ
   };
 
+  const [titleError, setTitleError] = useState(false);
+  const [descriptionError, setDescriptionError] = useState(false);
+
+  const handleSubmit = async () => {
+    let hasError = false;
+    if (!title.trim()) {
+      setTitleError(true);
+      hasError = true;
+    }
+    if (!description.trim()) {
+      setDescriptionError(true);
+      hasError = true;
+    }
+    if (hasError) {
+      message.error('Fill out Title and Description');
+      return;
+    }
+    // Validate players selection for custom category
+    if (matchCategory === 'custom') {
+      if (matchType === 'single') {
+        if (!playersSelected.players[1]) {
+          message.error('At least 2 persons for a single match');
+          return;
+        }
+      } else {
+        if (
+          playersSelected.players.length < 4 ||
+          !playersSelected.players[1] ||
+          !playersSelected.players[2] ||
+          !playersSelected.players[3]
+        ) {
+          message.error('At least 4 persons for a double match');
+          return;
+        }
+      }
+    }
+    const isComp =
+      matchCategory === MatchCategory[MatchCategory.Competitive].toLowerCase();
+    const payload: MatchRequest = {
+      title: title,
+      description: description,
+      matchDate: selectedDate.toISOString(),
+      status: MatchStatus.Scheduled,
+      venueId: venue !== 0 ? venue : null,
+      matchCategory: isComp ? MatchCategory.Competitive : MatchCategory.Custom,
+      matchFormat: isComp
+        ? user?.gender?.toLowerCase() === 'male'
+          ? MatchFormat.SingleMale
+          : MatchFormat.SingleFemale
+        : MatchFormat.DoublesMix,
+      winScore: matchScore,
+      isPublic: !isComp,
+      roomOnwer: user!.id,
+      player1Id: user!.id,
+      player2Id: isComp ? null : playersSelected.players[1].id ?? null,
+      player3Id: isComp ? null : playersSelected.players[2].id ?? null,
+      player4Id: isComp ? null : playersSelected.players[3].id ?? null,
+      refereeId: referee !== 0 ? venue : null,
+      tournamentId: null,
+    };
+    const data = await createMatch(payload);
+    if (data) {
+      message.success('Create match successfully');
+      resetFields();
+    } else message.info('Create match failed');
+  };
+
+  // Initial player selection: only the current user
+  const getInitialPlayers = (): PlayersSelected => ({
+    players: user
+      ? [
+          {
+            id: user.id,
+            name: `${user.firstName} ${user.lastName}`.trim(),
+            avatar:
+              user.avatarUrl ||
+              'https://inkythuatso.com/uploads/thumbnails/800/2023/03/9-anh-dai-dien-trang-inkythuatso-03-15-27-03.jpg',
+            level: user.userDetails?.experienceLevel ?? 0,
+          },
+        ]
+      : [],
+  });
+
+  const resetFields = () => {
+    setTitle('');
+    setDescription('');
+    setSelectedDate(dayjs());
+    setVenue(venueData?.[0]?.id ?? 0);
+    setReferee(refereeData?.[0]?.id ?? 0);
+    setPlayersSelected(getInitialPlayers());
+    setFriendData(allFriend || []);
+    setMatchCategory('custom');
+    setMatchType('team');
+    setMatchScore(selectScore[0]);
+  };
+
   const items: CollapseProps['items'] = [
     {
       key: '1',
@@ -146,19 +260,38 @@ const AddMatches: React.FC = () => {
           <div className="row mb-4">
             <div className="col-md-4">
               <label className="form-label">Title</label>
-              <Input placeholder="Title" required />
+              <Input
+                className="rounded-pill p-3"
+                placeholder="Title"
+                value={title}
+                onChange={(e) => {
+                  setTitle(e.target.value);
+                  if (titleError) setTitleError(false);
+                }}
+                required
+              />
             </div>
             <div className="col-md-4">
               <label className="form-label">Description</label>
-              <Input placeholder="Description" required />
+              <Input
+                className="rounded-pill p-3"
+                placeholder="Description"
+                value={description}
+                onChange={(e) => {
+                  setDescription(e.target.value);
+                  if (descriptionError) setDescriptionError(false);
+                }}
+                required
+              />
             </div>
             <div className="col-md-4">
               <label className="form-label">Date</label>
               <DatePicker
-                className="w-100"
+                className="w-100 rounded-pill p-3"
                 value={selectedDate}
                 onChange={(date) => date && setSelectedDate(date)}
-                format="MM/DD/YYYY"
+                showTime={{ format: 'HH:mm' }}
+                format="YYYY-MM-DD HH:mm"
               />
             </div>
           </div>
@@ -171,7 +304,10 @@ const AddMatches: React.FC = () => {
 
               {/* This player (PLAYER 1)*/}
               {playersSelected.players[0] && (
-                <div className="selected-player">
+                <div
+                  className="selected-player border p-2 rounded-pill mb-2"
+                  style={{ background: 'rgba(177, 177, 177, 0.5)' }}
+                >
                   <Avatar icon={<UserOutlined />} className="player-avatar" />
                   <span className="player-name ms-2">
                     {playersSelected.players[0].name}
@@ -188,223 +324,278 @@ const AddMatches: React.FC = () => {
                   />
                 </div>
               )}
-              {/* Player 2 if select match type team */}
-              {matchType === 'team' ? (
-                playersSelected.players[1] ? (
-                  <div className="selected-player">
-                    <Avatar icon={<UserOutlined />} className="player-avatar" />
-                    <span className="player-name ms-2">
-                      {playersSelected.players[1].name}
-                    </span>
-                    <Tag color="blue" className="player-rating ms-3">
-                      {playersSelected.players[1].level}
-                    </Tag>
-                    <Button
-                      type="text"
-                      icon={<MinusCircleOutlined />}
-                      onClick={() => removePlayer(1)}
-                      className="remove-player"
-                    />
-                  </div>
-                ) : (
-                  <AutoComplete
-                    options={handleSearch()?.map((f) => ({
-                      value: f.userFriendName ?? '',
-                      label: (
-                        <div className="d-flex flex-column my-2">
-                          <span className="fw-bold">{f.userFriendName}</span>
-                          <small className="text-muted">
-                            Gender: {f.gender} | Level: {f.exeprienceLevel}
-                          </small>
-                        </div>
-                      ),
-                    }))}
-                    onSelect={
-                      (value) => handlePlayerSelect(value, 1) // Always selects player[1]
-                    }
-                    className="player-search w-100"
-                  >
-                    <Input
-                      prefix={<UserOutlined />}
-                      placeholder="Search Player"
-                      className="rounded-pill"
-                      onChange={(e) => handleSearchChange(e.target.value)}
-                    />
-                  </AutoComplete>
-                )
-              ) : (
-                <div className="selected-player"></div>
-              )}
-
-              <label className="form-label">
-                {matchType === 'single' ? 'Player 2' : 'Team 2'}
-              </label>
-
-              {/* Player 3 if select match type team*/}
-              {matchType === 'team' ? (
-                playersSelected.players[2] ? (
-                  <div className="selected-player">
-                    <Avatar icon={<UserOutlined />} className="player-avatar" />
-                    <span className="player-name ms-2">
-                      {playersSelected.players[2].name}
-                    </span>
-                    <Tag color="blue" className="player-rating ms-3">
-                      {playersSelected.players[2].level}
-                    </Tag>
-                    <Button
-                      type="text"
-                      icon={<MinusCircleOutlined />}
-                      onClick={() => removePlayer(2)}
-                      className="remove-player"
-                    />
-                  </div>
-                ) : (
-                  <AutoComplete
-                    options={handleSearch()?.map((f) => ({
-                      value: f.userFriendName ?? '',
-                      label: (
-                        <div className="d-flex flex-column my-2">
-                          <span className="fw-bold">{f.userFriendName}</span>
-                          <small className="text-muted">
-                            Gender: {f.gender} | Level: {f.exeprienceLevel}
-                          </small>
-                        </div>
-                      ),
-                    }))}
-                    onSelect={
-                      (value) => handlePlayerSelect(value, 2) // Always selects player[1]
-                    }
-                    className="player-search w-100"
-                  >
-                    <Input
-                      prefix={<UserOutlined />}
-                      placeholder="Search Player"
-                      className="rounded-pill"
-                      onChange={(e) => handleSearchChange(e.target.value)}
-                    />
-                  </AutoComplete>
-                )
-              ) : // Player 2 if select match type team
-              playersSelected.players[1] ? (
-                <div className="selected-player">
-                  <Avatar icon={<UserOutlined />} className="player-avatar" />
-                  <span className="player-name ms-2">
-                    {playersSelected.players[1].name}
-                  </span>
-                  <Tag color="blue" className="player-rating ms-3">
-                    {playersSelected.players[1].level}
-                  </Tag>
-                  <Button
-                    type="text"
-                    icon={<MinusCircleOutlined />}
-                    onClick={() => removePlayer(1)}
-                    className="remove-player"
-                  />
-                </div>
-              ) : (
-                <AutoComplete
-                  options={handleSearch()?.map((f) => ({
-                    value: f.userFriendName ?? '',
-                    label: (
-                      <div className="d-flex flex-column my-2">
-                        <span className="fw-bold">{f.userFriendName}</span>
-                        <small className="text-muted">
-                          Gender: {f.gender} | Level: {f.exeprienceLevel}
-                        </small>
+              {matchCategory === 'custom' && (
+                <>
+                  {/* Player 2 if select match type team */}
+                  {matchType === 'team' ? (
+                    playersSelected.players[1] ? (
+                      <div
+                        className="selected-player border p-2 rounded-pill"
+                        style={{ background: 'rgba(177, 177, 177, 0.5)' }}
+                      >
+                        <Avatar
+                          icon={<UserOutlined />}
+                          className="player-avatar"
+                        />
+                        <span className="player-name ms-2">
+                          {playersSelected.players[1].name}
+                        </span>
+                        <Tag color="blue" className="player-rating ms-3">
+                          {playersSelected.players[1].level}
+                        </Tag>
+                        <Button
+                          type="text"
+                          icon={<MinusCircleOutlined />}
+                          onClick={() => removePlayer(1)}
+                          className="remove-player"
+                        />
                       </div>
-                    ),
-                  }))}
-                  onSelect={
-                    (value) => handlePlayerSelect(value, 1) // Always selects player[1]
-                  }
-                  className="player-search w-100"
-                >
-                  <Input
-                    prefix={<UserOutlined />}
-                    placeholder="Search Player"
-                    className="rounded-pill"
-                    onChange={(e) => handleSearchChange(e.target.value)}
-                  />
-                </AutoComplete>
-              )}
+                    ) : (
+                      <AutoComplete
+                        options={handleSearch()?.map((f) => ({
+                          value: f.userFriendName ?? '',
+                          label: (
+                            <div className="d-flex flex-column my-2">
+                              <span className="fw-bold">
+                                {f.userFriendName}
+                              </span>
+                              <small className="text-muted">
+                                Gender: {f.gender} | Level: {f.exeprienceLevel}
+                              </small>
+                            </div>
+                          ),
+                        }))}
+                        onSelect={
+                          (value) => handlePlayerSelect(value, 1) // Always selects player[1]
+                        }
+                        className="player-search w-100"
+                      >
+                        <Input
+                          prefix={<UserOutlined />}
+                          placeholder="Search Player"
+                          className="rounded-pill p-2 mb-2"
+                          onChange={(e) => handleSearchChange(e.target.value)}
+                        />
+                      </AutoComplete>
+                    )
+                  ) : (
+                    <div></div>
+                  )}
 
-              {/* Player 4 if select match type team */}
-              {matchType === 'team' ? (
-                playersSelected.players[3] ? (
-                  <div className="selected-player">
-                    <Avatar icon={<UserOutlined />} className="player-avatar" />
-                    <span className="player-name ms-2">
-                      {playersSelected.players[3].name}
-                    </span>
-                    <Tag color="blue" className="player-rating ms-3">
-                      {playersSelected.players[3].level}
-                    </Tag>
-                    <Button
-                      type="text"
-                      icon={<MinusCircleOutlined />}
-                      onClick={() => removePlayer(3)}
-                      className="remove-player"
-                    />
-                  </div>
-                ) : (
-                  <AutoComplete
-                    options={handleSearch()?.map((f) => ({
-                      value: f.userFriendName ?? '',
-                      label: (
-                        <div className="d-flex flex-column my-2">
-                          <span className="fw-bold">{f.userFriendName}</span>
-                          <small className="text-muted">
-                            Gender: {f.gender} | Level: {f.exeprienceLevel}
-                          </small>
-                        </div>
-                      ),
-                    }))}
-                    onSelect={
-                      (value) => handlePlayerSelect(value, 3) // Always selects player[1]
-                    }
-                    className="player-search w-100"
-                  >
-                    <Input
-                      prefix={<UserOutlined />}
-                      placeholder="Search Player"
-                      className="rounded-pill"
-                      onChange={(e) => handleSearchChange(e.target.value)}
-                    />
-                  </AutoComplete>
-                )
-              ) : (
-                <div className="selected-player"></div>
+                  <label className="form-label mt-4">
+                    {matchType === 'single' ? 'Player 2' : 'Team 2'}
+                  </label>
+
+                  {/* Player 3 if select match type team*/}
+                  {matchType === 'team' ? (
+                    playersSelected.players[2] ? (
+                      <div
+                        className="selected-player border p-2 rounded-pill mb-2"
+                        style={{ background: 'rgba(177, 177, 177, 0.5)' }}
+                      >
+                        <Avatar
+                          icon={<UserOutlined />}
+                          className="player-avatar"
+                        />
+                        <span className="player-name ms-2">
+                          {playersSelected.players[2].name}
+                        </span>
+                        <Tag color="blue" className="player-rating ms-3">
+                          {playersSelected.players[2].level}
+                        </Tag>
+                        <Button
+                          type="text"
+                          icon={<MinusCircleOutlined />}
+                          onClick={() => removePlayer(2)}
+                          className="remove-player"
+                        />
+                      </div>
+                    ) : (
+                      <AutoComplete
+                        options={handleSearch()?.map((f) => ({
+                          value: f.userFriendName ?? '',
+                          label: (
+                            <div className="d-flex flex-column my-2">
+                              <span className="fw-bold">
+                                {f.userFriendName}
+                              </span>
+                              <small className="text-muted">
+                                Gender: {f.gender} | Level: {f.exeprienceLevel}
+                              </small>
+                            </div>
+                          ),
+                        }))}
+                        onSelect={
+                          (value) => handlePlayerSelect(value, 2) // Always selects player[1]
+                        }
+                        className="player-search w-100 mb-2"
+                      >
+                        <Input
+                          prefix={<UserOutlined />}
+                          placeholder="Search Player"
+                          className="rounded-pill p-2 mb-2"
+                          onChange={(e) => handleSearchChange(e.target.value)}
+                        />
+                      </AutoComplete>
+                    )
+                  ) : // Player 2 if select match type team
+                  playersSelected.players[1] ? (
+                    <div
+                      className="selected-player border p-2 rounded-pill mb-2"
+                      style={{ background: 'rgba(177, 177, 177, 0.5)' }}
+                    >
+                      <Avatar
+                        icon={<UserOutlined />}
+                        className="player-avatar"
+                      />
+                      <span className="player-name ms-2">
+                        {playersSelected.players[1].name}
+                      </span>
+                      <Tag color="blue" className="player-rating ms-3">
+                        {playersSelected.players[1].level}
+                      </Tag>
+                      <Button
+                        type="text"
+                        icon={<MinusCircleOutlined />}
+                        onClick={() => removePlayer(1)}
+                        className="remove-player"
+                      />
+                    </div>
+                  ) : (
+                    <AutoComplete
+                      options={handleSearch()?.map((f) => ({
+                        value: f.userFriendName ?? '',
+                        label: (
+                          <div className="d-flex flex-column my-2">
+                            <span className="fw-bold">{f.userFriendName}</span>
+                            <small className="text-muted">
+                              Gender: {f.gender} | Level: {f.exeprienceLevel}
+                            </small>
+                          </div>
+                        ),
+                      }))}
+                      onSelect={
+                        (value) => handlePlayerSelect(value, 1) // Always selects player[1]
+                      }
+                      className="player-search w-100 mb-2"
+                    >
+                      <Input
+                        prefix={<UserOutlined />}
+                        placeholder="Search Player"
+                        className="rounded-pill p-2 mb-2"
+                        onChange={(e) => handleSearchChange(e.target.value)}
+                      />
+                    </AutoComplete>
+                  )}
+
+                  {/* Player 4 if select match type team */}
+                  {matchType === 'team' ? (
+                    playersSelected.players[3] ? (
+                      <div
+                        className="selected-player border p-2 rounded-pill mt-2"
+                        style={{ background: 'rgba(177, 177, 177, 0.5)' }}
+                      >
+                        <Avatar
+                          icon={<UserOutlined />}
+                          className="player-avatar"
+                        />
+                        <span className="player-name ms-2">
+                          {playersSelected.players[3].name}
+                        </span>
+                        <Tag color="blue" className="player-rating ms-3">
+                          {playersSelected.players[3].level}
+                        </Tag>
+                        <Button
+                          type="text"
+                          icon={<MinusCircleOutlined />}
+                          onClick={() => removePlayer(3)}
+                          className="remove-player"
+                        />
+                      </div>
+                    ) : (
+                      <AutoComplete
+                        options={handleSearch()?.map((f) => ({
+                          value: f.userFriendName ?? '',
+                          label: (
+                            <div className="d-flex flex-column my-2">
+                              <span className="fw-bold">
+                                {f.userFriendName}
+                              </span>
+                              <small className="text-muted">
+                                Gender: {f.gender} | Level: {f.exeprienceLevel}
+                              </small>
+                            </div>
+                          ),
+                        }))}
+                        onSelect={
+                          (value) => handlePlayerSelect(value, 3) // Always selects player[1]
+                        }
+                        className="player-search w-100 mt-2"
+                      >
+                        <Input
+                          prefix={<UserOutlined />}
+                          placeholder="Search Player"
+                          className="rounded-pill p-2"
+                          onChange={(e) => handleSearchChange(e.target.value)}
+                        />
+                      </AutoComplete>
+                    )
+                  ) : (
+                    <div className="selected-player"></div>
+                  )}
+                </>
               )}
             </div>
-
             <div className="col-md-6">
-              <div className="d-flex justify-content-between align-items-center mb-2">
+              <div className="d-flex justify-content-between align-items-center my-3">
                 <label className="form-label">Match Category</label>
                 <Radio.Group
-                  value={matchCategpory}
-                  onChange={(e) => setMatchCategpory(e.target.value)}
+                  value={matchCategory}
+                  onChange={(e) => setMatchCategory(e.target.value)}
                   buttonStyle="solid"
                 >
-                  <Radio.Button value="competitive">Competitive</Radio.Button>
-                  <Radio.Button value="custom">Friendly</Radio.Button>
+                  <Radio.Button
+                    className="rounded-pill rounded-end-0"
+                    value="competitive"
+                  >
+                    Competitive
+                  </Radio.Button>
+                  <Radio.Button
+                    className="rounded-pill rounded-start-0"
+                    value="custom"
+                  >
+                    Friendly
+                  </Radio.Button>
                 </Radio.Group>
               </div>
 
-              <div className="d-flex justify-content-between align-items-center mb-2">
+              <div className="d-flex justify-content-between align-items-center mb-3">
                 <label className="form-label">Match Type</label>
                 <Radio.Group
                   value={matchType}
                   onChange={(e) => setMatchType(e.target.value)}
                   buttonStyle="solid"
                 >
-                  <Radio.Button value="single">Single</Radio.Button>
-                  <Radio.Button value="team">Team</Radio.Button>
+                  <Radio.Button
+                    className="rounded-pill rounded-end-0"
+                    value="single"
+                  >
+                    Single
+                  </Radio.Button>
+                  <Radio.Button
+                    className="rounded-pill rounded-start-0"
+                    value="team"
+                    disabled={matchCategory === 'competitive'}
+                  >
+                    Team
+                  </Radio.Button>
                 </Radio.Group>
               </div>
 
-              <div className="d-flex justify-content-between align-items-center mb-2">
+              <div className="d-flex justify-content-between align-items-center mb-3">
                 <label className="form-label">Score</label>
                 <Select
+                  className="w-25"
                   value={matchScore}
                   onChange={(value) => setMatchScore(Number(value))}
                 >
@@ -415,7 +606,7 @@ const AddMatches: React.FC = () => {
                   ))}
                 </Select>
               </div>
-              <div className="d-flex justify-content-between align-items-center mb-2">
+              <div className="d-flex justify-content-between align-items-center mb-3">
                 <label className="form-label">Venue</label>
                 <Select
                   className="w-50"
@@ -438,7 +629,7 @@ const AddMatches: React.FC = () => {
                   ))}
                 </Select>
               </div>
-              <div className="d-flex justify-content-between align-items-center mb-2">
+              <div className="d-flex justify-content-between align-items-center mb-3">
                 <label className="form-label">Referee</label>
                 <Select
                   className="w-50"
@@ -476,12 +667,15 @@ const AddMatches: React.FC = () => {
 
   return (
     <div className="container p-5">
-      <div className="d-flex justify-content-between align-items-center p-3">
-        <Title level={2} style={{ margin: 0, color: 'white' }} className="mt-5">
-          Add Matches
-        </Title>
-        <Button type="primary" className="bg-light" ghost>
-          Submit Matches
+      <div className="d-flex justify-content-between align-items-center">
+        <h1 className="display-4 fw-bold mb-4 text-white">Add Matches</h1>
+        <Button
+          type="primary"
+          className="rounded-pill bg-light"
+          ghost
+          onClick={handleSubmit}
+        >
+          <span className="fw-bold">Submit Matches</span>
         </Button>
       </div>
 

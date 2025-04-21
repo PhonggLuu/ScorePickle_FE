@@ -131,25 +131,34 @@ export const TournamentPlayerPage = () => {
 
   return (
     <div className="d-flex flex-column min-vh-100">
-      <main className="flex-grow-1 container py-4">
-        <h1 className="display-4 fw-bold mb-4">My Joined Tournaments</h1>
+      <main className="flex-grow-1 container py-4 text-white">
+        <h1 className="display-4 fw-bold mb-4">Registed Tournaments</h1>
 
         {/* Tabs for Filtering */}
         <Tabs
           defaultActiveKey="All"
           onChange={(key) => setFilter(key)}
-          className="mb-4"
+          className="mb-4 text-white"
         >
-          <TabPane tab="All" key="All" />
-          <TabPane tab="Scheduled" key="Scheduled" />
-          <TabPane tab="OnGoing" key="Ongoing" />
-          <TabPane tab="Completed" key="Completed" />
+          <TabPane tab={<span className="text-white">All</span>} key="All" />
+          <TabPane
+            tab={<span className="text-white">Scheduled</span>}
+            key="Scheduled"
+          />
+          <TabPane
+            tab={<span className="text-white">OnGoing</span>}
+            key="Ongoing"
+          />
+          <TabPane
+            tab={<span className="text-white">Completed</span>}
+            key="Completed"
+          />
         </Tabs>
 
-        <div className="row">
-          <div className="col-md-12">
+        <div className="row d-flex justify-content-center align-items-center">
+          <div className="col-md-10">
             {isLoading
-              ? "You haven't joined any tournament"
+              ? "You haven't registered any tournament"
               : (filteredTournaments ?? []).map((tournament) => (
                   <TournamentCard
                     key={tournament.id}

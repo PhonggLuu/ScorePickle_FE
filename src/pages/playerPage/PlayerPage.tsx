@@ -24,6 +24,7 @@ const PlayerCard = ({
   dateOfBirth,
   gender,
   level,
+  checkUser,
   onAddFriendClick,
 }) => (
   <Card className="profile-card border rounded shadow-sm mb-2 card">
@@ -56,21 +57,36 @@ const PlayerCard = ({
           {gender && <span>{gender}</span>}
         </p>
       </div>
-      <Button
-        type="text"
-        className="ms-auto d-flex justify-content-center align-items-center"
-        style={{ marginRight: '60px', background: '#05155E1A' }}
-        aria-readonly
-      >
-        <span className="fw-200">Level {level}</span>
-      </Button>
-      <Button
-        className="position-absolute end-0 translate-middle-y me-3 d-flex justify-content-center align-items-center"
-        style={{ top: '50%', transform: 'translateY(-50%)' }}
-        onClick={onAddFriendClick}
-      >
-        <UserAddOutlined />
-      </Button>
+      {checkUser ? (
+        <>
+          <Button
+            type="text"
+            className="ms-auto d-flex justify-content-center align-items-center"
+            style={{ marginRight: '60px', background: '#05155E1A' }}
+            aria-readonly
+          >
+            <span className="fw-200">Level {level}</span>
+          </Button>
+          <Button
+            className="position-absolute end-0 translate-middle-y me-3 d-flex justify-content-center align-items-center"
+            style={{ top: '50%', transform: 'translateY(-50%)' }}
+            onClick={onAddFriendClick}
+          >
+            <UserAddOutlined />
+          </Button>
+        </>
+      ) : (
+        <Button
+          className="position-absolute end-0 translate-middle-y me-3 d-flex justify-content-center align-items-center"
+          style={{
+            top: '50%',
+            transform: 'translateY(-50%)',
+            background: '#05155E1A',
+          }}
+        >
+          <span className="fw-200">Level {level}</span>
+        </Button>
+      )}
     </div>
   </Card>
 );
@@ -162,8 +178,6 @@ export const PlayersPage: React.FC = () => {
                   color: 'white',
                 }}
               >
-                <h1 className="mb-3 fw-bold">Players</h1>
-
                 <div className="position-relative mb-3">
                   <Input
                     prefix={<SearchOutlined style={{ color: '#bfbfbf' }} />}
@@ -204,6 +218,7 @@ export const PlayersPage: React.FC = () => {
                         dateOfBirth={player.dateOfBirth}
                         gender={player.gender}
                         level={player.userDetails.experienceLevel}
+                        checkUser={user?.id}
                         onAddFriendClick={() => handleAddFriend(player.id)}
                       />
                     ))}
