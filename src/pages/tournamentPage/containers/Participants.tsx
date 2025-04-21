@@ -1,11 +1,8 @@
-import type { InputRef } from 'antd';
 import { Avatar, Button, Card, Table } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 import { RegistrationDetail } from '@src/modules/Tournament/models';
 import { useSelector } from 'react-redux';
-
-type DataIndex = string;
 
 type PlayersTableProps = {
   tournamentId: number;
@@ -56,29 +53,9 @@ const PlayerCard = ({
 );
 
 export const Participants = ({ registrations = [] }: PlayersTableProps) => {
-  const [, setSearchText] = useState<string>('');
-  const [searchedColumn, setSearchedColumn] = useState<string>('');
-  const searchInput = useRef<InputRef>(null);
   const [filteredRegistrations] = useState<RegistrationDetail[]>(registrations);
 
   const user = useSelector((state: any) => state.auth.user);
-
-  const handleSearch = (
-    selectedKeys: string[],
-    confirm: () => void,
-    dataIndex: DataIndex
-  ) => {
-    confirm();
-    setSearchText(selectedKeys[0]);
-    setSearchedColumn(dataIndex);
-  };
-
-  const handleReset = (clearFilters?: () => void) => {
-    if (clearFilters) {
-      clearFilters();
-    }
-    setSearchText('');
-  };
 
   // const getColumnSearchProps = (dataIndex: DataIndex): ColumnType<any> => ({
   //   filterDropdown: ({
