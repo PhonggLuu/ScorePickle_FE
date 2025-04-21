@@ -53,7 +53,7 @@ const TournamentInvitation = ({ playerId }) => {
             <span style={{ color: 'coral' }}>{invitation.requesterName}</span>{' '}
             {/* <span>{invitation.status === InvitationStatus.Accepted ? "was accepted" : "was rejected"}</span> */}
           </strong>
-          {invitation.status === InvitationStatus.Pending && (
+          {invitation.status === InvitationStatus.Pending ? (
             <div className="col-4 d-flex justify-content-end">
               <Button
                 style={{ borderColor: 'green', color: 'green' }}
@@ -73,8 +73,7 @@ const TournamentInvitation = ({ playerId }) => {
                 Reject
               </Button>
             </div>
-          )}
-          {invitation.status === InvitationStatus.Accepted ? (
+          ) : invitation.status === InvitationStatus.Accepted ? (
             <div className="col-4 d-flex justify-content-end">
               <Button
                 style={{ borderColor: 'green', color: 'green' }}
