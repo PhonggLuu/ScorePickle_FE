@@ -1,7 +1,6 @@
-import { SearchOutlined } from '@ant-design/icons';
 import type { InputRef } from 'antd';
-import { Button, Input, Space, Table } from 'antd';
-import type { ColumnsType, ColumnType } from 'antd/es/table';
+import { Avatar, Button, Card, Table } from 'antd';
+import type { ColumnsType } from 'antd/es/table';
 import { useRef, useState } from 'react';
 import { RegistrationDetail } from '@src/modules/Tournament/models';
 import { useSelector } from 'react-redux';
@@ -14,6 +13,47 @@ type PlayersTableProps = {
   registrations: RegistrationDetail[];
   refetch: () => void;
 };
+
+const PlayerCard = ({
+  firstName,
+  secondName,
+  lastName,
+  avatarUrl,
+  email,
+  ranking,
+}) => (
+  <Card className="profile-card border rounded shadow-sm mb-2 card">
+    <div className="d-flex align-items-center">
+      <div className="avatar-container">
+        <Avatar
+          style={{ marginLeft: '10px' }}
+          size={40}
+          src={
+            avatarUrl ??
+            'https://inkythuatso.com/uploads/thumbnails/800/2023/03/9-anh-dai-dien-trang-inkythuatso-03-15-27-03.jpg'
+          }
+          className="bg-primary"
+        />
+      </div>
+      <div className="ms-3 user-info">
+        <div className="mb-0 fw-bold" style={{ fontSize: '14px' }}>
+          {firstName} {secondName} {lastName}
+        </div>
+        <p className="d-flex small text-muted">{email}</p>
+      </div>
+      <Button
+        className="position-absolute end-0 translate-middle-y me-3 d-flex justify-content-center align-items-center"
+        style={{
+          top: '50%',
+          transform: 'translateY(-50%)',
+          background: '#05155E1A',
+        }}
+      >
+        <span className="fw-200">Level {ranking}</span>
+      </Button>
+    </div>
+  </Card>
+);
 
 export const Participants = ({ registrations = [] }: PlayersTableProps) => {
   const [, setSearchText] = useState<string>('');
@@ -40,106 +80,128 @@ export const Participants = ({ registrations = [] }: PlayersTableProps) => {
     setSearchText('');
   };
 
-  const getColumnSearchProps = (dataIndex: DataIndex): ColumnType<any> => ({
-    filterDropdown: ({
-      setSelectedKeys,
-      selectedKeys,
-      confirm,
-      clearFilters,
-    }) => (
-      <div style={{ padding: 8 }}>
-        <Input
-          ref={searchInput}
-          placeholder={`Search ${dataIndex}`}
-          value={selectedKeys[0]}
-          onChange={(e) =>
-            setSelectedKeys(e.target.value ? [e.target.value] : [])
-          }
-          onPressEnter={() =>
-            handleSearch(selectedKeys as string[], confirm, dataIndex)
-          }
-          style={{ marginBottom: 8, display: 'block' }}
-        />
-        <Space>
-          <Button
-            type="primary"
-            onClick={() =>
-              handleSearch(selectedKeys as string[], confirm, dataIndex)
-            }
-            icon={<SearchOutlined />}
-            size="small"
-            style={{ width: 90 }}
-          >
-            Search
-          </Button>
-          <Button
-            onClick={() => handleReset(clearFilters)}
-            size="small"
-            style={{ width: 90 }}
-          >
-            Reset
-          </Button>
-        </Space>
-      </div>
-    ),
-    filterIcon: (filtered: boolean) => (
-      <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />
-    ),
-    onFilter: (value, record) =>
-      record[dataIndex]
-        ? record[dataIndex]
-            .toString()
-            .toLowerCase()
-            .includes((value as string).toLowerCase())
-        : '',
-    onFilterDropdownVisibleChange: (visible) => {
-      if (visible) {
-        setTimeout(() => searchInput.current?.select(), 100);
-      }
-    },
-    render: (text) =>
-      searchedColumn === dataIndex ? (
-        <span style={{ backgroundColor: '#ffc069', padding: 0 }}>{text}</span>
-      ) : (
-        text
-      ),
-  });
+  // const getColumnSearchProps = (dataIndex: DataIndex): ColumnType<any> => ({
+  //   filterDropdown: ({
+  //     setSelectedKeys,
+  //     selectedKeys,
+  //     confirm,
+  //     clearFilters,
+  //   }) => (
+  //     <div style={{ padding: 8 }}>
+  //       <Input
+  //         ref={searchInput}
+  //         placeholder={`Search ${dataIndex}`}
+  //         value={selectedKeys[0]}
+  //         onChange={(e) =>
+  //           setSelectedKeys(e.target.value ? [e.target.value] : [])
+  //         }
+  //         onPressEnter={() =>
+  //           handleSearch(selectedKeys as string[], confirm, dataIndex)
+  //         }
+  //         style={{ marginBottom: 8, display: 'block' }}
+  //       />
+  //       <Space>
+  //         <Button
+  //           type="primary"
+  //           onClick={() =>
+  //             handleSearch(selectedKeys as string[], confirm, dataIndex)
+  //           }
+  //           icon={<SearchOutlined />}
+  //           size="small"
+  //           style={{ width: 90 }}
+  //         >
+  //           Search
+  //         </Button>
+  //         <Button
+  //           onClick={() => handleReset(clearFilters)}
+  //           size="small"
+  //           style={{ width: 90 }}
+  //         >
+  //           Reset
+  //         </Button>
+  //       </Space>
+  //     </div>
+  //   ),
+  //   filterIcon: (filtered: boolean) => (
+  //     <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />
+  //   ),
+  //   onFilter: (value, record) =>
+  //     record[dataIndex]
+  //       ? record[dataIndex]
+  //           .toString()
+  //           .toLowerCase()
+  //           .includes((value as string).toLowerCase())
+  //       : '',
+  //   onFilterDropdownVisibleChange: (visible) => {
+  //     if (visible) {
+  //       setTimeout(() => searchInput.current?.select(), 100);
+  //     }
+  //   },
+  //   render: (text) =>
+  //     searchedColumn === dataIndex ? (
+  //       <span style={{ backgroundColor: '#ffc069', padding: 0 }}>{text}</span>
+  //     ) : (
+  //       text
+  //     ),
+  // });
 
-  const columns: ColumnsType<any> = [
+  // 1. Kiểm tra xem có bản ghi nào có partner không
+  const hasPartner = registrations.some((item) => !!item.partnerId);
+
+  // 2. Định nghĩa các cột chung
+  const baseColumns: ColumnsType<RegistrationDetail> = [
     {
-      title: 'Player',
-      dataIndex: ['playerDetails', 'firstName'],
-      key: 'firstName',
-      ...getColumnSearchProps('firstName'),
-      render: (_: string, record: RegistrationDetail) => (
-        <span>
-          {record?.playerDetails?.firstName} {record?.playerDetails?.lastName}
-        </span>
+      title: hasPartner ? 'Player 1' : 'Player',
+      dataIndex: ['playerDetails', 'avatarUrl'],
+      key: 'avatarUrl',
+      render: (_: string, record) => (
+        // url ? (
+        //   <Avatar src={url} size={40} />
+        // ) : (
+        //   <Avatar icon={<UserOutlined />} size={40} />
+        // ),
+
+        <PlayerCard
+          firstName={record.playerDetails.firstName}
+          secondName={record.playerDetails.secondName}
+          lastName={record.playerDetails.lastName}
+          avatarUrl={record.playerDetails.avatarUrl}
+          email={record.playerDetails.email}
+          ranking={record.playerDetails.ranking}
+        />
       ),
     },
+  ];
+
+  // 3. Nếu có partner thì thêm 2 cột này
+  const partnerColumns: ColumnsType<RegistrationDetail> = [
     {
-      title: 'Email',
-      dataIndex: ['playerDetails', 'email'],
-      key: 'email',
-      ...getColumnSearchProps('email'),
-    },
-    {
-      title: 'Partner',
-      dataIndex: ['partnerDetails', 'firstName'],
-      key: 'partnerFirstName',
-      ...getColumnSearchProps('partnerFirstName'),
-      render: (_: string, record: RegistrationDetail) => (
-        <span>
-          {record.partnerDetails?.firstName} {record.partnerDetails?.lastName}
-        </span>
+      title: hasPartner ? 'Player 2' : 'Player',
+      dataIndex: ['partnerDetails', 'avatarUrl'],
+      key: 'avatarUrl',
+      render: (_: string, record) => (
+        // url ? (
+        //   <Avatar src={url} size={40} />
+        // ) : (
+        //   <Avatar icon={<UserOutlined />} size={40} />
+        // ),
+
+        <PlayerCard
+          firstName={record.playerDetails.firstName}
+          secondName={record.playerDetails.secondName}
+          lastName={record.playerDetails.lastName}
+          avatarUrl={record.playerDetails.avatarUrl}
+          email={record.playerDetails.email}
+          ranking={record.playerDetails.ranking}
+        />
       ),
     },
-    {
-      title: 'Partner Email',
-      dataIndex: ['partnerDetails', 'email'],
-      key: 'partnerEmail',
-      ...getColumnSearchProps('partnerEmail'),
-    },
+  ];
+
+  // 4. Kết hợp columns trước khi render <Table>
+  const columns: ColumnsType<RegistrationDetail> = [
+    ...baseColumns,
+    ...(hasPartner ? partnerColumns : []),
   ];
 
   const rowClassName = (record: RegistrationDetail) => {

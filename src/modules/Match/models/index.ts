@@ -171,3 +171,23 @@ export interface TournamentMember {
   teamId: number;
   joinedAt: string;
 }
+
+//Xử lý view list all matches by userId
+
+export interface Matches {
+  id: number;
+  title: string;
+  description: string;
+  matchDate: Date; // ISO date string
+  venueId: number | null;
+  status: MatchStatus;
+  matchCategory: MatchCategory;
+  matchFormat: MatchFormat;
+  winScore: number;
+  roomOwner: number;
+  team1Score: number | null;
+  team2Score: number | null;
+  isPublic: boolean;
+  refereeId: number | null;
+  teams: Team[];
+}
