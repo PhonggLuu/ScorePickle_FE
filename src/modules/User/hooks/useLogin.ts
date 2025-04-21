@@ -9,11 +9,7 @@ import {
 } from '@src/utils/localStorageUtils';
 import { useNavigate } from 'react-router-dom';
 import { PATH_LANDING } from '@src/constants';
-import {
-  PATH_ADMIN_PAYMENT,
-  PATH_DASHBOARD,
-  PATH_SPONSOR_PAYMENT,
-} from '@src/constants/routes';
+import { PATH_DASHBOARD, PATH_SPONSOR_PAYMENT } from '@src/constants/routes';
 
 // integration with redux for login user
 const login = async (request: LoginRequest): Promise<LoginResponse> => {
