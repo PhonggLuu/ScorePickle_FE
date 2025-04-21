@@ -1,5 +1,5 @@
 import type React from 'react';
-import { Card, Button, Tabs, Tag, Typography, message } from 'antd';
+import { Card, Button, Tabs, Tag, Typography, message, Spin } from 'antd';
 import {
   CalendarOutlined,
   EnvironmentOutlined,
@@ -22,7 +22,7 @@ import { useGetTournamentById } from '@src/modules/Tournament/hooks/useGetTourna
 import { getPaymentUrl } from '@src/modules/Payment/hooks/useGetPaymentUrl';
 import { createRegistration } from '@src/modules/TournamentRegistration/hooks/useCreateRegistration';
 import { useCheckJoinTournament } from '@src/modules/Tournament/hooks/useCheckJoinTournament';
-import MatchRoom from '../tournament/Admin/containers/MatchRoom';
+import TournamentMatches from './containers/TournamentMatchPage';
 
 const { Title, Paragraph } = Typography;
 const { TabPane } = Tabs;
@@ -50,7 +50,15 @@ export const TournamentDetailPage: React.FC = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
 
   // If data is still loading or there's an error, render appropriate messages
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading)
+    return (
+      <div
+        className="d-flex justify-content-center align-items-center"
+        style={{ height: '100vh' }}
+      >
+        <Spin style={{ fontSize: '50px' }} />
+      </div>
+    );
   if (notFoundTournament) return <div>Error loading tournament details</div>;
 
   const tournament: Tournament = tournamentData as Tournament;
@@ -292,6 +300,7 @@ export const TournamentDetailPage: React.FC = () => {
                 Schedule information will be displayed here.
               </Paragraph>
             </Card> */}
+            <TournamentMatches id={tournament.id} />
           </TabPane>
           <TabPane tab="Participants" key="participants">
             <Participants

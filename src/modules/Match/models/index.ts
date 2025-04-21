@@ -137,3 +137,37 @@ export interface MatchResponse {
   refereeId: number | null;
   teams: any[];
 }
+
+export interface TournamentMatch {
+  id: number;
+  title: string;
+  description: string;
+  matchDate: Date;
+  createAt: Date;
+  venueId: number | null;
+  status: MatchStatus;
+  matchCategory: MatchCategory;
+  matchFormat: MatchFormat;
+  winScore: number;
+  roomOwner: number;
+  team1Score: number | null;
+  team2Score: number | null;
+  isPublic: boolean;
+  refereeId: number | null;
+  teamResponse: TournamentTeam[];
+}
+
+export interface TournamentTeam {
+  id: number;
+  name: string;
+  captainId: number | null;
+  matchingId: number;
+  members: TournamentMember[];
+}
+
+export interface TournamentMember {
+  id: number;
+  playerId: number;
+  teamId: number;
+  joinedAt: string;
+}

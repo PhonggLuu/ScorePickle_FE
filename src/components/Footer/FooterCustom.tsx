@@ -1,5 +1,5 @@
 import React from 'react';
-import { Layout, Row, Col, Image, Input, Button } from 'antd';
+import { Layout, Row, Col, Input, Button } from 'antd';
 import {
   FacebookFilled,
   InstagramFilled,
