@@ -20,7 +20,7 @@ import { useGetMatchDetail } from '@src/modules/Match/hooks/useGetMatchDetail';
 
 const { Title, Text } = Typography;
 
-const MatchDetail: React.FC = () => {
+export const MatchDetail: React.FC = () => {
   const [activeKey, setActiveKey] = useState<string | string[]>(['1']);
   const { id } = useParams<{ id: string }>();
   const { data } = useGetMatchDetail(Number(id || 0));
