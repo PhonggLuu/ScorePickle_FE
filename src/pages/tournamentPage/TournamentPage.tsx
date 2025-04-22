@@ -1,109 +1,16 @@
-import { useState } from 'react';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import 'antd/dist/reset.css';
-import { Button, Checkbox, Input, message } from 'antd';
 import {
-  CalendarOutlined,
-  EnvironmentOutlined,
   FilterOutlined,
   LoadingOutlined,
-  SearchOutlined,
-  TagOutlined,
-  TeamOutlined,
+  SearchOutlined
 } from '@ant-design/icons';
-import { Link } from 'react-router-dom';
 import { useGetAllTournamentsForPlayer } from '@src/modules/Tournament/hooks/useGetAllTournaments';
-import { useSelector } from 'react-redux';
 import { RootState } from '@src/redux/store';
-import './tournament-page.css';
-
-const TournamentCard = ({
-  id,
-  title,
-  dates,
-  location,
-  type,
-  registeredCount,
-  description,
-  skillLevels,
-  entryFee,
-  status,
-}) => (
-  <div className="card mb-4">
-    <div className="card-body">
-      <div className="row ml-2">
-        <div className="col-5">
-          <h5 className="card-title mb-4" style={{ fontWeight: 'bold' }}>
-            {title}
-          </h5>
-          <p className="card-text">
-            <span className="d-flex align-items-center mb-2">
-              <CalendarOutlined className="me-2" />
-              {dates}
-            </span>
-            <span className="d-flex align-items-center mb-2">
-              <EnvironmentOutlined className="me-2" />
-              {location}
-            </span>
-            <span className="d-flex align-items-center mb-2">
-              <TagOutlined className="me-2" />
-              {type}
-            </span>
-            <span className="d-flex align-items-center mb-2">
-              <TeamOutlined className="me-2" />
-              {registeredCount}
-            </span>
-          </p>
-        </div>
-        <div className="col-1"></div>
-        <div className="col-6">
-          <div className="d-flex justify-content-end mb-2 mr-2">
-            <span
-              className="border border-light bg-dark text-white rounded-pill p-1 fw-bold fs-7 px-3"
-              style={{ fontSize: '0.75rem' }}
-            >
-              {status}
-            </span>
-          </div>
-          <p className="card-text mt-2">
-            <span className="d-flex align-items-center mb-2">
-              {description}
-            </span>
-            <span className="d-flex align-items-center mb-2">
-              {skillLevels !== 'null - null' ? (
-                <span>
-                  <strong>Skill Levels: {skillLevels}</strong>
-                </span>
-              ) : (
-                <span>
-                  <strong>Skill Levels: All</strong>
-                </span>
-              )}
-            </span>
-            <span className="d-flex align-items-center mb-2">
-              <strong>Entry Fee: {entryFee.toLocaleString('vi-VN')}</strong>
-            </span>
-          </p>
-        </div>
-      </div>
-    </div>
-    <div className="card-header">
-      <div className="row">
-        <div className="col-6">
-          <div className="d-flex justify-content-start">
-            <Link
-              to={`/tournament-detail/${id}`}
-              style={{ textDecoration: 'none' }}
-              className="border border-dark bg-light text-dark py-2 px-3 rounded fw-bold"
-            >
-              View Details
-            </Link>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-);
+import { Button, Checkbox, Input, message } from 'antd';
+import 'antd/dist/reset.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import { useState } from 'react';
+import { useSelector } from 'react-redux';
+import { TournamentCard } from './containers/TournamentCard';
 
 export const TournamentPage = () => {
   const { data, isLoading } = useGetAllTournamentsForPlayer();
@@ -414,12 +321,12 @@ export const TournamentPage = () => {
                   location={tournament.location}
                   type={tournament.type}
                   registeredCount={tournament.maxPlayer}
-                  description={tournament.description}
                   skillLevels={
                     tournament.isMinRanking + ' - ' + tournament.isMaxRanking
                   }
                   entryFee={tournament.entryFee}
                   status={tournament.status}
+                  banner={tournament.banner}
                 />
               ))
             )}
