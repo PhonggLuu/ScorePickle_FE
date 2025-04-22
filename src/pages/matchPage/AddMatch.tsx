@@ -34,7 +34,6 @@ import {
 } from '@src/modules/Match/models';
 import { createMatch } from '@src/modules/Match/hooks/useCreateMatch';
 import { useNavigate } from 'react-router-dom';
-import moment from 'moment';
 
 const { Title, Text } = Typography;
 //const { TabPane } = Tabs;
@@ -74,15 +73,15 @@ const AddMatches: React.FC = () => {
   const { data: allFriend } = useGetFriendByUserId(user?.id ?? 0);
   const [friendData, setFriendData] = useState<GetFriendByUserIdResponse[]>([]);
 
-  const disabledDate = (current: moment.Moment) => {
+  const disabledDate = (current: dayjs.Dayjs) => {
     // không cho chọn trước 0:00 phút của ngày hôm nay
-    return current && current < moment().startOf('day');
+    return current && current.isBefore(dayjs().startOf('day'));
   };
 
   // 2. Chặn giờ/phút đã qua nếu chọn đúng ngày hôm nay
-  const disabledDateTime = (current: moment.Moment | null) => {
+  const disabledDateTime = (current: dayjs.Dayjs | null) => {
     if (!current) return {};
-    const now = moment();
+    const now = dayjs();
 
     // nếu đang chọn ngày hôm nay
     if (current.isSame(now, 'day')) {

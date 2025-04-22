@@ -4,7 +4,7 @@
 //   MatchFormat,
 //   MatchStatus,
 // } from '@src/modules/Match/models';
-import MatchDetail from './MatchDetail';
+//import MatchDetail from './MatchDetail';
 // import { useGetMatchByUserId } from '@src/modules/Match/hooks/useGetMatchByUserId';
 // import { RootState } from '@src/redux/store';
 // import { useSelector } from 'react-redux';
@@ -78,6 +78,6 @@ export default function PlayerMatchesPage() {
   //     },
   //   ],
   // };
-
-  return <MatchDetail />;
+  //return <MatchDetail />;
+  return;
 }
