@@ -32,6 +32,7 @@
     "bootstrap": "^5.3.3",
     "dayjs": "^1.11.9",
     "firebase": "^10.8.0",
+    "framer-motion": "^12.7.4",
     "interactjs": "^1.10.18",
     "jest": "^29.7.0",
     "jwt-decode": "^4.0.0",

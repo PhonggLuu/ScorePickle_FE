@@ -1,10 +1,14 @@
 import {
   CalendarOutlined,
+  DollarOutlined,
   EnvironmentOutlined,
-  TagOutlined,
   TeamOutlined,
+  TrophyOutlined
 } from '@ant-design/icons';
+import { Badge, Divider, Tag } from 'antd';
+import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
+import './TournamentCard.css';
 
 export const TournamentCard = ({
   id,
@@ -13,85 +17,107 @@ export const TournamentCard = ({
   location,
   type,
   registeredCount,
-  description,
   skillLevels,
   entryFee,
   status,
-}) => (
-  <div className="card mb-4">
-    <div className="card-body">
-      <div className="row ml-2">
-        <div className="col-5">
-          <h5 className="card-title mb-4" style={{ fontWeight: 'bold' }}>
-            {title}
-          </h5>
-          <p className="card-text">
-            <span className="d-flex align-items-center mb-2">
-              <CalendarOutlined className="me-2" />
-              {dates}
-            </span>
-            <span className="d-flex align-items-center mb-2">
-              <EnvironmentOutlined className="me-2" />
-              {location}
-            </span>
-            <span className="d-flex align-items-center mb-2">
-              <TagOutlined className="me-2" />
-              {type}
-            </span>
-            <span className="d-flex align-items-center mb-2">
-              <TeamOutlined className="me-2" />
-              {registeredCount}
-            </span>
-          </p>
-        </div>
-        <div className="col-1"></div>
-        <div className="col-6">
-          <div className="d-flex justify-content-end mb-2 mr-2">
-            <span
-              className="border border-light bg-dark text-white rounded-pill p-1 fw-bold fs-7 px-3"
-              style={{ fontSize: '0.75rem' }}
-            >
-              {status}
-            </span>
-          </div>
-          <p className="card-text mt-2">
-            <span className="d-flex align-items-center mb-2">
-              {description}
-            </span>
-            <span className="d-flex align-items-center mb-2">
-              {skillLevels !== 'null - null' ? (
-                <span>
-                  <strong>Skill Levels: {skillLevels}</strong>
-                </span>
-              ) : (
-                <span>
-                  <strong>Skill Levels: All</strong>
-                </span>
-              )}
-            </span>
-            <span className="d-flex align-items-center mb-2">
-              <strong>Entry Fee: {entryFee.toLocaleString('vi-VN')}</strong>
-            </span>
-          </p>
-        </div>
-      </div>
-    </div>
-    <div className="card-header">
-      <div className="row">
-        <div className="col-6">
-          <div className="d-flex justify-content-start">
-            <Link
-              to={`/tournament-detail/${id}`}
-              style={{ textDecoration: 'none' }}
-              className="border border-dark bg-light text-dark py-2 px-3 rounded fw-bold ms-3"
-            >
-              View Details
-            </Link>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-);
+  banner,
+}) => {
+  // Status badge type based on status
+  const getStatusBadge = (status): { color: 'processing' | 'success' | 'default' | 'warning' | 'error' | undefined, text: string } => {
+    switch(status) {
+      case 'Scheduled':
+        return { color: 'processing', text: 'Coming Soon' };
+      case 'Ongoing':
+        return { color: 'success', text: 'Ongoing' };
+      case 'Completed':
+        return { color: 'default', text: 'Completed' };
+      default:
+        return { color: 'warning', text: status };
+    }
+  };
 
-export default TournamentCard;
+  const statusConfig = getStatusBadge(status);
+  
+  // Tournament type based styling
+  const isDoubles = type.toLowerCase().includes('doubles');
+
+  return (
+    <motion.div 
+      className="tournament-card-container"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
+      whileHover={{ y: -5 }}
+    >
+      <div className="tournament-card">
+        <div className="tournament-card-header">
+          <div className="header-content">
+            <div className="title-area">
+              <h4 className="tournament-title">{title}</h4>
+              <Badge 
+                status={statusConfig.color} 
+                text={<span className="status-badge">{statusConfig.text}</span>}
+              />
+            </div>
+            <Tag 
+              color={isDoubles ? 'purple' : 'blue'} 
+              className="tournament-type"
+            >
+              {type}
+            </Tag>
+          </div>
+        </div>
+
+        <img src={banner} alt="" height={"300px"} width={"100%"} style={{
+          objectFit: 'cover',
+          borderRadius: '8px',
+          marginBottom: '16px'
+        }}/>
+        
+        <div className="tournament-info-section">
+          <div className="tournament-meta">
+            <div className="meta-row">
+              <div className="meta-item">
+          <CalendarOutlined className="meta-icon" /> 
+          <span>{dates}</span>
+              </div>
+              <div className="meta-item">
+          <EnvironmentOutlined className="meta-icon" /> 
+          <span>{location}</span>
+              </div>
+              <div className="meta-item">
+          <TeamOutlined className="meta-icon" /> 
+          <span>Maximum Players: {registeredCount}</span>
+              </div>
+            </div>
+          </div>
+          
+          <Divider className="card-divider" />
+          
+          <div className="tournament-stats">
+            <div className="stats-row">
+              <div className="stat-item">
+          <TrophyOutlined className="stat-icon" />
+          <span className="stat-label">Skill Levels:</span>
+          <span className="stat-value">
+            {skillLevels !== 'null - null' ? skillLevels : 'All'}
+          </span>
+              </div>
+              <div className="stat-item">
+          <DollarOutlined className="stat-icon" />
+          <span className="stat-label">Entry Fee:</span>
+          <span className="stat-value">{entryFee.toLocaleString('vi-VN')}₫</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div className="tournament-card-footer">
+          <Link to={`/tournament-detail/${id}`} className="btn-detail">
+            View Details
+          </Link>
+        </div>
+      </div>
+    </motion.div>
+  );
+};
