@@ -79,5 +79,6 @@ export default function PlayerMatchesPage() {
   //   ],
   // };
   //return <MatchDetail />;
-  return;
+
+  return <div>Player Matches Page</div>;
 }
