@@ -33,6 +33,8 @@ import {
   MatchStatus,
 } from '@src/modules/Match/models';
 import { createMatch } from '@src/modules/Match/hooks/useCreateMatch';
+import { useNavigate } from 'react-router-dom';
+import moment from 'moment';
 
 const { Title, Text } = Typography;
 //const { TabPane } = Tabs;
@@ -49,6 +51,7 @@ interface PlayersSelected {
 }
 
 const AddMatches: React.FC = () => {
+  const navigate = useNavigate();
   const user = useSelector((state: RootState) => state.auth.user);
   const [activeKey, setActiveKey] = useState<string | string[]>(['1']);
   const [matchType, setMatchType] = useState<string>('team');
@@ -70,6 +73,41 @@ const AddMatches: React.FC = () => {
 
   const { data: allFriend } = useGetFriendByUserId(user?.id ?? 0);
   const [friendData, setFriendData] = useState<GetFriendByUserIdResponse[]>([]);
+
+  const disabledDate = (current: moment.Moment) => {
+    // không cho chọn trước 0:00 phút của ngày hôm nay
+    return current && current < moment().startOf('day');
+  };
+
+  // 2. Chặn giờ/phút đã qua nếu chọn đúng ngày hôm nay
+  const disabledDateTime = (current: moment.Moment | null) => {
+    if (!current) return {};
+    const now = moment();
+
+    // nếu đang chọn ngày hôm nay
+    if (current.isSame(now, 'day')) {
+      const disabledHours = Array.from({ length: now.hour() }, (_, i) => i);
+      const disabledMinutes = (hour: number) => {
+        // nếu giờ trùng với giờ hiện tại, chặn phút đã qua
+        if (hour === now.hour()) {
+          return Array.from({ length: now.minute() }, (_, i) => i);
+        }
+        return [];
+      };
+      return {
+        disabledHours: () => disabledHours,
+        disabledMinutes,
+        disabledSeconds: () => [] as number[],
+      };
+    }
+
+    // với ngày khác hôm nay thì không chặn time
+    return {
+      disabledHours: () => [],
+      disabledMinutes: () => [],
+      disabledSeconds: () => [],
+    };
+  };
 
   useEffect(() => {
     if (allFriend) {
@@ -189,6 +227,7 @@ const AddMatches: React.FC = () => {
     }
     const isComp =
       matchCategory === MatchCategory[MatchCategory.Competitive].toLowerCase();
+    const isTeam = matchType === 'team';
     const payload: MatchRequest = {
       title: title,
       description: description,
@@ -206,8 +245,8 @@ const AddMatches: React.FC = () => {
       roomOnwer: user!.id,
       player1Id: user!.id,
       player2Id: isComp ? null : playersSelected.players[1].id ?? null,
-      player3Id: isComp ? null : playersSelected.players[2].id ?? null,
-      player4Id: isComp ? null : playersSelected.players[3].id ?? null,
+      player3Id: isComp ? null : isTeam ? playersSelected.players[2].id : null,
+      player4Id: isComp ? null : isTeam ? playersSelected.players[3].id : null,
       refereeId: referee !== 0 ? venue : null,
       tournamentId: null,
     };
@@ -215,6 +254,7 @@ const AddMatches: React.FC = () => {
     if (data) {
       message.success('Create match successfully');
       resetFields();
+      navigate(`/match-detail/${data.id}`);
     } else message.info('Create match failed');
   };
 
@@ -292,6 +332,8 @@ const AddMatches: React.FC = () => {
                 onChange={(date) => date && setSelectedDate(date)}
                 showTime={{ format: 'HH:mm' }}
                 format="YYYY-MM-DD HH:mm"
+                disabledDate={disabledDate}
+                disabledTime={disabledDateTime}
               />
             </div>
           </div>

@@ -14,23 +14,21 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import 'antd/dist/reset.css';
 import type { CollapseProps } from 'antd';
 import dayjs from 'dayjs';
-import {
-  MatchCategory,
-  Matches,
-  MatchFormat,
-  Member,
-} from '@src/modules/Match/models';
+import { MatchCategory, MatchFormat, Member } from '@src/modules/Match/models';
+import { useParams } from 'react-router-dom';
+import { useGetMatchDetail } from '@src/modules/Match/hooks/useGetMatchDetail';
 
 const { Title, Text } = Typography;
 
-interface Props {
-  data: Matches;
-}
-
-const MatchDetail: React.FC<Props> = ({ data }) => {
+const MatchDetail: React.FC = () => {
   const [activeKey, setActiveKey] = useState<string | string[]>(['1']);
+  const { id } = useParams<{ id: string }>();
+  const { data } = useGetMatchDetail(Number(id || 0));
 
   // Safely extract members for each team
+  if (data === undefined) {
+    return;
+  }
   const team1Members: Member[] = Array.isArray(data.teams[0]?.members)
     ? data.teams[0].members
     : [];

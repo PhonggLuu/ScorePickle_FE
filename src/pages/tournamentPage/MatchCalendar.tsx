@@ -2,19 +2,22 @@
 
 import type React from 'react';
 import { useState } from 'react';
-import { Button, Card, Row, Col, Badge, Typography } from 'antd';
+import { Button, Card, Row, Col, Badge, Typography, Spin } from 'antd';
 import { LeftOutlined, RightOutlined } from '@ant-design/icons';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './match-calendar.css';
+import { RootState } from '@src/redux/store';
+import { useSelector } from 'react-redux';
+import { useGetMatchByUserId } from '@src/modules/Match/hooks/useGetMatchByUserId';
+import { MatchCategory, Matches } from '@src/modules/Match/models';
+import { useNavigate } from 'react-router-dom';
 
 const { Title } = Typography;
 
 // Define types
 interface MatchEvent {
-  type: 'match' | 'tournament' | 'your-match';
-  title?: string;
-  time?: string;
-  details?: string;
+  type: MatchCategory;
+  match: Matches;
 }
 
 interface CalendarDay {
@@ -111,7 +114,6 @@ const styles = {
   },
   yourMatchBadge: {
     marginBottom: '4px',
-    fontWeight: 'bold',
   },
   matchTime: {
     fontSize: '12px',
@@ -120,114 +122,126 @@ const styles = {
 };
 
 const MatchCalendar: React.FC = () => {
-  const [activeView, setActiveView] = useState<string>('Monthly View');
-  const [currentMonth, setCurrentMonth] = useState<string>('March 2025');
+  //const [activeView, setActiveView] = useState<string>('Monthly View');
+  const navigate = useNavigate();
+  const [currentMonth, setCurrentMonth] = useState<string>(
+    `${new Date().toLocaleString('default', {
+      month: 'long',
+    })} ${new Date().getFullYear()}`
+  );
+  const [currentDate, setCurrentDate] = useState<Date>(new Date());
+  const user = useSelector((state: RootState) => state.auth.user);
+  const { data: matches, isLoading } = useGetMatchByUserId(user?.id ?? 0);
+
+  if (isLoading) {
+    return (
+      <>
+        <div
+          className="d-flex justify-content-center align-items-center"
+          style={{ height: '100vh' }}
+        >
+          <Spin size="large" />
+        </div>
+      </>
+    );
+  }
 
   // Sample data for March 2025
-  const generateCalendarData = (): CalendarDay[][] => {
+  const generateCalendarData = (
+    year: number,
+    month: number
+  ): CalendarDay[][] => {
     // This represents the calendar grid (6 rows x 7 columns)
     const weeks: CalendarDay[][] = [];
+    const monthMatches = (matches ?? []).filter((m) => {
+      const d = new Date(m.matchDate);
+      return d.getFullYear() === year && d.getMonth() === month;
+    });
 
-    // First week with empty days and days 1-2
-    weeks.push([
-      { day: 0, events: [] }, // Empty cell
-      { day: 0, events: [] }, // Empty cell
-      { day: 0, events: [] }, // Empty cell
-      { day: 0, events: [] }, // Empty cell
-      { day: 0, events: [] }, // Empty cell
-      { day: 1, events: [] },
-      { day: 2, events: [] },
-    ]);
+    // 2. Tính số ngày, và thứ của ngày 1
+    const firstOfMonth = new Date(year, month, 1);
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
 
-    // Second week (days 3-9)
-    weeks.push([
-      { day: 3, events: [{ type: 'match' }] },
-      { day: 4, events: [] },
-      { day: 5, events: [] },
-      { day: 6, events: [] },
-      { day: 7, events: [{ type: 'match' }] },
-      { day: 8, events: [] },
-      { day: 9, events: [] },
-    ]);
+    // Chuyển getDay() (0=CN,…6=T7) -> idx 0=Thứ 2,…6=Chủ nhật
+    const firstDayIdx =
+      firstOfMonth.getDay() === 0 ? 6 : firstOfMonth.getDay() - 1;
 
-    // Third week (days 10-16)
-    weeks.push([
-      { day: 10, events: [] },
-      { day: 11, events: [] },
-      { day: 12, events: [{ type: 'match' }] },
-      { day: 13, events: [] },
-      { day: 14, events: [] },
-      {
-        day: 15,
-        events: [{ type: 'tournament', title: 'Spring Open Tournament' }],
-      },
-      {
-        day: 16,
-        events: [{ type: 'tournament', title: 'Spring Open Tournament' }],
-      },
-    ]);
+    let currentWeek: CalendarDay[] = [];
 
-    // Fourth week (days 17-23)
-    weeks.push([
-      {
-        day: 17,
-        events: [{ type: 'tournament', title: 'Spring Open Tournament' }],
-      },
-      { day: 18, events: [] },
-      {
-        day: 19,
-        events: [
-          { type: 'your-match', time: '4:00 PM', details: 'Ranked Match' },
-        ],
-      },
-      { day: 20, events: [] },
-      { day: 21, events: [] },
-      { day: 22, events: [{ type: 'match' }] },
-      { day: 23, events: [] },
-    ]);
+    // 3. Đặt ô trống đầu tuần nếu ngày 1 không rơi đúng Thứ Hai
+    for (let i = 0; i < firstDayIdx; i++) {
+      currentWeek.push({ day: 0, events: [] });
+    }
 
-    // Fifth week (days 24-30)
-    weeks.push([
-      { day: 24, events: [] },
-      { day: 25, events: [{ type: 'match' }] },
-      { day: 26, events: [] },
-      { day: 27, events: [] },
-      { day: 28, events: [{ type: 'match' }] },
-      { day: 29, events: [] },
-      { day: 30, events: [] },
-    ]);
+    // 4. Duyệt từng ngày, tạo ô và đẩy sự kiện vào
+    for (let day = 1; day <= daysInMonth; day++) {
+      // Tìm match cùng ngày
+      const todayEvents: MatchEvent[] = monthMatches
+        .filter((m) => new Date(m.matchDate).getDate() === day)
+        .map((m) => ({ type: m.matchCategory, match: m }));
 
-    // Sixth week (day 31)
-    weeks.push([
-      { day: 31, events: [] },
-      { day: 0, events: [] }, // Empty cell
-      { day: 0, events: [] }, // Empty cell
-      { day: 0, events: [] }, // Empty cell
-      { day: 0, events: [] }, // Empty cell
-      { day: 0, events: [] }, // Empty cell
-      { day: 0, events: [] }, // Empty cell
-    ]);
+      currentWeek.push({ day, events: todayEvents });
+
+      // Khi đủ 7 ô thành một tuần, đẩy vào weeks và reset
+      if (currentWeek.length === 7) {
+        weeks.push(currentWeek);
+        currentWeek = [];
+      }
+    }
+
+    // 5. Cuối cùng, nếu tuần cuối chưa đủ 7 ô thì lấp ô trống
+    if (currentWeek.length > 0) {
+      while (currentWeek.length < 7) {
+        currentWeek.push({ day: 0, events: [] });
+      }
+      weeks.push(currentWeek);
+    }
 
     return weeks;
   };
 
-  const calendarData = generateCalendarData();
+  const calendarData = generateCalendarData(
+    currentDate.getFullYear(),
+    currentDate.getMonth()
+  );
 
   const handlePrevMonth = () => {
     // In a real app, this would change to the previous month
-    setCurrentMonth('February 2025');
-    console.log('Navigate to previous month');
+    const currentDate = new Date();
+    currentDate.setMonth(currentDate.getMonth() - 1); // Trừ đi 1 tháng
+
+    setCurrentMonth(
+      `${currentDate.toLocaleString('default', {
+        month: 'long',
+      })} ${currentDate.getFullYear()}`
+    );
+    setCurrentDate((prev) => {
+      const d = new Date(prev);
+      d.setMonth(d.getMonth() - 1); // or +1
+      return d;
+    });
   };
 
   const handleNextMonth = () => {
     // In a real app, this would change to the next month
-    setCurrentMonth('April 2025');
-    console.log('Navigate to next month');
+    const currentDate = new Date();
+    currentDate.setMonth(currentDate.getMonth() + 1);
+
+    setCurrentMonth(
+      `${currentDate.toLocaleString('default', {
+        month: 'long',
+      })} ${currentDate.getFullYear()}`
+    );
+    setCurrentDate((prev) => {
+      const d = new Date(prev);
+      d.setMonth(d.getMonth() + 1); // or +1
+      return d;
+    });
   };
 
-  const handleViewChange = (view: string) => {
-    setActiveView(view);
-  };
+  // const handleViewChange = (view: string) => {
+  //   setActiveView(view);
+  // };
 
   const renderDayCell = (day: CalendarDay) => {
     if (day.day === 0) {
@@ -238,31 +252,80 @@ const MatchCalendar: React.FC = () => {
       <div style={styles.calendarDay}>
         <div style={styles.dayNumber}>{day.day}</div>
         {day.events.map((event, index) => (
-          <div key={index}>
-            {event.type === 'match' && (
-              <div style={styles.matchLabel}>Matches</div>
-            )}
-            {event.type === 'tournament' && (
-              <div style={styles.tournamentEvent}>
-                {index === 0 && (
-                  <Badge
-                    color="orange"
-                    text="Tournament"
-                    style={styles.tournamentBadge}
-                  />
-                )}
-                <div style={styles.tournamentTitle}>{event.title}</div>
+          // ← đây là chỗ thêm onClick
+          <div
+            key={index}
+            style={{ cursor: 'pointer' }}
+            onClick={() =>
+              navigate(`/match-detail/${event.match.id}`, {
+                state: { match: event.match },
+              })
+            }
+          >
+            {event.type === MatchCategory.Competitive && (
+              //<div style={styles.matchLabel}>{event.match.title}</div>
+              <div style={styles.yourMatch}>
+                <Badge color="cyan" text="Competitive" />
+                <div style={styles.matchTime}>{event.match.title}</div>
+                <div
+                  style={styles.matchTime}
+                  className="bg-info rounded-pill d-flex justify-content-center align-items-center"
+                >
+                  {`${new Date(event.match.matchDate)
+                    .getHours()
+                    .toString()
+                    .padStart(2, '0')}:
+                    ${new Date(event.match.matchDate)
+                      .getMinutes()
+                      .toString()
+                      .padStart(2, '0')}`}
+                </div>
               </div>
             )}
-            {event.type === 'your-match' && (
+
+            {event.type === MatchCategory.Tournament && (
               <div style={styles.yourMatch}>
                 <Badge
-                  color="black"
-                  text="Your Match"
+                  color="orange"
+                  text="Tournament"
+                  style={styles.tournamentBadge}
+                />
+                <div style={styles.matchTime}>{event.match.title}</div>
+                <div
+                  style={{ ...styles.matchTime, background: 'orange' }}
+                  className="rounded-pill d-flex justify-content-center align-items-center"
+                >
+                  {`${new Date(event.match.matchDate)
+                    .getHours()
+                    .toString()
+                    .padStart(2, '0')}:
+                    ${new Date(event.match.matchDate)
+                      .getMinutes()
+                      .toString()
+                      .padStart(2, '0')}`}
+                </div>
+              </div>
+            )}
+            {event.type === MatchCategory.Custom && (
+              <div style={styles.yourMatch}>
+                <Badge
+                  color="pink"
+                  text="Friendly"
                   style={styles.yourMatchBadge}
                 />
-                <div style={styles.matchTime}>
-                  {event.time} - {event.details}
+                <div style={styles.matchTime}>{event.match.title}</div>
+                <div
+                  style={{ ...styles.matchTime, background: 'pink' }}
+                  className="rounded-pill d-flex justify-content-center align-items-center"
+                >
+                  {`${new Date(event.match.matchDate)
+                    .getHours()
+                    .toString()
+                    .padStart(2, '0')}:
+                    ${new Date(event.match.matchDate)
+                      .getMinutes()
+                      .toString()
+                      .padStart(2, '0')}`}
                 </div>
               </div>
             )}
@@ -273,25 +336,12 @@ const MatchCalendar: React.FC = () => {
   };
 
   return (
-    <div style={styles.container}>
-      <Title level={2} style={styles.title}>
+    <div style={styles.container} className="mt-5">
+      <Title level={2} style={styles.title} className="text-white">
         Match Calendar
       </Title>
 
-      <div style={styles.viewSelector}>
-        {['Monthly View', 'Weekly View', 'Daily View', 'Tournaments'].map(
-          (view) => (
-            <Button
-              key={view}
-              type={activeView === view ? 'primary' : 'default'}
-              style={styles.viewButton}
-              onClick={() => handleViewChange(view)}
-            >
-              {view}
-            </Button>
-          )
-        )}
-      </div>
+      <div style={styles.viewSelector}></div>
 
       <Card style={styles.calendarCard}>
         <div style={styles.monthHeader}>

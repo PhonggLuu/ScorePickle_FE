@@ -22,6 +22,7 @@ import { Link, Outlet, useLocation } from 'react-router-dom';
 import { useRef, useState } from 'react';
 import {
   ApartmentOutlined,
+  CalendarOutlined,
   DeleteColumnOutlined,
   EditOutlined,
   LockOutlined,
@@ -209,6 +210,18 @@ export const GuestLayout = () => {
         <Link to={`my-tournament`} style={{ textDecoration: 'none' }}>
           <TrophyOutlined className="me-2" />
           Joined-Tournament
+        </Link>
+      ),
+      style: {
+        padding: '10px 0 10px 10px',
+      },
+    },
+    {
+      key: 'my-match',
+      label: (
+        <Link to={`match-calendar`} style={{ textDecoration: 'none' }}>
+          <CalendarOutlined className="me-2" />
+          Matches Calendar
         </Link>
       ),
       style: {
@@ -595,6 +608,15 @@ export const GuestLayout = () => {
                     className="text-black"
                   >
                     Friends
+                  </Button>
+                </Link>
+                <Link to={`match-calendar`}>
+                  <Button
+                    icon={<CalendarOutlined />}
+                    type="link"
+                    className="text-black"
+                  >
+                    Matches Calendar
                   </Button>
                 </Link>
                 <Link to="#">
