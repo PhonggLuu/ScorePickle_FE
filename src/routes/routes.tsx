@@ -88,6 +88,7 @@ import AddMatches from '@src/pages/matchPage/AddMatch.tsx';
 import HomePagee from '@src/pages/Homee.tsx';
 import MyProfile from '@src/pages/profilePage/MyProfile.tsx';
 import PlayerMatchesPage from '@src/pages/matchPage/PlayerMatches.tsx';
+import MatchDetail from '@src/pages/matchPage/MatchDetail.tsx';
 
 // Custom scroll restoration function
 export const ScrollToTop: React.FC = () => {
@@ -204,6 +205,11 @@ const router = createBrowserRouter([
         index: true,
         path: 'my-matches',
         element: <PlayerMatchesPage />,
+      },
+      {
+        index: true,
+        path: 'match-detail/:id',
+        element: <MatchDetail />,
       },
     ],
   },
