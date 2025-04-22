@@ -1,8 +1,13 @@
-import { Avatar, Button, Card, Table } from 'antd';
+import { Avatar, Button, Card, Table, Typography, Empty } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import { useState } from 'react';
 import { RegistrationDetail } from '@src/modules/Tournament/models';
 import { useSelector } from 'react-redux';
+import { motion } from 'framer-motion';
+import './participants.css';
+import { RootState } from '@src/redux/store';
+
+const { Title, Text } = Typography;
 
 type PlayersTableProps = {
   tournamentId: number;
@@ -19,108 +24,95 @@ const PlayerCard = ({
   email,
   ranking,
 }) => (
-  <Card className="profile-card border rounded shadow-sm mb-2 card">
-    <div className="d-flex align-items-center">
-      <div className="avatar-container">
-        <Avatar
-          style={{ marginLeft: '10px' }}
-          size={40}
-          src={
-            avatarUrl ??
-            'https://inkythuatso.com/uploads/thumbnails/800/2023/03/9-anh-dai-dien-trang-inkythuatso-03-15-27-03.jpg'
-          }
-          className="bg-primary"
-        />
-      </div>
-      <div className="ms-3 user-info">
-        <div className="mb-0 fw-bold" style={{ fontSize: '14px' }}>
-          {firstName} {secondName} {lastName}
+  <motion.div
+    initial={{ opacity: 0, y: 10 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ duration: 0.4 }}
+  >
+    <Card 
+      className="profile-card border rounded mb-2 card player-card"
+      hoverable
+    >
+      <div className="d-flex align-items-center">
+        <div className="avatar-container">
+          <motion.div
+            whileHover={{ scale: 1.1 }}
+            transition={{ type: "spring", stiffness: 300, damping: 10 }}
+          >
+            <Avatar
+              style={{ marginLeft: '10px' }}
+              size={50}
+              src={
+                avatarUrl ??
+                'https://inkythuatso.com/uploads/thumbnails/800/2023/03/9-anh-dai-dien-trang-inkythuatso-03-15-27-03.jpg'
+              }
+              className="bg-primary"
+            />
+          </motion.div>
         </div>
-        <p className="d-flex small text-muted">{email}</p>
+        <div className="ms-3 user-info">
+          <Text strong className="player-name">
+            {firstName} {secondName} {lastName}
+          </Text>
+          <Text type="secondary" className="player-email">
+            {email}
+          </Text>
+        </div>
+        <motion.div
+          className="position-absolute end-0 translate-middle-y me-3"
+          whileHover={{ scale: 1.05 }}
+        >
+          <Button
+            className="d-flex justify-content-center align-items-center ranking-btn"
+            style={{
+              top: '50%',
+              transform: 'translateY(-50%)',
+              background: ranking >= 7 ? 'rgba(22, 119, 255, 0.1)' : 
+                        ranking >= 4 ? 'rgba(82, 196, 26, 0.1)' : 'rgba(250, 173, 20, 0.1)',
+              color: ranking >= 7 ? '#1677ff' : 
+                    ranking >= 4 ? '#52c41a' : '#faad14',
+              border: 'none',
+              fontWeight: '600'
+            }}
+          >
+            Level {ranking}
+          </Button>
+        </motion.div>
       </div>
-      <Button
-        className="position-absolute end-0 translate-middle-y me-3 d-flex justify-content-center align-items-center"
-        style={{
-          top: '50%',
-          transform: 'translateY(-50%)',
-          background: '#05155E1A',
-        }}
-      >
-        <span className="fw-200">Level {ranking}</span>
-      </Button>
-    </div>
-  </Card>
+    </Card>
+  </motion.div>
 );
 
 export const Participants = ({ registrations = [] }: PlayersTableProps) => {
   const [filteredRegistrations] = useState<RegistrationDetail[]>(registrations);
+  
+  const user = useSelector((state: RootState) => state.auth.user);
 
-  const user = useSelector((state: any) => state.auth.user);
+  // Animation variants for container
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        when: "beforeChildren",
+        staggerChildren: 0.1
+      }
+    }
+  };
 
-  // const getColumnSearchProps = (dataIndex: DataIndex): ColumnType<any> => ({
-  //   filterDropdown: ({
-  //     setSelectedKeys,
-  //     selectedKeys,
-  //     confirm,
-  //     clearFilters,
-  //   }) => (
-  //     <div style={{ padding: 8 }}>
-  //       <Input
-  //         ref={searchInput}
-  //         placeholder={`Search ${dataIndex}`}
-  //         value={selectedKeys[0]}
-  //         onChange={(e) =>
-  //           setSelectedKeys(e.target.value ? [e.target.value] : [])
-  //         }
-  //         onPressEnter={() =>
-  //           handleSearch(selectedKeys as string[], confirm, dataIndex)
-  //         }
-  //         style={{ marginBottom: 8, display: 'block' }}
-  //       />
-  //       <Space>
-  //         <Button
-  //           type="primary"
-  //           onClick={() =>
-  //             handleSearch(selectedKeys as string[], confirm, dataIndex)
-  //           }
-  //           icon={<SearchOutlined />}
-  //           size="small"
-  //           style={{ width: 90 }}
-  //         >
-  //           Search
-  //         </Button>
-  //         <Button
-  //           onClick={() => handleReset(clearFilters)}
-  //           size="small"
-  //           style={{ width: 90 }}
-  //         >
-  //           Reset
-  //         </Button>
-  //       </Space>
-  //     </div>
-  //   ),
-  //   filterIcon: (filtered: boolean) => (
-  //     <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />
-  //   ),
-  //   onFilter: (value, record) =>
-  //     record[dataIndex]
-  //       ? record[dataIndex]
-  //           .toString()
-  //           .toLowerCase()
-  //           .includes((value as string).toLowerCase())
-  //       : '',
-  //   onFilterDropdownVisibleChange: (visible) => {
-  //     if (visible) {
-  //       setTimeout(() => searchInput.current?.select(), 100);
-  //     }
-  //   },
-  //   render: (text) =>
-  //     searchedColumn === dataIndex ? (
-  //       <span style={{ backgroundColor: '#ffc069', padding: 0 }}>{text}</span>
-  //     ) : (
-  //       text
-  //     ),
-  // });
+  // Animation variants for table rows
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        type: "spring",
+        stiffness: 100,
+        damping: 12
+      }
+    }
+  };
 
   // 1. Kiểm tra xem có bản ghi nào có partner không
   const hasPartner = registrations.some((item) => !!item.partnerId);
@@ -132,12 +124,6 @@ export const Participants = ({ registrations = [] }: PlayersTableProps) => {
       dataIndex: ['playerDetails', 'avatarUrl'],
       key: 'avatarUrl',
       render: (_: string, record) => (
-        // url ? (
-        //   <Avatar src={url} size={40} />
-        // ) : (
-        //   <Avatar icon={<UserOutlined />} size={40} />
-        // ),
-
         <PlayerCard
           firstName={record.playerDetails.firstName}
           secondName={record.playerDetails.secondName}
@@ -150,27 +136,29 @@ export const Participants = ({ registrations = [] }: PlayersTableProps) => {
     },
   ];
 
-  // 3. Nếu có partner thì thêm 2 cột này
+  // 3. Nếu có partner thì thêm cột này
   const partnerColumns: ColumnsType<RegistrationDetail> = [
     {
-      title: hasPartner ? 'Player 2' : 'Player',
+      title: 'Player 2',
       dataIndex: ['partnerDetails', 'avatarUrl'],
       key: 'avatarUrl',
       render: (_: string, record) => (
-        // url ? (
-        //   <Avatar src={url} size={40} />
-        // ) : (
-        //   <Avatar icon={<UserOutlined />} size={40} />
-        // ),
-
-        <PlayerCard
-          firstName={record.playerDetails.firstName}
-          secondName={record.playerDetails.secondName}
-          lastName={record.playerDetails.lastName}
-          avatarUrl={record.playerDetails.avatarUrl}
-          email={record.playerDetails.email}
-          ranking={record.playerDetails.ranking}
-        />
+        record.partnerDetails ? (
+          <PlayerCard
+            firstName={record.partnerDetails.firstName}
+            secondName={record.partnerDetails.secondName}
+            lastName={record.partnerDetails.lastName}
+            avatarUrl={record.partnerDetails.avatarUrl}
+            email={record.partnerDetails.email}
+            ranking={record.partnerDetails.ranking}
+          />
+        ) : (
+          <Card className="profile-card border rounded mb-2 card empty-partner">
+            <div className="d-flex align-items-center justify-content-center" style={{ height: "60px" }}>
+              <Text type="secondary">No partner</Text>
+            </div>
+          </Card>
+        )
       ),
     },
   ];
@@ -190,25 +178,68 @@ export const Participants = ({ registrations = [] }: PlayersTableProps) => {
   };
 
   return (
-    <>
+    <motion.div
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+      className="participants-container"
+    >
+      <motion.div variants={itemVariants}>
+        <div className="participants-header">
+          <Title level={4} className="mb-3">
+            {registrations.length > 0 ? (
+              <>
+                Tournament Participants 
+                <span className="participant-count">{registrations.length}</span>
+              </>
+            ) : (
+              "No Participants Yet"
+            )}
+          </Title>
+        </div>
+      </motion.div>
+
       <style>
         {`
           .highlight-row {
-            background-color:rgb(250, 215, 166) !important;
+            background-color: rgba(250, 173, 20, 0.15) !important;
+            border-left: 3px solid #faad14;
+          }
+          
+          .highlight-row:hover td {
+            background-color: rgba(250, 173, 20, 0.25) !important;
           }
         `}
       </style>
-      <div>
-        <Table
-          columns={columns}
-          dataSource={filteredRegistrations}
-          rowKey="id"
-          style={{ backgroundColor: '#ffffff' }}
-          pagination={{ pageSize: 10 }}
-          rowClassName={rowClassName}
-        />
-      </div>
-    </>
+
+      {registrations.length > 0 ? (
+        <motion.div variants={itemVariants}>
+          <Table
+            columns={columns}
+            dataSource={filteredRegistrations}
+            rowKey="id"
+            className="participants-table"
+            pagination={{ 
+              pageSize: 10,
+              showSizeChanger: false,
+              position: ['bottomCenter'],
+              className: "custom-pagination" 
+            }}
+            rowClassName={rowClassName}
+          />
+        </motion.div>
+      ) : (
+        <motion.div
+          variants={itemVariants}
+          className="empty-state"
+        >
+          <Empty 
+            description="No participants have registered yet" 
+            image={Empty.PRESENTED_IMAGE_SIMPLE}
+          />
+        </motion.div>
+      )}
+    </motion.div>
   );
 };
 

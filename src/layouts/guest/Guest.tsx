@@ -1,4 +1,31 @@
 import {
+  BellOutlined,
+  CalendarOutlined,
+  DeleteColumnOutlined,
+  EditOutlined,
+  LockOutlined,
+  LoginOutlined,
+  LogoutOutlined,
+  MenuFoldOutlined,
+  MenuUnfoldOutlined,
+  ReadOutlined,
+  TeamOutlined,
+  TrophyOutlined,
+  UserAddOutlined,
+  UserOutlined
+} from '@ant-design/icons';
+import {
+  PATH_PLAYER_PAGE,
+  PATH_RULE_PAGE,
+  PATH_TOURNAMENT_PAGE
+} from '@src/constants/routes';
+import { useCountNotification } from '@src/modules/Notification/hooks/useCountNoti';
+import useLogout from '@src/modules/User/hooks/useLogout';
+import FriendRequest from '@src/pages/friend/FriendRequest';
+import TournamentInvitation from '@src/pages/tournamentPage/containers/TournamentInvitation';
+import { RootState } from '@src/redux/store';
+import {
+  Avatar as AntAvatar,
   Badge,
   Button,
   Card,
@@ -13,48 +40,30 @@ import {
   theme,
   Tooltip,
 } from 'antd';
+import TabPane from 'antd/es/tabs/TabPane';
+import { motion } from 'framer-motion';
+import { useEffect, useRef, useState } from 'react';
+import { useSelector } from 'react-redux';
+import { useMediaQuery } from 'react-responsive';
+import { Link, Outlet, useLocation } from 'react-router-dom';
 import {
   CSSTransition,
   SwitchTransition,
   TransitionGroup,
 } from 'react-transition-group';
-import { Link, Outlet, useLocation } from 'react-router-dom';
-import { useRef, useState } from 'react';
-import {
-  ApartmentOutlined,
-  CalendarOutlined,
-  DeleteColumnOutlined,
-  EditOutlined,
-  LockOutlined,
-  LoginOutlined,
-  LogoutOutlined,
-  MenuFoldOutlined,
-  MenuUnfoldOutlined,
-  NotificationOutlined,
-  ReadOutlined,
-  TeamOutlined,
-  TrophyOutlined,
-  UserAddOutlined,
-  UserOutlined,
-} from '@ant-design/icons';
-import { useMediaQuery } from 'react-responsive';
 import { Logo, NProgress } from '../../components';
 import { PATH_AUTH, PATH_LANDING } from '../../constants';
-import {
-  PATH_TOURNAMENT_PAGE,
-  PATH_RANKING_PAGE,
-  PATH_RULE_PAGE,
-  PATH_PLAYER_PAGE,
-} from '@src/constants/routes';
-import { RootState } from '@src/redux/store';
-import { useSelector } from 'react-redux';
-import useLogout from '@src/modules/User/hooks/useLogout';
-import TabPane from 'antd/es/tabs/TabPane';
-import TournamentInvitation from '@src/pages/tournamentPage/containers/TournamentInvitation';
-import { useCountNotification } from '@src/modules/Notification/hooks/useCountNoti';
-import FriendRequest from '@src/pages/friend/FriendRequest';
+import './guest-layout.css';
 
 const { Header, Content } = Layout;
+
+interface NavItem {
+  path: string;
+  label: string;
+  icon: JSX.Element;
+  exact?: boolean;
+}
+
 export const GuestLayout = () => {
   const {
     token: { borderRadius },
@@ -68,58 +77,90 @@ export const GuestLayout = () => {
   const { data: countNoti } = useCountNotification(user?.id ?? 0);
 
   const { logout } = useLogout();
-  const items: MenuProps['items'] = [
+  
+  // Navigation menu items definition
+  const navigationItems: NavItem[] = [
+    {
+      path: PATH_TOURNAMENT_PAGE.root,
+      label: 'Tournaments',
+      icon: <TrophyOutlined />,
+    },
+    {
+      path: PATH_PLAYER_PAGE.root,
+      label: 'Players',
+      icon: <TeamOutlined />,
+    },
+    {
+      path: PATH_RULE_PAGE.root,
+      label: 'Platform Rules',
+      icon: <ReadOutlined />,
+    },
+  ];
+
+  // User menu items
+  const userMenuItems: NavItem[] = user ? [
+    {
+      path: 'add-match',
+      label: 'New Match',
+      icon: <DeleteColumnOutlined />,
+    },
+  ] : [];
+  
+  // Check if the current path is active
+  const isActive = (path: string, exact = false) => {
+    if (exact) {
+      return location.pathname === path;
+    }
+    return location.pathname.startsWith(path);
+  };
+
+  // User dropdown menu items
+  const dropdownItems: MenuProps['items'] = [
     {
       label: (
-        <Card
-          style={{ width: 300, border: '0' }}
-          bodyStyle={{ padding: 10, paddingBottom: '20px' }}
+        <motion.div
+          initial={{ opacity: 0, y: 5 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.2 }}
         >
-          <Link
-            to={`my-profile`}
-            className="d-flex align-items-center text-decoration-none text-reset"
+          <Card
+            style={{ width: 300, border: '0' }}
+            bodyStyle={{ padding: 10, paddingBottom: '20px' }}
+            className="user-profile-card"
           >
-            <Flex>
-              <img
-                src={
-                  user?.avatarUrl ??
-                  'https://inkythuatso.com/uploads/thumbnails/800/2023/03/9-anh-dai-dien-trang-inkythuatso-03-15-27-03.jpg'
-                }
-                alt="user avatar"
-                style={{
-                  width: 50,
-                  height: 50,
-                  borderRadius: '50%',
-                  marginRight: '10px',
-                }}
-              />
-              <div style={{ whiteSpace: 'nowrap' }}>
-                <span>{user?.firstName + ' ' + user?.lastName}</span>
-                <br />
-                <p
-                  className="text-muted"
-                  style={{ marginTop: 0, fontSize: '13px', display: 'inline' }}
-                >
-                  {user?.userDetails?.province.toLocaleLowerCase() +
-                    ', ' +
-                    user?.userDetails?.city.toLocaleLowerCase()}
-                </p>
-                <span className="mx-1">•</span>
-                <p
-                  className="text-muted"
-                  style={{ marginTop: 0, fontSize: '13px', display: 'inline' }}
-                >
-                  {user?.gender}
-                </p>
-              </div>
-              <div style={{ whiteSpace: 'nowrap' }}>
-                <span className="bg-info border p-1 px-2 rounded">
-                  Level {user?.userDetails?.experienceLevel}
-                </span>
-              </div>
-            </Flex>
-          </Link>
-        </Card>
+            <Link
+              to={`my-profile`}
+              className="d-flex align-items-center text-decoration-none text-reset"
+            >
+              <Flex align="center">
+                <AntAvatar
+                  src={
+                    user?.avatarUrl ??
+                    'https://inkythuatso.com/uploads/thumbnails/800/2023/03/9-anh-dai-dien-trang-inkythuatso-03-15-27-03.jpg'
+                  }
+                  alt="user avatar"
+                  size={64}
+                  className="user-avatar"
+                />
+                <div className="ms-3" style={{ whiteSpace: 'nowrap' }}>
+                  <div className="user-name">{user?.firstName + ' ' + user?.lastName}</div>
+                  <div className="user-location">
+                    {user?.userDetails?.province?.toLocaleLowerCase() +
+                      ', ' +
+                      user?.userDetails?.city?.toLocaleLowerCase()}
+                    <span className="mx-1">•</span>
+                    {user?.gender}
+                  </div>
+                  <div className="mt-1">
+                    <span className="user-level">
+                      Level {user?.userDetails?.experienceLevel}
+                    </span>
+                  </div>
+                </div>
+              </Flex>
+            </Link>
+          </Card>
+        </motion.div>
       ),
       key: 'profile',
       style: { padding: '0', marginBottom: '10px' },
@@ -127,105 +168,89 @@ export const GuestLayout = () => {
     {
       key: 'profile-gap',
       label: (
-        <p
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            height: '100%',
-            marginTop: '10px',
-          }}
-        >
+        <div className="menu-section-header">
           My Account
-        </p>
+        </div>
       ),
       disabled: true,
       style: {
-        padding: '0',
-        margin: '0',
-        paddingLeft: '10px',
-        backgroundColor: 'rgb(224, 224, 224)',
+        padding: '8px 16px',
+        backgroundColor: 'rgba(0, 0, 0, 0.04)',
+        fontWeight: '600',
       },
     },
     {
       key: 'user-profile-link',
       label: (
-        <Link to={`my-profile`} style={{ textDecoration: 'none' }}>
+        <Link to={`my-profile`} className="menu-item">
           <EditOutlined className="me-2" />
           Edit Profile
         </Link>
       ),
       style: {
-        padding: '10px 0 10px 10px',
+        padding: '10px 16px',
       },
     },
     {
       key: 'user-password-link',
       label: (
-        <Link to={`update-password`} style={{ textDecoration: 'none' }}>
+        <Link to={`update-password`} className="menu-item">
           <LockOutlined className="me-2" />
           Password
         </Link>
       ),
       style: {
-        padding: '10px 0 10px 10px',
+        padding: '10px 16px',
       },
     },
     {
       key: 'info-gap',
       label: (
-        <p
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            height: '100%',
-            marginTop: '10px',
-          }}
-        >
+        <div className="menu-section-header">
           Activity
-        </p>
+        </div>
       ),
       disabled: true,
       style: {
-        padding: '0',
-        margin: '0',
-        paddingLeft: '10px',
-        backgroundColor: 'rgb(224, 224, 224)',
+        padding: '8px 16px',
+        backgroundColor: 'rgba(0, 0, 0, 0.04)',
+        fontWeight: '600',
       },
     },
     {
       key: 'my-friend',
       label: (
-        <Link to={`my-friend`} style={{ textDecoration: 'none' }}>
+        <Link to={`my-friend`} className="menu-item">
           <TeamOutlined className="me-2" />
           Friends
         </Link>
       ),
       style: {
-        padding: '10px 0 10px 10px',
+        padding: '10px 16px',
       },
     },
     {
       key: 'my-tournament',
       label: (
-        <Link to={`my-tournament`} style={{ textDecoration: 'none' }}>
+        <Link to={`my-tournament`} className="menu-item">
           <TrophyOutlined className="me-2" />
-          Joined-Tournament
+          Joined Tournaments
         </Link>
       ),
       style: {
-        padding: '10px 0 10px 10px',
+        padding: '10px 16px',
       },
     },
     {
       key: 'my-match',
       label: (
-        <Link to={`match-calendar`} style={{ textDecoration: 'none' }}>
+        <Link to={`match-calendar`} className="menu-item">
           <CalendarOutlined className="me-2" />
           Matches Calendar
         </Link>
       ),
       style: {
-        padding: '10px 0 10px 10px',
+        padding: '10px 16px',
       },
     },
     {
@@ -233,19 +258,19 @@ export const GuestLayout = () => {
     },
     {
       key: 'user-logout-link',
-      label: 'logout',
-      icon: <LogoutOutlined />,
+      label: (
+        <div className="menu-item text-danger">
+          <LogoutOutlined className="me-2" />
+          Logout
+        </div>
+      ),
       danger: true,
       onClick: () => logout(),
       style: {
-        padding: '10px 0 10px 10px',
+        padding: '10px 16px',
       },
     },
   ];
-
-  const handleLogout = () => {
-    logout();
-  };
 
   const showDrawer = () => {
     setOpen(true);
@@ -255,9 +280,10 @@ export const GuestLayout = () => {
     setOpen(false);
   };
 
+  // Notification modal state and handlers
   const [isModalVisible, setIsModalVisible] = useState(false);
-
-  // Toggle the modal visibility
+  const [activeTab, setActiveTab] = useState("1");
+  
   const showNotification = () => {
     setIsModalVisible(true);
   };
@@ -265,251 +291,200 @@ export const GuestLayout = () => {
   const handleCancel = () => {
     setIsModalVisible(false);
   };
+  
+  // Close drawer when navigating on mobile
+  useEffect(() => {
+    if (open && isMobile) {
+      setOpen(false);
+    }
+  }, [location.pathname, isMobile]);
 
   return (
     <>
       <NProgress isAnimating={isLoading} key={location.key} />
       <Layout
-        className="layout rounded-pill"
+        className="layout"
         style={{
           minHeight: '100vh',
-          // backgroundColor: 'white',
         }}
       >
         <Header
+          className="main-header"
           style={{
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            background: 'rgb(255, 255, 255)',
-            gap: 12,
-            top: 0,
-            zIndex: 1,
-            color: 'var(--blue-900)',
-            backgroundColor: '#fff',
-            border: '1px solid #fff',
-            borderRadius: '900000px',
-            width: '98%',
-            fontFamily: 'Inter, sans-serif',
-            display: 'flex',
-            position: 'fixed',
-            boxShadow: '0 4px 10px #0003',
-            padding: isMobile ? '0 1rem' : '1.5rem .75rem 1.5rem 1.5rem',
+            width: isMobile ? 'calc(100% - 16px)' : 'calc(100% - 40px)',
+            borderRadius: '16px',
+            padding: isMobile ? '0 16px' : '0 24px',
           }}
-          className="rounded-pill m-2 mt-3 p-4"
         >
-          <Logo color="black" asLink href={PATH_LANDING.root} />
-          {!isMobile ? (
-            // Desktop Menu
-            <>
-              <Flex
-                style={{
-                  fontSize: '14px',
-                  color: '05155E',
-                  paddingTop: '16px',
-                  paddingBottom: '16px',
-                }}
-                className="py-4"
+          <div className="header-content">
+            {/* Logo */}
+            <div className="header-logo">
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.3 }}
               >
-                {/* <Link to={PATH_DOCS.productRoadmap} target="_blank">
-                  <Button icon={<ProductOutlined />} type="link">
-                    Product Roadmap
-                  </Button>
-                </Link>
-                <Link to={PATH_DOCS.components} target="_blank">
-                  <Button icon={<AppstoreAddOutlined />} type="link">
-                    Components
-                  </Button>
-                </Link>
-                <Link to={PATH_GITHUB.repo} target="_blank">
-                  <Button icon={<GithubOutlined />} type="link">
-                    Give us a star
-                  </Button>
-                </Link> */}
-                <Link to={PATH_TOURNAMENT_PAGE.root}>
-                  <Button
-                    icon={<TrophyOutlined />}
-                    type="link"
-                    className="text-black"
-                  >
-                    Tournaments
-                  </Button>
-                </Link>
-                <Link to={PATH_PLAYER_PAGE.root}>
-                  <Button
-                    icon={<TeamOutlined />}
-                    type="link"
-                    className="text-black"
-                  >
-                    Players
-                  </Button>
-                </Link>
-                {/* <Link to={PATH_RANKING_PAGE.root}>
-                  <Button
-                    icon={<ApartmentOutlined />}
-                    type="link"
-                    className="text-black"
-                  >
-                    Bảng xếp hạng
-                  </Button>
-                </Link> */}
-                <Link to={PATH_RULE_PAGE.root}>
-                  <Button
-                    icon={<ReadOutlined />}
-                    type="link"
-                    className="text-black"
-                  >
-                    Platform Rule
-                  </Button>
-                </Link>
-                {user ? (
-                  <>
-                    {/* <Link to="match-calendar">
-                      <Button
-                        icon={<ClockCircleOutlined />}
-                        type="link"
-                        className="text-black"
-                      >
-                        Calendar
-                      </Button>
-                    </Link>*/}
-                    <Link to="add-match" className="me-4">
-                      <Button
-                        icon={<DeleteColumnOutlined />}
-                        type="link"
-                        className="text-black"
-                      >
-                        New Match
-                      </Button>
-                    </Link>
-                    <Link to="#" className="me-4">
-                      <Button
-                        icon={
-                          <Badge count={countNoti}>
-                            <NotificationOutlined />
-                          </Badge>
-                        }
-                        type="link"
-                        className="text-black"
-                        onClick={showNotification}
-                      ></Button>
-                    </Link>
-                    <Dropdown
-                      menu={{
-                        items,
-                        style: {
-                          padding: '20px', // Thêm padding cho toàn bộ menu
-                        },
-                      }}
-                      trigger={['click']}
-                      className="me-2"
+                <Logo 
+                  color="black" 
+                  asLink 
+                  href={PATH_LANDING.root} 
+                  style={{ width: isMobile ? 120 : 170 }}
+                />
+              </motion.div>
+            </div>
+            
+            {!isMobile ? (
+              // Desktop Menu
+              <div className="header-nav">
+                {/* Navigation Items */}
+                <div className="nav-items">
+                  {navigationItems.map((item) => (
+                    <motion.div
+                      key={item.path}
+                      whileHover={{ y: -2 }}
+                      whileTap={{ scale: 0.95 }}
                     >
-                      <Flex>
-                        <img
-                          src={
-                            user.avatarUrl ??
-                            'https://images.icon-icons.com/3446/PNG/512/account_profile_user_avatar_icon_219236.png'
-                          }
-                          alt="user profile photo"
-                          height={36}
-                          width={36}
-                          className="rounded-circle"
-                          style={{
-                            borderRadius,
-                            objectFit: 'cover',
-                            alignItems: 'center',
-                            marginTop: '12px',
-                          }}
-                        />
-                      </Flex>
-                    </Dropdown>
-                  </>
-                ) : (
-                  <>
-                    <Link to={PATH_AUTH.signin} className="mr-3">
-                      <Button
-                        icon={<LoginOutlined />}
-                        type="primary"
-                        className="bg-light text-black border border-1 border-dark"
-                      >
-                        Login
-                      </Button>
-                    </Link>
-                    <Link to={PATH_AUTH.signup}>
-                      <Button
-                        icon={<UserAddOutlined />}
-                        type="primary"
-                        className="bg-dark text-white"
-                      >
-                        Register
-                      </Button>
-                    </Link>
-                  </>
-                )}
-              </Flex>
-            </>
-          ) : (
-            // Mobile Menu
-            <Tooltip title={`${open ? 'Expand' : 'Collapse'} Sidebar`}>
-              <Button
-                type="text"
-                icon={open ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
-                onClick={showDrawer}
-                style={{
-                  color: 'black',
-                  fontSize: '16px',
-                  width: 48,
-                  height: 48,
-                }}
-              />
-            </Tooltip>
-          )}
-          <Modal
-            title="Notifications"
-            visible={isModalVisible}
-            onCancel={handleCancel}
-            footer={null}
-          >
-            <Tabs defaultActiveKey="1">
-              <TabPane tab="Request doubles tournament" key="1">
-                <TournamentInvitation playerId={user?.id} />
-              </TabPane>
-              <TabPane tab="Add friend request" key="2">
-                <FriendRequest userId={user?.id} />
-              </TabPane>
-              {/* <TabPane tab="Lịch thi đấu" key="2">
-                <p>Thông báo lịch thi đấu</p>
-                <ul>
-                  <li>
-                    <strong>Giải đấu 1</strong>
-                    <p>Thời gian: 20/10/2023</p>
-                  </li>
-                  <li>
-                    <strong>Giải đấu 2</strong>
-                    <p>Thời gian: 25/10/2023</p>
-                  </li>
-                </ul>
-              </TabPane>
-              <TabPane tab="Thông báo" key="3">
-                <p>Thông báo từ hệ thống</p>
-                <ul>
-                  {notifications.map((notification) => (
-                    <li key={notification.id}>
-                      <strong>{notification.message}</strong>
-                      <p>{notification.description}</p>
-                    </li>
+                      <Link to={item.path} className="nav-link-container">
+                        <Button
+                          type={isActive(item.path, item.exact) ? "primary" : "text"}
+                          icon={item.icon}
+                          className={`nav-link ${isActive(item.path, item.exact) ? 'active' : ''}`}
+                        >
+                          {item.label}
+                        </Button>
+                      </Link>
+                    </motion.div>
                   ))}
-                </ul>
-              </TabPane> */}
-            </Tabs>
-          </Modal>
+                </div>
+                
+                {/* User Menu */}
+                <div className="auth-section">
+                  {user ? (
+                    <Flex gap="small" align="center">
+                      {userMenuItems.map((item) => (
+                        <motion.div
+                          key={item.path}
+                          whileHover={{ y: -2 }}
+                          whileTap={{ scale: 0.95 }}
+                        >
+                          <Link to={item.path} className="nav-link-container">
+                            <Button
+                              type={isActive(item.path, item.exact) ? "primary" : "text"}
+                              icon={item.icon}
+                              className={`nav-link ${isActive(item.path, item.exact) ? 'active' : ''}`}
+                            >
+                              {item.label}
+                            </Button>
+                          </Link>
+                        </motion.div>
+                      ))}
+                      
+                      {/* Notification Button */}
+                      <motion.div 
+                        whileHover={{ y: -2, scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                      >
+                        <Button
+                          type="text"
+                          icon={
+                            <Badge 
+                              count={countNoti} 
+                              overflowCount={99}
+                              offset={[-5, 5]}
+                            >
+                              <BellOutlined className="notification-icon" />
+                            </Badge>
+                          }
+                          onClick={showNotification}
+                          className="notification-button"
+                        />
+                      </motion.div>
+                      
+                      {/* User Avatar Dropdown */}
+                      <Dropdown
+                        menu={{
+                          items: dropdownItems,
+                        }}
+                        trigger={['click']}
+                        placement="bottomRight"
+                        overlayClassName="user-dropdown"
+                        getPopupContainer={(trigger) => trigger.parentElement!}
+                      >
+                        <motion.div
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                          className="avatar-container"
+                        >
+                          <AntAvatar
+                            src={
+                              user.avatarUrl ??
+                              'https://images.icon-icons.com/3446/PNG/512/account_profile_user_avatar_icon_219236.png'
+                            }
+                            alt="user profile photo"
+                            size={40}
+                            className="user-avatar-small"
+                          />
+                        </motion.div>
+                      </Dropdown>
+                    </Flex>
+                  ) : (
+                    <Flex gap="small">
+                      <motion.div
+                        whileHover={{ y: -2 }}
+                        whileTap={{ scale: 0.95 }}
+                      >
+                        <Link to={PATH_AUTH.signin}>
+                          <Button
+                            icon={<LoginOutlined />}
+                            className="login-button"
+                          >
+                            Login
+                          </Button>
+                        </Link>
+                      </motion.div>
+                      
+                      <motion.div
+                        whileHover={{ y: -2 }}
+                        whileTap={{ scale: 0.95 }}
+                      >
+                        <Link to={PATH_AUTH.signup}>
+                          <Button
+                            icon={<UserAddOutlined />}
+                            type="primary"
+                            className="register-button"
+                          >
+                            Register
+                          </Button>
+                        </Link>
+                      </motion.div>
+                    </Flex>
+                  )}
+                </div>
+              </div>
+            ) : (
+              // Mobile Menu
+              <Tooltip title={`${open ? 'Close menu' : 'Open menu'}`}>
+                <motion.div whileTap={{ scale: 0.9 }}>
+                  <Button
+                    type="text"
+                    icon={open ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+                    onClick={showDrawer}
+                    className="mobile-menu-button"
+                  />
+                </motion.div>
+              </Tooltip>
+            )}
+          </div>
         </Header>
+        
+        {/* Page Content */}
         <Content
           style={{
-            // background: 'rgba(255, 255, 255, 1)',
             borderRadius,
             transition: 'all .25s',
             paddingBottom: '10rem',
             background: 'linear-gradient(to right, #1e3a8a, #3b82f6)',
+            paddingTop: '80px',
           }}
         >
           <TransitionGroup>
@@ -542,132 +517,185 @@ export const GuestLayout = () => {
           <FloatButton.BackTop />
         </Content>
       </Layout>
-      <Drawer title="Menu" placement="left" onClose={onClose} open={open}>
-        <>
-          <Flex gap="small" vertical>
-            <Link to={PATH_TOURNAMENT_PAGE.root}>
-              <Button
-                icon={<TrophyOutlined />}
-                type="link"
-                className="text-black"
+      
+      {/* Notification Modal */}
+      <Modal
+        title={
+          <div className="notification-header">
+            <BellOutlined className="notification-header-icon" />
+            <span>Notifications</span>
+          </div>
+        }
+        visible={isModalVisible}
+        onCancel={handleCancel}
+        footer={null}
+        className="notification-modal"
+        width={600}
+      >
+        <Tabs 
+          defaultActiveKey="1" 
+          activeKey={activeTab}
+          onChange={setActiveTab}
+          className="notification-tabs"
+        >
+          <TabPane 
+            tab={
+              <span className="notification-tab">
+                <TrophyOutlined /> Tournament Requests
+              </span>
+            } 
+            key="1"
+          >
+            <TournamentInvitation playerId={user?.id} />
+          </TabPane>
+          <TabPane 
+            tab={
+              <span className="notification-tab">
+                <TeamOutlined /> Friend Requests
+              </span>
+            } 
+            key="2"
+          >
+            <FriendRequest userId={user?.id} />
+          </TabPane>
+        </Tabs>
+      </Modal>
+      
+      {/* Mobile Drawer */}
+      <Drawer 
+        title={
+          user ? (
+            <Flex align="center" className="drawer-header">
+              <AntAvatar
+                src={
+                  user.avatarUrl ??
+                  'https://images.icon-icons.com/3446/PNG/512/account_profile_user_avatar_icon_219236.png'
+                }
+                alt="user profile photo"
+                size={48}
+                className="drawer-avatar"
+              />
+              <div className="drawer-user-info">
+                <div className="drawer-username">{user?.firstName} {user?.lastName}</div>
+                <div className="drawer-userlevel">Level {user?.userDetails?.experienceLevel}</div>
+              </div>
+            </Flex>
+          ) : (
+            "Menu"
+          )
+        }
+        placement="left"
+        onClose={onClose}
+        open={open}
+        className="mobile-drawer"
+      >
+        <div className="drawer-content">
+          {/* Main Navigation */}
+          <div className="drawer-section">
+            {navigationItems.map((item) => (
+              <Link 
+                key={item.path} 
+                to={item.path} 
+                onClick={onClose}
+                className={`drawer-item ${isActive(item.path, item.exact) ? 'active' : ''}`}
               >
-                Tournaments
-              </Button>
-            </Link>
-            <Link to={PATH_RANKING_PAGE.root}>
-              <Button
-                icon={<ApartmentOutlined />}
-                type="link"
-                className="text-black"
-              >
-                Ranking
-              </Button>
-            </Link>
-            <Link to={PATH_RULE_PAGE.root}>
-              <Button
-                icon={<ReadOutlined />}
-                type="link"
-                className="text-black"
-              >
-                Platform Rule
-              </Button>
-            </Link>
-            {user ? (
-              <>
-                <Link to="add-match" className="me-4">
-                  <Button
-                    icon={<DeleteColumnOutlined />}
-                    type="link"
-                    className="text-black"
+                {item.icon}
+                <span>{item.label}</span>
+              </Link>
+            ))}
+          </div>
+          
+          {/* User Specific Navigation */}
+          {user ? (
+            <>
+              <div className="drawer-divider" />
+              <div className="drawer-section-title">User Menu</div>
+              <div className="drawer-section">
+                {userMenuItems.map((item) => (
+                  <Link 
+                    key={item.path} 
+                    to={item.path}
+                    onClick={onClose}
+                    className={`drawer-item ${isActive(item.path, item.exact) ? 'active' : ''}`}
                   >
-                    New Match
-                  </Button>
+                    {item.icon}
+                    <span>{item.label}</span>
+                  </Link>
+                ))}
+                
+                {/* Additional user links */}
+                <Link
+                  to="my-profile" 
+                  onClick={onClose}
+                  className={`drawer-item ${isActive('my-profile') ? 'active' : ''}`}
+                >
+                  <UserOutlined />
+                  <span>My Profile</span>
                 </Link>
-                <Link to="my-profile">
-                  <Button
-                    icon={<UserOutlined />}
-                    type="link"
-                    className="text-black"
-                  >
-                    My Profile
-                  </Button>
+                
+                <Link
+                  to="my-tournament" 
+                  onClick={onClose}
+                  className={`drawer-item ${isActive('my-tournament') ? 'active' : ''}`}
+                >
+                  <TrophyOutlined />
+                  <span>Joined Tournaments</span>
                 </Link>
-                <Link to="my-tournament">
-                  <Button
-                    icon={<TrophyOutlined />}
-                    type="link"
-                    className="text-black"
-                  >
-                    Joined-Tournament
-                  </Button>
+                
+                <Link
+                  to="my-friend" 
+                  onClick={onClose}
+                  className={`drawer-item ${isActive('my-friend') ? 'active' : ''}`}
+                >
+                  <TeamOutlined />
+                  <span>Friends</span>
                 </Link>
-                <Link to="my-tournament">
-                  <Button
-                    icon={<TeamOutlined />}
-                    type="link"
-                    className="text-black"
-                  >
-                    Friends
-                  </Button>
+                
+                <Link
+                  to="match-calendar" 
+                  onClick={onClose}
+                  className={`drawer-item ${isActive('match-calendar') ? 'active' : ''}`}
+                >
+                  <CalendarOutlined />
+                  <span>Matches Calendar</span>
                 </Link>
-                <Link to={`match-calendar`}>
-                  <Button
-                    icon={<CalendarOutlined />}
-                    type="link"
-                    className="text-black"
-                  >
-                    Matches Calendar
-                  </Button>
+                
+                <div 
+                  className="drawer-item notification-item"
+                  onClick={() => {
+                    setIsModalVisible(true);
+                    onClose();
+                  }}
+                >
+                  <Badge count={countNoti} overflowCount={99}>
+                    <BellOutlined />
+                  </Badge>
+                  <span>Notifications</span>
+                </div>
+                
+                <div className="drawer-item logout-item" onClick={logout}>
+                  <LogoutOutlined />
+                  <span>Logout</span>
+                </div>
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="drawer-divider" />
+              <div className="drawer-section auth-section">
+                <Link to={PATH_AUTH.signin} className="drawer-auth-button login" onClick={onClose}>
+                  <LoginOutlined />
+                  <span>Login</span>
                 </Link>
-                <Link to="#">
-                  <Button
-                    icon={
-                      <Badge count={countNoti}>
-                        <NotificationOutlined />
-                      </Badge>
-                    }
-                    type="link"
-                    className="text-black"
-                    onClick={showNotification}
-                  >
-                    Notification
-                  </Button>
+                
+                <Link to={PATH_AUTH.signup} className="drawer-auth-button register" onClick={onClose}>
+                  <UserAddOutlined />
+                  <span>Register</span>
                 </Link>
-                <Link to="#">
-                  <Button
-                    icon={<LogoutOutlined />}
-                    type="link"
-                    className="text-black"
-                    onClick={handleLogout}
-                  >
-                    Log out
-                  </Button>
-                </Link>
-              </>
-            ) : (
-              <>
-                <Link to={PATH_AUTH.signin}>
-                  <Button
-                    icon={<LoginOutlined />}
-                    type="link"
-                    className="text-black"
-                  >
-                    Login
-                  </Button>
-                </Link>
-                <Link to={PATH_AUTH.signup}>
-                  <Button
-                    icon={<UserAddOutlined />}
-                    type="link"
-                    className="text-black"
-                  >
-                    Register
-                  </Button>
-                </Link>
-              </>
-            )}
-          </Flex>
-        </>
+              </div>
+            </>
+          )}
+        </div>
       </Drawer>
     </>
   );
