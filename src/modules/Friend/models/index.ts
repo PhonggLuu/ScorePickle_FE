@@ -29,7 +29,7 @@ export interface AddFriendResponse {
   userFriendId: number | null;
   userFriendName: string | null;
   userFriendAvatar: string | null;
-  status: number;
+  status: FriendStatus;
   createdAt: Date | null;
   gender: string | null;
   exeprienceLevel: number | null;
