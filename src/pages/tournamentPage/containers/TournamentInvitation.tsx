@@ -1,22 +1,34 @@
+import { useGetTournamentTeamRequestNotification } from '@src/modules/Notification/hooks/useGetNotification';
 import { useGetTournamentTeamRequestByPlayerId } from '@src/modules/TournamentRegistration/hooks/useGetTournamentTeamRequest';
 import { useRespondTeamRequest } from '@src/modules/TournamentRegistration/hooks/useRespondTeamRequest';
 import { InvitationStatus } from '@src/modules/TournamentRegistration/models';
-import { Button, message } from 'antd';
+import { Button, message, Spin } from 'antd';
 
 const TournamentInvitation = ({ playerId }) => {
   const { data, error, isLoading, refetch } =
     useGetTournamentTeamRequestByPlayerId(playerId);
+  const {
+    data: notifications,
+    error: errorNoti,
+    isLoading: loadingNoti,
+    refetch: refetchNoti,
+  } = useGetTournamentTeamRequestNotification(playerId);
   const { mutate } = useRespondTeamRequest();
 
-  if (isLoading) {
-    return <p>Loading...</p>;
+  if (isLoading && loadingNoti) {
+    return <Spin />;
   }
 
-  if (error) {
-    return <p>Error: {error.message}</p>;
+  if (error || errorNoti) {
+    return (
+      <p>Error: {error?.message || errorNoti?.message || 'Unknown error'}</p>
+    );
   }
 
-  if (!data || data.length === 0) {
+  if (
+    (!data || data?.length === 0) &&
+    (!notifications || notifications?.length === 0)
+  ) {
     return <p>No invitations available.</p>;
   }
 
@@ -25,6 +37,7 @@ const TournamentInvitation = ({ playerId }) => {
       await mutate({ id: invitationId, isAccept: 'true' });
       message.success('Accepted invitation successfully!');
       refetch();
+      refetchNoti();
     } catch (err) {
       message.error('Failed to accept invitation!');
     }
@@ -35,6 +48,7 @@ const TournamentInvitation = ({ playerId }) => {
       await mutate({ id: invitationId, isAccept: 'false' });
       message.success('Rejected invitation successfully!');
       refetch();
+      refetchNoti();
     } catch (err) {
       message.error('Failed to reject invitation!');
     }
@@ -42,7 +56,7 @@ const TournamentInvitation = ({ playerId }) => {
 
   return (
     <ul>
-      {data.map((invitation, index) => (
+      {(data ?? []).map((invitation, index) => (
         <li key={index} className="row mb-2">
           <strong className="col-8">
             Team Request Tournament{' '}
@@ -96,6 +110,17 @@ const TournamentInvitation = ({ playerId }) => {
               </Button>
             </div>
           )}
+        </li>
+      ))}
+      {(notifications ?? []).map((noti, index) => (
+        <li key={index} className="row mb-2">
+          <div className="p-2">
+            <strong className="col-8">
+              <span>
+                {noti.message} by {noti.referenceName}
+              </span>
+            </strong>
+          </div>
         </li>
       ))}
     </ul>

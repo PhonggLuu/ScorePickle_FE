@@ -1,4 +1,5 @@
 import {
+  ApartmentOutlined,
   BellOutlined,
   CalendarOutlined,
   DeleteColumnOutlined,
@@ -12,12 +13,13 @@ import {
   TeamOutlined,
   TrophyOutlined,
   UserAddOutlined,
-  UserOutlined
+  UserOutlined,
 } from '@ant-design/icons';
 import {
   PATH_PLAYER_PAGE,
+  PATH_RANKING_PAGE,
   PATH_RULE_PAGE,
-  PATH_TOURNAMENT_PAGE
+  PATH_TOURNAMENT_PAGE,
 } from '@src/constants/routes';
 import { useCountNotification } from '@src/modules/Notification/hooks/useCountNoti';
 import useLogout from '@src/modules/User/hooks/useLogout';
@@ -77,7 +79,7 @@ export const GuestLayout = () => {
   const { data: countNoti } = useCountNotification(user?.id ?? 0);
 
   const { logout } = useLogout();
-  
+
   // Navigation menu items definition
   const navigationItems: NavItem[] = [
     {
@@ -95,17 +97,24 @@ export const GuestLayout = () => {
       label: 'Platform Rules',
       icon: <ReadOutlined />,
     },
+    {
+      path: PATH_RANKING_PAGE.root,
+      label: 'Top Rankings',
+      icon: <ApartmentOutlined />,
+    },
   ];
 
   // User menu items
-  const userMenuItems: NavItem[] = user ? [
-    {
-      path: 'add-match',
-      label: 'New Match',
-      icon: <DeleteColumnOutlined />,
-    },
-  ] : [];
-  
+  const userMenuItems: NavItem[] = user
+    ? [
+        {
+          path: 'add-match',
+          label: 'New Match',
+          icon: <DeleteColumnOutlined />,
+        },
+      ]
+    : [];
+
   // Check if the current path is active
   const isActive = (path: string, exact = false) => {
     if (exact) {
@@ -143,7 +152,9 @@ export const GuestLayout = () => {
                   className="user-avatar"
                 />
                 <div className="ms-3" style={{ whiteSpace: 'nowrap' }}>
-                  <div className="user-name">{user?.firstName + ' ' + user?.lastName}</div>
+                  <div className="user-name">
+                    {user?.firstName + ' ' + user?.lastName}
+                  </div>
                   <div className="user-location">
                     {user?.userDetails?.province?.toLocaleLowerCase() +
                       ', ' +
@@ -167,11 +178,7 @@ export const GuestLayout = () => {
     },
     {
       key: 'profile-gap',
-      label: (
-        <div className="menu-section-header">
-          My Account
-        </div>
-      ),
+      label: <div className="menu-section-header">My Account</div>,
       disabled: true,
       style: {
         padding: '8px 16px',
@@ -182,7 +189,7 @@ export const GuestLayout = () => {
     {
       key: 'user-profile-link',
       label: (
-        <Link to={`my-profile`} className="menu-item">
+        <Link to={`edit-profile`} className="menu-item">
           <EditOutlined className="me-2" />
           Edit Profile
         </Link>
@@ -205,11 +212,7 @@ export const GuestLayout = () => {
     },
     {
       key: 'info-gap',
-      label: (
-        <div className="menu-section-header">
-          Activity
-        </div>
-      ),
+      label: <div className="menu-section-header">Activity</div>,
       disabled: true,
       style: {
         padding: '8px 16px',
@@ -234,7 +237,7 @@ export const GuestLayout = () => {
       label: (
         <Link to={`my-tournament`} className="menu-item">
           <TrophyOutlined className="me-2" />
-          Joined Tournaments
+          Registered Tournaments
         </Link>
       ),
       style: {
@@ -282,8 +285,8 @@ export const GuestLayout = () => {
 
   // Notification modal state and handlers
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [activeTab, setActiveTab] = useState("1");
-  
+  const [activeTab, setActiveTab] = useState('1');
+
   const showNotification = () => {
     setIsModalVisible(true);
   };
@@ -291,7 +294,7 @@ export const GuestLayout = () => {
   const handleCancel = () => {
     setIsModalVisible(false);
   };
-  
+
   // Close drawer when navigating on mobile
   useEffect(() => {
     if (open && isMobile) {
@@ -324,15 +327,15 @@ export const GuestLayout = () => {
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.3 }}
               >
-                <Logo 
-                  color="black" 
-                  asLink 
-                  href={PATH_LANDING.root} 
+                <Logo
+                  color="black"
+                  asLink
+                  href={PATH_LANDING.root}
                   style={{ width: isMobile ? 120 : 170 }}
                 />
               </motion.div>
             </div>
-            
+
             {!isMobile ? (
               // Desktop Menu
               <div className="header-nav">
@@ -346,9 +349,13 @@ export const GuestLayout = () => {
                     >
                       <Link to={item.path} className="nav-link-container">
                         <Button
-                          type={isActive(item.path, item.exact) ? "primary" : "text"}
+                          type={
+                            isActive(item.path, item.exact) ? 'primary' : 'text'
+                          }
                           icon={item.icon}
-                          className={`nav-link ${isActive(item.path, item.exact) ? 'active' : ''}`}
+                          className={`nav-link ${
+                            isActive(item.path, item.exact) ? 'active' : ''
+                          }`}
                         >
                           {item.label}
                         </Button>
@@ -356,7 +363,7 @@ export const GuestLayout = () => {
                     </motion.div>
                   ))}
                 </div>
-                
+
                 {/* User Menu */}
                 <div className="auth-section">
                   {user ? (
@@ -369,37 +376,44 @@ export const GuestLayout = () => {
                         >
                           <Link to={item.path} className="nav-link-container">
                             <Button
-                              type={isActive(item.path, item.exact) ? "primary" : "text"}
+                              type={
+                                isActive(item.path, item.exact)
+                                  ? 'primary'
+                                  : 'text'
+                              }
                               icon={item.icon}
-                              className={`nav-link ${isActive(item.path, item.exact) ? 'active' : ''}`}
+                              className={`nav-link ${
+                                isActive(item.path, item.exact) ? 'active' : ''
+                              }`}
                             >
                               {item.label}
                             </Button>
                           </Link>
                         </motion.div>
                       ))}
-                      
+
                       {/* Notification Button */}
-                      <motion.div 
+                      <motion.div
                         whileHover={{ y: -2, scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
                       >
                         <Button
                           type="text"
                           icon={
-                            <Badge 
-                              count={countNoti} 
+                            <Badge
+                              count={countNoti}
                               overflowCount={99}
-                              offset={[-5, 5]}
+                              offset={[5, -10]}
                             >
                               <BellOutlined className="notification-icon" />
                             </Badge>
                           }
                           onClick={showNotification}
                           className="notification-button"
+                          style={{ width: '50px' }}
                         />
                       </motion.div>
-                      
+
                       {/* User Avatar Dropdown */}
                       <Dropdown
                         menu={{
@@ -442,7 +456,7 @@ export const GuestLayout = () => {
                           </Button>
                         </Link>
                       </motion.div>
-                      
+
                       <motion.div
                         whileHover={{ y: -2 }}
                         whileTap={{ scale: 0.95 }}
@@ -476,7 +490,7 @@ export const GuestLayout = () => {
             )}
           </div>
         </Header>
-        
+
         {/* Page Content */}
         <Content
           style={{
@@ -517,7 +531,7 @@ export const GuestLayout = () => {
           <FloatButton.BackTop />
         </Content>
       </Layout>
-      
+
       {/* Notification Modal */}
       <Modal
         title={
@@ -532,37 +546,37 @@ export const GuestLayout = () => {
         className="notification-modal"
         width={600}
       >
-        <Tabs 
-          defaultActiveKey="1" 
+        <Tabs
+          defaultActiveKey="1"
           activeKey={activeTab}
           onChange={setActiveTab}
           className="notification-tabs"
         >
-          <TabPane 
+          <TabPane
             tab={
               <span className="notification-tab">
                 <TrophyOutlined /> Tournament Requests
               </span>
-            } 
+            }
             key="1"
           >
             <TournamentInvitation playerId={user?.id} />
           </TabPane>
-          <TabPane 
+          <TabPane
             tab={
               <span className="notification-tab">
                 <TeamOutlined /> Friend Requests
               </span>
-            } 
+            }
             key="2"
           >
             <FriendRequest userId={user?.id} />
           </TabPane>
         </Tabs>
       </Modal>
-      
+
       {/* Mobile Drawer */}
-      <Drawer 
+      <Drawer
         title={
           user ? (
             <Flex align="center" className="drawer-header">
@@ -576,12 +590,16 @@ export const GuestLayout = () => {
                 className="drawer-avatar"
               />
               <div className="drawer-user-info">
-                <div className="drawer-username">{user?.firstName} {user?.lastName}</div>
-                <div className="drawer-userlevel">Level {user?.userDetails?.experienceLevel}</div>
+                <div className="drawer-username">
+                  {user?.firstName} {user?.lastName}
+                </div>
+                <div className="drawer-userlevel">
+                  Level {user?.userDetails?.experienceLevel}
+                </div>
               </div>
             </Flex>
           ) : (
-            "Menu"
+            'Menu'
           )
         }
         placement="left"
@@ -593,18 +611,20 @@ export const GuestLayout = () => {
           {/* Main Navigation */}
           <div className="drawer-section">
             {navigationItems.map((item) => (
-              <Link 
-                key={item.path} 
-                to={item.path} 
+              <Link
+                key={item.path}
+                to={item.path}
                 onClick={onClose}
-                className={`drawer-item ${isActive(item.path, item.exact) ? 'active' : ''}`}
+                className={`drawer-item ${
+                  isActive(item.path, item.exact) ? 'active' : ''
+                }`}
               >
                 {item.icon}
                 <span>{item.label}</span>
               </Link>
             ))}
           </div>
-          
+
           {/* User Specific Navigation */}
           {user ? (
             <>
@@ -612,55 +632,65 @@ export const GuestLayout = () => {
               <div className="drawer-section-title">User Menu</div>
               <div className="drawer-section">
                 {userMenuItems.map((item) => (
-                  <Link 
-                    key={item.path} 
+                  <Link
+                    key={item.path}
                     to={item.path}
                     onClick={onClose}
-                    className={`drawer-item ${isActive(item.path, item.exact) ? 'active' : ''}`}
+                    className={`drawer-item ${
+                      isActive(item.path, item.exact) ? 'active' : ''
+                    }`}
                   >
                     {item.icon}
                     <span>{item.label}</span>
                   </Link>
                 ))}
-                
+
                 {/* Additional user links */}
                 <Link
-                  to="my-profile" 
+                  to="my-profile"
                   onClick={onClose}
-                  className={`drawer-item ${isActive('my-profile') ? 'active' : ''}`}
+                  className={`drawer-item ${
+                    isActive('my-profile') ? 'active' : ''
+                  }`}
                 >
                   <UserOutlined />
                   <span>My Profile</span>
                 </Link>
-                
+
                 <Link
-                  to="my-tournament" 
+                  to="my-tournament"
                   onClick={onClose}
-                  className={`drawer-item ${isActive('my-tournament') ? 'active' : ''}`}
+                  className={`drawer-item ${
+                    isActive('my-tournament') ? 'active' : ''
+                  }`}
                 >
                   <TrophyOutlined />
-                  <span>Joined Tournaments</span>
+                  <span>Registered Tournaments</span>
                 </Link>
-                
+
                 <Link
-                  to="my-friend" 
+                  to="my-friend"
                   onClick={onClose}
-                  className={`drawer-item ${isActive('my-friend') ? 'active' : ''}`}
+                  className={`drawer-item ${
+                    isActive('my-friend') ? 'active' : ''
+                  }`}
                 >
                   <TeamOutlined />
                   <span>Friends</span>
                 </Link>
-                
+
                 <Link
-                  to="match-calendar" 
+                  to="match-calendar"
                   onClick={onClose}
-                  className={`drawer-item ${isActive('match-calendar') ? 'active' : ''}`}
+                  className={`drawer-item ${
+                    isActive('match-calendar') ? 'active' : ''
+                  }`}
                 >
                   <CalendarOutlined />
                   <span>Matches Calendar</span>
                 </Link>
-                
-                <div 
+
+                <div
                   className="drawer-item notification-item"
                   onClick={() => {
                     setIsModalVisible(true);
@@ -672,7 +702,7 @@ export const GuestLayout = () => {
                   </Badge>
                   <span>Notifications</span>
                 </div>
-                
+
                 <div className="drawer-item logout-item" onClick={logout}>
                   <LogoutOutlined />
                   <span>Logout</span>
@@ -683,12 +713,20 @@ export const GuestLayout = () => {
             <>
               <div className="drawer-divider" />
               <div className="drawer-section auth-section">
-                <Link to={PATH_AUTH.signin} className="drawer-auth-button login" onClick={onClose}>
+                <Link
+                  to={PATH_AUTH.signin}
+                  className="drawer-auth-button login"
+                  onClick={onClose}
+                >
                   <LoginOutlined />
                   <span>Login</span>
                 </Link>
-                
-                <Link to={PATH_AUTH.signup} className="drawer-auth-button register" onClick={onClose}>
+
+                <Link
+                  to={PATH_AUTH.signup}
+                  className="drawer-auth-button register"
+                  onClick={onClose}
+                >
                   <UserAddOutlined />
                   <span>Register</span>
                 </Link>
