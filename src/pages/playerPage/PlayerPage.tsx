@@ -13,6 +13,7 @@ import { addFriend } from '@src/modules/Friend/hooks/useAddFriend';
 import { useSelector } from 'react-redux';
 import { RootState } from '@src/redux/store';
 import { useGetNoneUserPlayer } from '@src/modules/User/hooks/useGetUnfriendByUserId';
+import { useNavigate } from 'react-router-dom';
 
 const PlayerCard = ({
   firstName,
@@ -97,6 +98,7 @@ export const PlayersPage: React.FC = () => {
   const [loading, setLoading] = useState(false); // Trạng thái tải dữ liệu
   const user = useSelector((state: RootState) => state.auth.user);
   const { data, isLoading } = useGetNoneUserPlayer(user?.id ?? 0);
+  const navigate = useNavigate();
 
   const { ref, inView } = useInView({
     triggerOnce: false, // Kiểm tra liên tục khi cuộn
@@ -161,6 +163,11 @@ export const PlayersPage: React.FC = () => {
     setVisiblePlayers(filtered);
   };
 
+  const goToProfile = (id: string) => {
+    // có thể thêm side-effect ở đây
+    navigate(`/profile/${id}`);
+  };
+
   return (
     <div className="d-flex flex-column min-vh-100 text-white justify-content-center">
       <div className="flex-grow-1 container py-4">
@@ -207,20 +214,26 @@ export const PlayersPage: React.FC = () => {
                         .includes(searchTerm.toLowerCase())
                     )
                     .map((player) => (
-                      <PlayerCard
+                      <div
                         key={player.id}
-                        firstName={player.firstName}
-                        secondName={player.secondName}
-                        lastName={player.lastName}
-                        avatarUrl={player.avatarUrl}
-                        province={player.userDetails.province}
-                        city={player.userDetails.city}
-                        dateOfBirth={player.dateOfBirth}
-                        gender={player.gender}
-                        level={player.userDetails.experienceLevel}
-                        checkUser={user?.id}
-                        onAddFriendClick={() => handleAddFriend(player.id)}
-                      />
+                        onClick={() => goToProfile(player.id)}
+                        style={{ cursor: 'pointer' }}
+                      >
+                        <PlayerCard
+                          key={player.id}
+                          firstName={player.firstName}
+                          secondName={player.secondName}
+                          lastName={player.lastName}
+                          avatarUrl={player.avatarUrl}
+                          province={player.userDetails.province}
+                          city={player.userDetails.city}
+                          dateOfBirth={player.dateOfBirth}
+                          gender={player.gender}
+                          level={player.userDetails.experienceLevel}
+                          checkUser={user?.id}
+                          onAddFriendClick={() => handleAddFriend(player.id)}
+                        />
+                      </div>
                     ))}
                 </div>
 

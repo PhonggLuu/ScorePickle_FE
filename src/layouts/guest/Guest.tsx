@@ -138,7 +138,7 @@ export const GuestLayout = () => {
             className="user-profile-card"
           >
             <Link
-              to={`my-profile`}
+              to={`profile/${user?.id}`}
               className="d-flex align-items-center text-decoration-none text-reset"
             >
               <Flex align="center">
@@ -647,10 +647,10 @@ export const GuestLayout = () => {
 
                 {/* Additional user links */}
                 <Link
-                  to="my-profile"
+                  to={`profile/${user?.id}`}
                   onClick={onClose}
                   className={`drawer-item ${
-                    isActive('my-profile') ? 'active' : ''
+                    isActive(`profile/${user?.id}`) ? 'active' : ''
                   }`}
                 >
                   <UserOutlined />

@@ -1,3 +1,5 @@
+import { User } from '@src/modules/User/models';
+
 export interface IMatch {
   teamResponse: any;
   id: number;
@@ -190,4 +192,45 @@ export interface Matches {
   isPublic: boolean;
   refereeId: number | null;
   teams: Team[];
+}
+
+export interface MatchInfo extends Matches {
+  venueName: string | null | undefined;
+  venueAddress: string | null | undefined;
+  venueImage: string | null | undefined;
+  player1?: User | undefined;
+  player2?: User | undefined;
+  player3?: User | undefined;
+  player4?: User | undefined;
+}
+
+export interface MatchAndScore {
+  matchId: number;
+  team1Score: number | null;
+  team2Score: number | null;
+  winnerId: number | null;
+  loserId: number | null;
+  date: string; // ISO string format, có thể dùng Date nếu muốn parse
+  urlVideoMatch: string | null;
+  log: string | null;
+  matchScoreDetails: MatchScoreDetail[] | null | undefined;
+}
+
+interface MatchScoreDetail {
+  matchScoreId: number;
+  round: number;
+  note: string;
+  currentHaft: number;
+  team1Score: number;
+  team2Score: number;
+}
+
+export interface FullMatchInfo {
+  score: MatchAndScore | null | undefined;
+  info: MatchInfo;
+}
+
+export interface JoinMatchRequest {
+  matchId: number;
+  userJoinId: number;
 }

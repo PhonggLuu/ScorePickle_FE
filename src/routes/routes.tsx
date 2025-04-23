@@ -198,7 +198,7 @@ const router = createBrowserRouter([
       },
       {
         index: true,
-        path: 'my-profile',
+        path: 'profile/:id',
         element: <MyProfile />,
       },
       {
