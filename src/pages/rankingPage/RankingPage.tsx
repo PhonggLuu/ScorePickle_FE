@@ -1,339 +1,239 @@
-import { useState } from 'react';
-import { Table, Input, Radio, Checkbox, Button, Select, Avatar } from 'antd';
-import type { RadioChangeEvent } from 'antd';
-import type { ColumnsType } from 'antd/es/table';
-import './RankingPage.css';
+import React, { useState, useMemo } from 'react';
+import { Card, Table, Avatar, Row, Col, Typography, Input } from 'antd';
+import { SearchOutlined, MoreOutlined } from '@ant-design/icons';
+import { useMediaQuery } from 'react-responsive';
+import { useSelector } from 'react-redux';
+import trophyIcon from '@src/assets/icons/trophy.png';
+import { useGetTopPlayer } from '@src/modules/Ranking/hooks/useGetLeaderBoard';
+import { TopPlayer } from '@src/modules/Ranking/models';
+import { RootState } from '@src/redux/store';
+import { ColumnsType } from 'antd/es/table';
 
-interface PlayerData {
-  key: string;
-  rank: number;
-  player: string;
-  avatar: string;
-  location: string;
-  gender: string;
-  age: number;
-  rating: number;
-  change: string;
-  wl: string;
-  winPercentage: string;
+const { Title, Text } = Typography;
+
+interface TeamMemberCardProps {
+  player: TopPlayer;
+  trophyCount: number;
 }
 
-export const RankingPage = () => {
-  // State for filters
-  const [playerType, setPlayerType] = useState<string>('all');
-  const [gender, setGender] = useState<string>('all');
-  const [ageGroups, setAgeGroups] = useState<string[]>(['open']);
-  const [ratingRange, setRatingRange] = useState<string>('all');
-
-  // Sample data
-  const data: PlayerData[] = [
-    {
-      key: '1',
-      rank: 1,
-      player: 'Alex Johnson',
-      avatar: '/placeholder.svg?height=40&width=40',
-      location: 'Phoenix, AZ',
-      gender: 'Male',
-      age: 28,
-      rating: 5.5,
-      change: '+0.1',
-      wl: '42-5',
-      winPercentage: '89.4%',
-    },
-    {
-      key: '2',
-      rank: 2,
-      player: 'Maria Garcia',
-      avatar: '/placeholder.svg?height=40&width=40',
-      location: 'Miami, FL',
-      gender: 'Female',
-      age: 26,
-      rating: 5.4,
-      change: '+0.1',
-      wl: '38-7',
-      winPercentage: '84.4%',
-    },
-    {
-      key: '3',
-      rank: 3,
-      player: 'David Kim',
-      avatar: '/placeholder.svg?height=40&width=40',
-      location: 'Los Angeles, CA',
-      gender: 'Male',
-      age: 31,
-      rating: 5.3,
-      change: '-',
-      wl: '36-8',
-      winPercentage: '81.8%',
-    },
-    {
-      key: '4',
-      rank: 4,
-      player: 'Sarah Williams',
-      avatar: '/placeholder.svg?height=40&width=40',
-      location: 'Chicago, IL',
-      gender: 'Female',
-      age: 29,
-      rating: 5.2,
-      change: '+0.1',
-      wl: '34-9',
-      winPercentage: '79.1%',
-    },
-    {
-      key: '5',
-      rank: 5,
-      player: 'Michael Chen',
-      avatar: '/placeholder.svg?height=40&width=40',
-      location: 'Seattle, WA',
-      gender: 'Male',
-      age: 27,
-      rating: 5.2,
-      change: '-',
-      wl: '32-10',
-      winPercentage: '76.2%',
-    },
-    {
-      key: '6',
-      rank: 6,
-      player: 'Jennifer Lopez',
-      avatar: '/placeholder.svg?height=40&width=40',
-      location: 'Dallas, TX',
-      gender: 'Female',
-      age: 30,
-      rating: 5.1,
-      change: '+0.1',
-      wl: '30-11',
-      winPercentage: '73.2%',
-    },
-    {
-      key: '7',
-      rank: 7,
-      player: 'Robert Garcia',
-      avatar: '/placeholder.svg?height=40&width=40',
-      location: 'Denver, CO',
-      gender: 'Male',
-      age: 33,
-      rating: 5.1,
-      change: '-0.1',
-      wl: '28-12',
-      winPercentage: '70.0%',
-    },
-    {
-      key: '8',
-      rank: 8,
-      player: 'Emily Davis',
-      avatar: '/placeholder.svg?height=40&width=40',
-      location: 'Atlanta, GA',
-      gender: 'Female',
-      age: 25,
-      rating: 5.0,
-      change: '+0.1',
-      wl: '26-13',
-      winPercentage: '66.7%',
-    },
-  ];
-
-  // Table columns
-  const columns: ColumnsType<PlayerData> = [
-    {
-      title: 'Rank',
-      dataIndex: 'rank',
-      key: 'rank',
-      width: 80,
-    },
-    {
-      title: 'Player',
-      dataIndex: 'player',
-      key: 'player',
-      render: (_, record) => (
-        <div className="d-flex align-items-center">
-          <Avatar src={record.avatar} className="me-2" />
-          <span>{record.player}</span>
+const TeamMemberCard: React.FC<TeamMemberCardProps> = ({
+  player,
+  trophyCount,
+}) => (
+  <Card bordered={false} className="team-member-card">
+    <div style={{ textAlign: 'center' }}>
+      <div style={{ position: 'relative', display: 'inline-block' }}>
+        <Avatar size={80} src={player.avatar} />
+        <div style={{ position: 'absolute', top: -20, right: -30 }}>
+          {Array.from({ length: trophyCount }).map((_, i) => (
+            <img
+              key={i}
+              src={trophyIcon}
+              alt="Trophy"
+              style={{ width: 20, height: 20, marginLeft: i > 0 ? 4 : 0 }}
+            />
+          ))}
         </div>
+      </div>
+
+      <Title level={5} style={{ margin: '16px 0 0' }}>
+        {player.fullName}
+      </Title>
+
+      <Row justify="space-between" style={{ marginTop: 16 }}>
+        <Col>
+          <Text type="secondary">Level</Text>
+          <Title level={4} style={{ color: '#1890ff', margin: 0 }}>
+            {player.exeprienceLevel}
+          </Title>
+        </Col>
+        <Col>
+          <Text type="secondary">Point</Text>
+          <Title level={4} style={{ margin: 0 }}>
+            {player.rankingPoint}
+          </Title>
+        </Col>
+      </Row>
+    </div>
+  </Card>
+);
+
+export const RankingPage: React.FC = () => {
+  const { data } = useGetTopPlayer();
+  const user = useSelector((state: RootState) => state.auth.user);
+  const [searchName, setSearchName] = useState<string>('');
+  const [pagination, setPagination] = useState({ current: 1, pageSize: 10 });
+
+  // Featured top 3 players
+  const featuredMembers = useMemo(
+    () => (data ? [data[1], data[0], data[2]] : []),
+    [data]
+  );
+
+  // Remaining players
+  const otherPlayers = useMemo(() => data?.slice(3) ?? [], [data]);
+
+  // Filter by search term
+  const filteredPlayers = useMemo(
+    () =>
+      otherPlayers.filter(
+        (p) =>
+          p.rankingPoint &&
+          p.fullName.toLowerCase().includes(searchName.toLowerCase())
       ),
-    },
-    {
-      title: 'Location',
-      dataIndex: 'location',
-      key: 'location',
-    },
-    {
-      title: 'Gender',
-      dataIndex: 'gender',
-      key: 'gender',
-    },
-    {
-      title: 'Age',
-      dataIndex: 'age',
-      key: 'age',
-      width: 80,
-    },
-    {
-      title: 'Rating',
-      dataIndex: 'rating',
-      key: 'rating',
-      sorter: (a, b) => a.rating - b.rating,
-      sortDirections: ['descend', 'ascend'],
-      render: (rating) => <div>{rating}</div>,
-    },
-    {
-      title: 'Change',
-      dataIndex: 'change',
-      key: 'change',
-      render: (change) => {
-        if (change === '-') return <span>-</span>;
+    [otherPlayers, searchName]
+  );
 
-        const isPositive = change.startsWith('+');
-        return (
-          <div
-            className={`d-flex align-items-center ${
-              isPositive ? 'text-success' : 'text-danger'
-            }`}
-          >
-            {isPositive ? (
-              <span className="me-1">▲</span>
-            ) : (
-              <span className="me-1">▼</span>
-            )}
-            {change.substring(1)}
-          </div>
-        );
-      },
-    },
-    {
-      title: 'W/L',
-      dataIndex: 'wl',
-      key: 'wl',
-    },
-    {
-      title: 'Win %',
-      dataIndex: 'winPercentage',
-      key: 'winPercentage',
-    },
-  ];
+  const trophyCounts = [2, 3, 1];
 
-  // Handle filter changes
-  const handlePlayerTypeChange = (e: RadioChangeEvent) => {
-    setPlayerType(e.target.value);
+  const columns = useMemo(
+    () =>
+      [
+        {
+          title: 'STT',
+          key: 'index',
+          width: 60,
+          render: (_: any, _record: TopPlayer, index: number) =>
+            (pagination.current - 1) * pagination.pageSize + index + 4,
+        },
+        {
+          title: 'Avatar',
+          dataIndex: 'avatar',
+          key: 'avatar',
+          width: 60,
+          render: (avatar: string) => <Avatar src={avatar} />,
+        },
+        {
+          title: 'Name',
+          dataIndex: 'fullName',
+          key: 'fullName',
+          render: (text: string) => <Text>{text}</Text>,
+        },
+        {
+          title: 'Total Wins',
+          dataIndex: 'totalWins',
+          key: 'totalWins',
+          width: 100,
+          render: (wins: number) => (
+            <Text style={{ color: '#1890ff' }}>{wins}</Text>
+          ),
+        },
+        {
+          title: 'Total Match',
+          dataIndex: 'totalMatch',
+          key: 'totalMatch',
+          width: 120,
+          render: (matches: number) => (
+            <Text style={{ color: '#1890ff' }}>{matches}</Text>
+          ),
+        },
+        {
+          title: 'Level',
+          dataIndex: 'exeprienceLevel',
+          key: 'exeprienceLevel',
+          width: 100,
+          render: (level: number) => (
+            <Text style={{ color: '#1890ff' }}>{level}</Text>
+          ),
+        },
+        {
+          title: 'Point',
+          dataIndex: 'rankingPoint',
+          key: 'rankingPoint',
+          width: 100,
+          render: (point: number) => (
+            <Text style={{ color: '#1890ff' }}>{point}</Text>
+          ),
+        },
+        {
+          title: '',
+          key: 'action',
+          width: 60,
+          render: () => <MoreOutlined style={{ fontSize: 20 }} />,
+        },
+      ] as ColumnsType<TopPlayer>,
+    [pagination.current, pagination.pageSize]
+  );
+
+  const isMobile = useMediaQuery({ maxWidth: 769 });
+
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchName(e.target.value);
+    setPagination((prev) => ({ ...prev, current: 1 }));
   };
 
-  const handleGenderChange = (e: RadioChangeEvent) => {
-    setGender(e.target.value);
-  };
-
-  const handleAgeGroupChange = (checkedValues: any) => {
-    setAgeGroups(checkedValues);
-  };
-
-  const handleRatingRangeChange = (value: string) => {
-    setRatingRange(value);
-  };
-
-  const resetFilters = () => {
-    setPlayerType('all');
-    setGender('all');
-    setAgeGroups(['open']);
-    setRatingRange('all');
+  const handleTableChange = (newPagination: any) => {
+    setPagination({
+      current: newPagination.current,
+      pageSize: newPagination.pageSize,
+    });
   };
 
   return (
-    <div className="d-flex flex-column min-vh-100">
-      <main className="flex-grow-1 container py-4">
-        <h1 className="display-4 fw-bold mb-4">Rankings</h1>
+    <div style={{ maxWidth: 1200, margin: '0 auto', padding: 24 }}>
+      <Row
+        className="d-flex justify-content-center"
+        gutter={[16, 16]}
+        style={{ marginBottom: 24 }}
+      >
+        {featuredMembers.map((member, idx) => (
+          <Col
+            xs={12}
+            sm={12}
+            md={8}
+            lg={8}
+            xl={6}
+            key={member.userId}
+            style={
+              idx === 1 && !isMobile ? { transform: 'translateY(-20px)' } : {}
+            }
+          >
+            <TeamMemberCard player={member} trophyCount={trophyCounts[idx]} />
+          </Col>
+        ))}
+      </Row>
 
-        {/* Filters Section */}
-        <div className="row">
-          <div className="col-md-3 mb-4">
-            <div className="mb-4">
-              <h2 className="h5 fw-medium mb-3">Filters</h2>
-              <Button onClick={resetFilters} className="w-100 mb-4">
-                Reset Filters
-              </Button>
-            </div>
+      <Card>
+        <Row
+          justify="space-between"
+          align="middle"
+          style={{ marginBottom: 16 }}
+        >
+          <Col>
+            <Title level={5} style={{ margin: 0 }}>
+              Leader Board
+            </Title>
+          </Col>
+          <Col>
+            <Input
+              placeholder="Search players..."
+              prefix={<SearchOutlined />}
+              value={searchName}
+              onChange={handleSearch}
+              style={{ width: 300 }}
+              className="rounded-pill p-3"
+            />
+          </Col>
+        </Row>
 
-            <div className="mb-4">
-              <h6>Player Type</h6>
-              <Radio.Group
-                value={playerType}
-                onChange={handlePlayerTypeChange}
-                className="d-flex flex-column"
-              >
-                <Radio value="all">All Players</Radio>
-                <Radio value="singles">Singles</Radio>
-                <Radio value="doubles">Doubles</Radio>
-                <Radio value="mixed">Mixed Doubles</Radio>
-              </Radio.Group>
-            </div>
-
-            <div className="mb-4">
-              <h6>Gender</h6>
-              <Radio.Group
-                value={gender}
-                onChange={handleGenderChange}
-                className="d-flex flex-column"
-              >
-                <Radio value="all">All</Radio>
-                <Radio value="men">Men</Radio>
-                <Radio value="women">Women</Radio>
-              </Radio.Group>
-            </div>
-            <div className="mb-4">
-              <h6>Age Group</h6>
-              <Checkbox.Group
-                value={ageGroups}
-                onChange={handleAgeGroupChange}
-                className="d-flex flex-column"
-              >
-                <Checkbox value="open">Open</Checkbox>
-                <Checkbox value="junior">Junior (Under 18)</Checkbox>
-                <Checkbox value="senior">Senior (50+)</Checkbox>
-              </Checkbox.Group>
-            </div>
-
-            <div className="mb-4">
-              <h6>Rating Range</h6>
-              <Select
-                value={ratingRange}
-                onChange={handleRatingRangeChange}
-                className="w-100"
-              >
-                <Select.Option value="all">All Ratings</Select.Option>
-                <Select.Option value="5+">5.0+</Select.Option>
-                <Select.Option value="4-5">4.0 - 5.0</Select.Option>
-                <Select.Option value="3-4">3.0 - 4.0</Select.Option>
-                <Select.Option value="2-3">2.0 - 3.0</Select.Option>
-              </Select>
-            </div>
-            <Button className="bg-dark text-white" block>
-              Apply Filters
-            </Button>
-          </div>
-
-          {/* Main Content */}
-          <div className="col-md-9">
-            <div className="rankings-container">
-              <div className="d-flex justify-content-between align-items-center mb-2">
-                <div>
-                  <h2 className="mb-0">Top Players</h2>
-                </div>
-                <Input
-                  placeholder="Search players..."
-                  prefix={<span>🔍</span>}
-                  style={{ width: 250 }}
-                />
-              </div>
-
-              <Table
-                columns={columns}
-                dataSource={data}
-                pagination={false}
-                className="player-rankings-table"
-                rowClassName="player-row"
-              />
-            </div>
-          </div>
-        </div>
-      </main>
+        <Table
+          columns={columns}
+          dataSource={filteredPlayers}
+          rowKey="id"
+          pagination={{
+            current: pagination.current,
+            pageSize: pagination.pageSize,
+            total: filteredPlayers.length,
+            showSizeChanger: true,
+            pageSizeOptions: ['5', '10', '20'],
+          }}
+          onChange={handleTableChange}
+          scroll={{ x: 'max-content' }}
+          rowClassName={(record) =>
+            record.userId === user?.id ? 'ant-table-row-selected' : ''
+          }
+        />
+      </Card>
     </div>
   );
 };

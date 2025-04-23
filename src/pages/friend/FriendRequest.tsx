@@ -81,23 +81,13 @@ const FriendRequest = ({ userId }) => {
             </div>
           ) : Friend.status === FriendStatus.Accepted ? (
             <div className="col-4 d-flex justify-content-end">
-              <Button
-                style={{ borderColor: 'green', color: 'green' }}
-                onClick={() => {
-                  handleAcceptFriend(Friend.id);
-                }}
-              >
+              <Button style={{ borderColor: 'green', color: 'green' }}>
                 <span>Accepted</span>
               </Button>
             </div>
           ) : (
             <div className="col-4 d-flex justify-content-end">
-              <Button
-                style={{ borderColor: 'red', color: 'red' }}
-                onClick={() => {
-                  handleRejectFriend(Friend.id);
-                }}
-              >
+              <Button style={{ borderColor: 'red', color: 'red' }}>
                 <span>Rejected</span>
               </Button>
             </div>

@@ -4,14 +4,17 @@ import 'antd/dist/reset.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { useSelector } from 'react-redux';
 import { RootState } from '@src/redux/store';
-import { UpdatePasswordRequest } from '@src/modules/User/models';
-import { useUpdatePassword } from '@src/modules/User/hooks/useUpdatePassword';
+import {
+  useCheckPassword,
+  useUpdatePassword,
+} from '@src/modules/User/hooks/useUpdatePassword';
 import { useState } from 'react';
 import { EyeInvisibleOutlined, EyeOutlined } from '@ant-design/icons';
 
 const UpdatePassword: React.FC = () => {
   const user = useSelector((state: RootState) => state.auth.user);
   const { mutate: updatePassword } = useUpdatePassword();
+  const { mutate: checkPassword } = useCheckPassword();
   //const passwordRegex = /^(?=.*[A-Z])(?=.*\W).{8,}$/;
 
   const passwordRegexUpperCase = /[A-Z]/; // Kiểm tra ít nhất 1 ký tự hoa
@@ -23,13 +26,33 @@ const UpdatePassword: React.FC = () => {
   const [newPasswordVisible, setNewPasswordVisible] = useState(false);
   const [confirmPasswordVisible, setConfirmPasswordVisible] = useState(false);
 
-  const onFinish = (values: UpdatePasswordRequest) => {
+  const onFinish = (values) => {
     handleUpdatePassword(values);
   };
 
-  const handleUpdatePassword = async (values: UpdatePasswordRequest) => {
-    values.userId = user?.id ?? 0;
-    updatePassword(values);
+  const handleUpdatePassword = async (values) => {
+    const payload = {
+      userId: user?.id ?? 0,
+      oldPassword: values.oldPassword,
+    };
+
+    checkPassword(payload, {
+      onSuccess: (isValid) => {
+        if (!isValid) {
+          // sai mật khẩu cũ ⇒ dừng ngay, không gọi update
+          return;
+        }
+        // đúng rồi thì mới update mật khẩu mới
+        updatePassword({
+          userId: payload.userId,
+          newPassword: values.newPassword,
+        });
+      },
+      onError: (err) => {
+        // ví dụ lỗi mạng, API… thì cũng có thể show message custom ở đây
+        console.error('Your old password is wrong', err);
+      },
+    });
   };
 
   return (

@@ -8,11 +8,11 @@ import {
   SearchOutlined,
   UserAddOutlined,
 } from '@ant-design/icons';
-import { useGetAllUserPlayer } from '@src/modules/User/hooks/useGetAllUserPlayer';
 import './player-page.css';
 import { addFriend } from '@src/modules/Friend/hooks/useAddFriend';
 import { useSelector } from 'react-redux';
 import { RootState } from '@src/redux/store';
+import { useGetNoneUserPlayer } from '@src/modules/User/hooks/useGetUnfriendByUserId';
 
 const PlayerCard = ({
   firstName,
@@ -93,10 +93,10 @@ const PlayerCard = ({
 
 export const PlayersPage: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
-  const { data, isLoading } = useGetAllUserPlayer();
   const [visiblePlayers, setVisiblePlayers] = useState<any[]>([]); // Danh sách người chơi hiển thị
   const [loading, setLoading] = useState(false); // Trạng thái tải dữ liệu
   const user = useSelector((state: RootState) => state.auth.user);
+  const { data, isLoading } = useGetNoneUserPlayer(user?.id ?? 0);
 
   const { ref, inView } = useInView({
     triggerOnce: false, // Kiểm tra liên tục khi cuộn

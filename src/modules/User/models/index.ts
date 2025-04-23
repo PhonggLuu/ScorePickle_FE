@@ -137,3 +137,8 @@ export interface UpdatePasswordRequest {
   userId: number;
   newPassword: string;
 }
+
+export interface CheckPasswordRequest {
+  userId: number;
+  oldPassword: string;
+}
