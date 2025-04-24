@@ -142,8 +142,8 @@ export const TournamentPlayerPage = () => {
         >
           <TabPane tab={<span className="text-white">All</span>} key="All" />
           <TabPane
-            tab={<span className="text-white">Scheduled</span>}
-            key="Scheduled"
+            tab={<span className="text-white">Schedule</span>}
+            key="Schedule"
           />
           <TabPane
             tab={<span className="text-white">OnGoing</span>}

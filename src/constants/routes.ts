@@ -35,6 +35,7 @@ const ROOTS_SPONSOR = '/sponsor';
 const ROOTS_MY_TOURNAMENT = '/my-tournament';
 const ROOTS_PLAYER_PAGE = '/player-page';
 const ROOTS_REFEREE = '/referee';
+const ROOTS_MATCH_PAGE = '/match-page';
 
 export const PATH_LANDING = {
   root: ROOTS_LANDING,
@@ -307,4 +308,8 @@ export const PATH_PLAYER_PAGE = {
 
 export const PATH_REFEREE = {
   root: ROOTS_REFEREE,
+};
+
+export const PATH_MATCH_PAGE = {
+  root: ROOTS_MATCH_PAGE,
 };

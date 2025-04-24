@@ -234,3 +234,10 @@ export interface JoinMatchRequest {
   matchId: number;
   userJoinId: number;
 }
+
+export interface ExtendMatchDetail extends Matches {
+  player1: User | undefined | null;
+  player2: User | undefined | null;
+  player3: User | undefined | null;
+  player4: User | undefined | null;
+}

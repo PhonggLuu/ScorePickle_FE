@@ -39,11 +39,7 @@ const { Search } = Input;
 const MyProfile: React.FC = () => {
   const currentUser = useSelector((state: RootState) => state.auth.user);
   const { id } = useParams<{ id: string }>();
-  const {
-    data: matches,
-    isLoading,
-    refetch,
-  } = useGetListMatchAndScore(Number(id || 0));
+  const { data: matches, isLoading } = useGetListMatchAndScore(Number(id || 0));
   const { data: user } = useGetUserById(Number(id || 0));
   const [isModalVisible, setIsModalVisible] = useState(false);
   const { mutate: addFriend } = useAddFriend();
@@ -79,13 +75,11 @@ const MyProfile: React.FC = () => {
   const handleJoinMatch = (matchId: number) => {
     const payload = {
       matchId: matchId,
-      userId: currentUser?.id ?? 0,
       userJoinId: currentUser?.id ?? 0,
     };
     joinMatch({ data: payload });
     // Thêm logic tham gia trận đấu
     setIsModalVisible(false);
-    refetch();
   };
   function handleAddFriend() {
     const payload: AddFriendRequest = {

@@ -30,82 +30,82 @@ const { TabPane } = Tabs;
 // Animation variants
 const pageVariants = {
   initial: { opacity: 0 },
-  animate: { 
+  animate: {
     opacity: 1,
-    transition: { duration: 0.6 }
+    transition: { duration: 0.6 },
   },
-  exit: { opacity: 0 }
+  exit: { opacity: 0 },
 };
 
 const headerVariants = {
   initial: { y: -50, opacity: 0 },
-  animate: { 
-    y: 0, 
+  animate: {
+    y: 0,
     opacity: 1,
-    transition: { 
-      type: "spring",
+    transition: {
+      type: 'spring',
       stiffness: 100,
       damping: 15,
-      delay: 0.2
-    }
-  }
+      delay: 0.2,
+    },
+  },
 };
 
 const metaVariants = {
   initial: { opacity: 0 },
-  animate: { 
+  animate: {
     opacity: 1,
-    transition: { 
+    transition: {
       duration: 0.5,
       delay: 0.4,
-      staggerChildren: 0.1
-    }
-  }
+      staggerChildren: 0.1,
+    },
+  },
 };
 
 const metaItemVariants = {
   initial: { y: 20, opacity: 0 },
-  animate: { 
-    y: 0, 
+  animate: {
+    y: 0,
     opacity: 1,
-    transition: { duration: 0.4 }
-  }
+    transition: { duration: 0.4 },
+  },
 };
 
 const buttonVariants = {
   initial: { scale: 0.9, opacity: 0 },
-  animate: { 
-    scale: 1, 
+  animate: {
+    scale: 1,
     opacity: 1,
-    transition: { 
-      type: "spring",
+    transition: {
+      type: 'spring',
       stiffness: 200,
       damping: 15,
-      delay: 0.6
-    }
+      delay: 0.6,
+    },
   },
-  hover: { 
+  hover: {
     scale: 1.05,
-    transition: { duration: 0.2 }
+    transition: { duration: 0.2 },
   },
-  tap: { 
+  tap: {
     scale: 0.98,
-    transition: { duration: 0.2 }
-  }
+    transition: { duration: 0.2 },
+  },
 };
 
 const tabsContainerVariants = {
   initial: { y: 30, opacity: 0 },
-  animate: { 
-    y: 0, 
+  animate: {
+    y: 0,
     opacity: 1,
-    transition: { 
-      type: "spring",
+    transition: {
+      type: 'spring',
       stiffness: 100,
       damping: 15,
-      delay: 0.8
-    }
-  }
+      delay: 0.8,
+    },
+  },
 };
 
 export const TournamentDetailPage: React.FC = () => {
@@ -128,7 +128,7 @@ export const TournamentDetailPage: React.FC = () => {
   );
 
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [activeKey, setActiveKey] = useState("details");
+  const [activeKey, setActiveKey] = useState('details');
 
   // If data is still loading or there's an error, render appropriate messages
   if (isLoading)
@@ -141,9 +141,9 @@ export const TournamentDetailPage: React.FC = () => {
         style={{ height: '100vh' }}
       >
         <motion.div
-          animate={{ 
+          animate={{
             rotate: 360,
-            transition: { duration: 1, repeat: Infinity, ease: "linear" }
+            transition: { duration: 1, repeat: Infinity, ease: 'linear' },
           }}
         >
           <Spin size="large" />
@@ -158,7 +158,7 @@ export const TournamentDetailPage: React.FC = () => {
         </motion.p>
       </motion.div>
     );
-    
+
   if (notFoundTournament)
     return (
       <motion.div
@@ -167,8 +167,8 @@ export const TournamentDetailPage: React.FC = () => {
         exit={{ opacity: 0 }}
         className="container mt-5 text-center"
       >
-        <motion.h2 
-          initial={{ y: -20 }} 
+        <motion.h2
+          initial={{ y: -20 }}
           animate={{ y: 0 }}
           transition={{ duration: 0.5 }}
         >
@@ -246,8 +246,8 @@ export const TournamentDetailPage: React.FC = () => {
         </motion.div>
       );
     }
-    
-    if (tournament.status !== 'Scheduled') {
+
+    if (!tournament.status.toLowerCase().includes('schedule')) {
       return (
         <motion.div
           variants={buttonVariants}
@@ -265,7 +265,7 @@ export const TournamentDetailPage: React.FC = () => {
         </motion.div>
       );
     }
-    
+
     if (
       ((user?.userDetails?.experienceLevel ?? 0) >= tournament.isMinRanking &&
         (user?.userDetails?.experienceLevel ?? 0) <= tournament.isMaxRanking &&
@@ -314,7 +314,7 @@ export const TournamentDetailPage: React.FC = () => {
           );
         }
       }
-      
+
       if (tournament.type.toLocaleLowerCase().includes('double')) {
         if (isTeamRegistered === undefined) {
           return (
@@ -469,16 +469,16 @@ export const TournamentDetailPage: React.FC = () => {
             marginTop: '5vh',
           }}
         >
-          <motion.div 
+          <motion.div
             className="banner-overlay"
             initial={{ opacity: 0 }}
             animate={{ opacity: 0.6 }}
             transition={{ duration: 1 }}
           />
         </motion.div>
-        
+
         {/* Tournament Header */}
-        <motion.div 
+        <motion.div
           className="row mb-3 mt-3"
           variants={headerVariants}
           initial="initial"
@@ -493,7 +493,7 @@ export const TournamentDetailPage: React.FC = () => {
                 {tournament.name}
               </Title>
             </div>
-            
+
             <motion.div
               className="tournament-meta mt-2 text-white"
               style={{ fontSize: '20px' }}
@@ -513,28 +513,28 @@ export const TournamentDetailPage: React.FC = () => {
               </motion.span>
             </motion.div>
           </div>
-          
+
           <div className="col-md-4 d-flex justify-content-end align-items-start mt-2">
             {showButton()}
           </div>
         </motion.div>
 
         {/* Navigation Tabs */}
-        <motion.div 
+        <motion.div
           className="container_bar"
           variants={tabsContainerVariants}
           initial="initial"
           animate="animate"
         >
-          <Tabs 
-            defaultActiveKey="details" 
+          <Tabs
+            defaultActiveKey="details"
             className="tournament-tabs"
             activeKey={activeKey}
             onChange={(key) => setActiveKey(key)}
           >
             <TabPane tab="Details" key="details">
               <AnimatePresence mode="wait">
-                {activeKey === "details" && (
+                {activeKey === 'details' && (
                   <motion.div
                     key="details"
                     initial={{ opacity: 0, y: 20 }}
@@ -547,10 +547,10 @@ export const TournamentDetailPage: React.FC = () => {
                 )}
               </AnimatePresence>
             </TabPane>
-            
+
             <TabPane tab="Schedule" key="schedule">
               <AnimatePresence mode="wait">
-                {activeKey === "schedule" && (
+                {activeKey === 'schedule' && (
                   <motion.div
                     key="schedule"
                     initial={{ opacity: 0, y: 20 }}
@@ -563,10 +563,10 @@ export const TournamentDetailPage: React.FC = () => {
                 )}
               </AnimatePresence>
             </TabPane>
-            
+
             <TabPane tab="Participants" key="participants">
               <AnimatePresence mode="wait">
-                {activeKey === "participants" && (
+                {activeKey === 'participants' && (
                   <motion.div
                     key="participants"
                     initial={{ opacity: 0, y: 20 }}
@@ -585,10 +585,10 @@ export const TournamentDetailPage: React.FC = () => {
                 )}
               </AnimatePresence>
             </TabPane>
-            
+
             <TabPane tab="Results" key="results">
               <AnimatePresence mode="wait">
-                {activeKey === "results" && (
+                {activeKey === 'results' && (
                   <motion.div
                     key="results"
                     initial={{ opacity: 0, y: 20 }}
@@ -597,7 +597,9 @@ export const TournamentDetailPage: React.FC = () => {
                     transition={{ duration: 0.3 }}
                   >
                     <Card>
-                      <Paragraph>Results information will be displayed here.</Paragraph>
+                      <Paragraph>
+                        Results information will be displayed here.
+                      </Paragraph>
                     </Card>
                   </motion.div>
                 )}
@@ -606,7 +608,7 @@ export const TournamentDetailPage: React.FC = () => {
           </Tabs>
         </motion.div>
       </div>
-      
+
       <RegistrationFormModal
         tournamentId={tournament.id}
         visible={isModalVisible}

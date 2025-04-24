@@ -23,10 +23,11 @@ export function useJoinMatch() {
     mutationFn: ({ data }) => joinMatch(data),
     onSuccess: (data) => {
       if (data) message.success('Join match successfully');
+      else message.error('Join match failed');
       queryClient.invalidateQueries({ queryKey: [JOIN_MATCH] });
     },
     onError: () => {
-      message.error('Join match error');
+      message.info('You joined this match');
     },
   });
 }
