@@ -199,7 +199,7 @@ import { useJoinMatch } from '@src/modules/Match/hooks/useJoinMatch';
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '@src/redux/store';
-import { useMatchRealtimeLogs } from '@src/modules/Match/hooks/useMatchRealtimeLogs';
+import { MatchScore } from './components/MatchScore';
 
 export default function MatchDetails() {
   const { id } = useParams<{ id: string }>();
@@ -207,12 +207,6 @@ export default function MatchDetails() {
   const { mutate: joinMatch } = useJoinMatch();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const user = useSelector((state: RootState) => state.auth.user);
-  const { logs } = useMatchRealtimeLogs(Number(id), 1);
-  const team1 = logs.filter((log) => log.team === 1);
-  const team2 = logs.filter((log) => log.team === 2);
-  console.log(logs);
-  console.log(team1);
-  console.log(team2);
 
   if (data === undefined) {
     return;
@@ -277,7 +271,7 @@ export default function MatchDetails() {
         </div>
 
         <div className="row">
-          <div className="col-12">
+          <div className="col-12 mb-3">
             <div className="row align-items-center text-center">
               {/* Team 1 */}
               <div className="col-md-5">
@@ -549,30 +543,8 @@ export default function MatchDetails() {
               </div>
             </div>
           </div>
-          {logs1 && (
-            <div className="d-md-none mt-3">
-              <div
-                className="alert alert-danger d-flex align-items-center"
-                role="alert"
-              >
-                <div className="d-flex align-items-center">
-                  <div className="me-2">
-                    <div
-                      className="spinner-grow spinner-grow-sm text-danger"
-                      role="status"
-                    >
-                      <span className="visually-hidden"></span>
-                    </div>
-                  </div>
-                  <div>
-                    {logs1.map((log, index) => (
-                      <div key={index}>{log.points}</div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
+
+          <MatchScore matchId={Number(id)} />
         </div>
         <Modal
           title="Join Match"
