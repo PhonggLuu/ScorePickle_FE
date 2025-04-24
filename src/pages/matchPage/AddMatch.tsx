@@ -226,7 +226,7 @@ const AddMatches: React.FC = () => {
     }
     const isComp =
       matchCategory === MatchCategory[MatchCategory.Competitive].toLowerCase();
-    const isTeam = matchType === 'team';
+    const isSingle = matchType === 'single';
     const payload: MatchRequest = {
       title: title,
       description: description,
@@ -235,17 +235,29 @@ const AddMatches: React.FC = () => {
       venueId: venue !== 0 ? venue : null,
       matchCategory: isComp ? MatchCategory.Competitive : MatchCategory.Custom,
       matchFormat: isComp
-        ? user?.gender?.toLowerCase() === 'male'
-          ? MatchFormat.SingleMale
-          : MatchFormat.SingleFemale
-        : MatchFormat.DoublesMix,
+        ? user?.gender?.toLowerCase().includes('female')
+          ? MatchFormat.SingleFemale
+          : MatchFormat.SingleMale
+        : isSingle
+          ? user?.gender?.toLowerCase().includes('female')
+            ? MatchFormat.SingleFemale
+            : MatchFormat.SingleMale
+          : MatchFormat.DoublesMix,
       winScore: matchScore,
       isPublic: !isComp,
       roomOnwer: user!.id,
       player1Id: user!.id,
       player2Id: isComp ? null : playersSelected.players[1].id ?? null,
-      player3Id: isComp ? null : isTeam ? playersSelected.players[2].id : null,
-      player4Id: isComp ? null : isTeam ? playersSelected.players[3].id : null,
+      player3Id: isComp
+        ? null
+        : isSingle
+          ? null
+          : playersSelected.players[2].id,
+      player4Id: isComp
+        ? null
+        : isSingle
+          ? null
+          : playersSelected.players[3].id,
       refereeId: referee !== 0 ? venue : null,
       tournamentId: null,
     };

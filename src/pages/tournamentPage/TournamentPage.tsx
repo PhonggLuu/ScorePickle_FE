@@ -1,14 +1,14 @@
 import {
   FilterOutlined,
   LoadingOutlined,
-  SearchOutlined
+  SearchOutlined,
 } from '@ant-design/icons';
 import { useGetAllTournamentsForPlayer } from '@src/modules/Tournament/hooks/useGetAllTournaments';
 import { RootState } from '@src/redux/store';
 import { Button, Checkbox, Input, message } from 'antd';
 import 'antd/dist/reset.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { TournamentCard } from './containers/TournamentCard';
 
@@ -16,6 +16,8 @@ export const TournamentPage = () => {
   const { data, isLoading } = useGetAllTournamentsForPlayer();
   const [isSidebarHidden, setIsSidebarHidden] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  const sidebarRef = useRef<HTMLDivElement>(null);
+  const mainRef = useRef(null);
 
   const toggleSidebar = () => {
     setIsSidebarHidden((prevState) => !prevState);
@@ -102,51 +104,103 @@ export const TournamentPage = () => {
     message.success('Filter follow your level and gender succesfully');
   };
 
-  const handleResetFilters = () => {
-    window.location.reload();
-  };
+  // const handleResetFilters = () => {
+  //   window.location.reload();
+  // };
 
   return (
-    <div className="d-flex flex-column min-vh-100 text-white">
-      <main className="flex-grow-1 container py-4">
-        <h1 className="display-4 fw-bold mb-4">Tournaments</h1>
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        height: '100vh',
+        width: '100vw',
+        justifyContent: 'center',
+        alignItems: 'stretch',
+      }}
+      className="text-white"
+    >
+      {/* HEADER */}
+      <div style={{ padding: '1rem 2rem' }}>
+        <h1 style={{ fontSize: '2.5rem', fontWeight: 700, margin: 0 }}>
+          Tournaments
+        </h1>
+      </div>
 
-        <div
-          className="row"
-          style={{ minHeight: '100vh', overflowX: 'hidden' }}
+      {/* CONTENT WRAPPER */}
+      <div
+        style={{
+          display: 'flex',
+          flexGrow: 1,
+          overflow: 'hidden',
+          color: 'white',
+        }}
+      >
+        {/* SIDEBAR */}
+        <aside
+          ref={sidebarRef}
+          style={{
+            flex: '0 0 25%',
+            maxWidth: isSidebarHidden ? '0' : '20%',
+            transform: isSidebarHidden ? 'translateX(-100%)' : 'translateX(0)',
+            transition: 'transform .3s ease, max-width .3s ease',
+            height: '100%',
+            overflowY: 'auto',
+            msOverflowStyle: 'none',
+            scrollbarWidth: 'none',
+            overscrollBehaviorY: 'contain',
+            padding: isSidebarHidden ? '0' : '1rem',
+            marginLeft: '80px',
+          }}
         >
-          <div
-            className={`${isSidebarHidden ? 'sidebar-hidden' : 'col-md-3'}`}
-            style={{
-              transition: 'transform 0.3s ease, width 0.3s ease',
-              transform: isSidebarHidden
-                ? 'translateX(-100%)'
-                : 'translateX(0)',
-            }}
-          >
+          <div style={{ position: 'sticky', top: 0 }}>
             {user?.id && (
-              <div className="mb-4">
-                <h2 className="h5 fw-medium mb-3">Recommend Tournament</h2>
-                <Button
-                  className="w-100 mb-4 btn-primary"
-                  onClick={recommendTournaments}
+              <div style={{ marginBottom: '1rem' }}>
+                <h2
+                  style={{
+                    fontSize: '1.25rem',
+                    fontWeight: 500,
+                    margin: '0 0 .75rem',
+                  }}
                 >
                   Recommend Tournament
+                </h2>
+                <Button
+                  style={{ width: '100%', marginBottom: '1rem' }}
+                  type="primary"
+                  onClick={recommendTournaments}
+                >
+                  Filter By Level And Gender
                 </Button>
               </div>
             )}
-            <div className="mb-4">
-              <h2 className="h5 fw-medium mb-3">Filters</h2>
-              <Button className="w-100 mb-4" block onClick={handleResetFilters}>
+
+            {/* <div style={{ marginBottom: '1rem' }}>
+              <h2 style={{ fontSize: '1.25rem', fontWeight: 500, margin: '0 0 .75rem' }}>Filters</h2>
+              <Button style={{ width: '100%', marginBottom: '1rem' }} onClick={handleResetFilters}>
                 Reset Filters
               </Button>
-            </div>
+            </div> */}
 
-            <div className="mb-4">
-              <h3 className="h6 fw-medium">Tournament Type</h3>
-              <div className="d-flex flex-column gap-2">
+            {/* Tournament Type */}
+            <div style={{ marginBottom: '1rem' }}>
+              <h3
+                style={{
+                  fontSize: '1rem',
+                  fontWeight: 500,
+                  margin: '0 0 .5rem',
+                }}
+              >
+                Tournament Type
+              </h3>
+              <div
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '0.5rem',
+                }}
+              >
                 <Checkbox
-                  className="text-white"
                   onChange={() =>
                     handleCheckboxChange('tournamentType', 'singles')
                   }
@@ -154,7 +208,6 @@ export const TournamentPage = () => {
                   Single
                 </Checkbox>
                 <Checkbox
-                  className="text-white"
                   onChange={() =>
                     handleCheckboxChange('tournamentType', 'doubles')
                   }
@@ -164,89 +217,78 @@ export const TournamentPage = () => {
               </div>
             </div>
 
-            <div className="mb-4">
-              <h3 className="h6 fw-medium">Skill Level</h3>
-              <div className="d-flex flex-column gap-2">
-                <div className="row">
-                  <div className="col-6">
+            {/* Skill Level */}
+            <div style={{ marginBottom: '1rem' }}>
+              <h3
+                style={{
+                  fontSize: '1rem',
+                  fontWeight: 500,
+                  margin: '0 0 .5rem',
+                }}
+              >
+                Skill Level
+              </h3>
+              <div
+                style={{ display: 'flex', flexDirection: 'row', gap: '1rem' }}
+              >
+                <div>
+                  {[1, 2, 3, 4, 5].map((level) => (
                     <Checkbox
-                      className="text-white"
-                      onChange={() => handleCheckboxChange('skillLevel', '1')}
+                      key={level}
+                      style={{ display: 'block' }}
+                      onChange={() =>
+                        handleCheckboxChange('skillLevel', String(level))
+                      }
                     >
-                      Level 1
+                      Level {level}
                     </Checkbox>
+                  ))}
+                </div>
+                <div>
+                  {[6, 7, 8, 9].map((level) => (
                     <Checkbox
-                      className="text-white"
-                      onChange={() => handleCheckboxChange('skillLevel', '2')}
+                      key={level}
+                      style={{ display: 'block' }}
+                      onChange={() =>
+                        handleCheckboxChange('skillLevel', String(level))
+                      }
                     >
-                      Level 2
+                      Level {level}
                     </Checkbox>
-                    <Checkbox
-                      className="text-white"
-                      onChange={() => handleCheckboxChange('skillLevel', '3')}
-                    >
-                      Level 3
-                    </Checkbox>
-                    <Checkbox
-                      className="text-white"
-                      onChange={() => handleCheckboxChange('skillLevel', '4')}
-                    >
-                      Level 4
-                    </Checkbox>
-                    <Checkbox
-                      className="text-white"
-                      onChange={() => handleCheckboxChange('skillLevel', '5')}
-                    >
-                      Level 5
-                    </Checkbox>
-                  </div>
-                  <div className="col-6">
-                    <Checkbox
-                      className="text-white"
-                      onChange={() => handleCheckboxChange('skillLevel', '6')}
-                    >
-                      Level 6
-                    </Checkbox>
-                    <Checkbox
-                      className="text-white"
-                      onChange={() => handleCheckboxChange('skillLevel', '7')}
-                    >
-                      Level 7
-                    </Checkbox>
-                    <Checkbox
-                      className="text-white"
-                      onChange={() => handleCheckboxChange('skillLevel', '8')}
-                    >
-                      Level 8
-                    </Checkbox>
-                    <Checkbox
-                      className="text-white"
-                      onChange={() => handleCheckboxChange('skillLevel', '9')}
-                    >
-                      Level 9
-                    </Checkbox>
-                  </div>
+                  ))}
                 </div>
               </div>
             </div>
 
-            <div className="mb-4">
-              <h3 className="h6 fw-medium">Status</h3>
-              <div className="d-flex flex-column gap-2">
+            {/* Status */}
+            <div style={{ marginBottom: '1rem' }}>
+              <h3
+                style={{
+                  fontSize: '1rem',
+                  fontWeight: 500,
+                  margin: '0 0 .5rem',
+                }}
+              >
+                Status
+              </h3>
+              <div
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '0.5rem',
+                }}
+              >
                 <Checkbox
-                  className="text-white"
                   onChange={() => handleCheckboxChange('status', 'Scheduled')}
                 >
                   Coming Soon
                 </Checkbox>
                 <Checkbox
-                  className="text-white"
                   onChange={() => handleCheckboxChange('status', 'Ongoing')}
                 >
                   Ongoing
                 </Checkbox>
                 <Checkbox
-                  className="text-white"
                   onChange={() => handleCheckboxChange('status', 'Completed')}
                 >
                   Past Tournaments
@@ -254,85 +296,106 @@ export const TournamentPage = () => {
               </div>
             </div>
 
-            <Button className="bg-dark text-white" block>
+            {/* <Button style={{ width: '100%' }} className="bg-dark text-white">
               Apply Filters
-            </Button>
+            </Button> */}
           </div>
+        </aside>
 
-          <div
-            className={`main-content ${
-              isSidebarHidden ? 'col-12' : 'col-md-9'
-            }`}
-            style={{
-              transition: 'all 0.3s ease',
-              willChange: 'width', // Tối ưu hiệu năng
-            }}
-          >
-            <div className="container-fluid p-0">
+        {/* MAIN CONTENT */}
+        <main
+          ref={mainRef}
+          style={{
+            flex: isSidebarHidden ? '0 0 90%' : '0 0 70%',
+            height: '100%',
+            overflowY: 'auto',
+            msOverflowStyle: 'none',
+            scrollbarWidth: 'none',
+            padding: '1rem',
+            transition: 'all .3s ease',
+            willChange: 'width',
+          }}
+        >
+          <div style={{ marginBottom: '1rem', color: 'inherit' }}>
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+              }}
+            >
+              <h2 style={{ fontSize: '1.5rem', fontWeight: 700, margin: 0 }}>
+                Events
+              </h2>
               <div
-                className="d-flex flex-column"
                 style={{
-                  color: 'white',
+                  position: 'relative',
+                  width: '50%',
+                  paddingRight: '40px',
                 }}
               >
-                <h1 className="mb-3 fw-bold">Events</h1>
-
-                <div className="position-relative mb-3">
-                  <Input
-                    prefix={<SearchOutlined style={{ color: '#bfbfbf' }} />}
-                    placeholder="Search"
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="rounded-pill py-2 ps-3"
-                    style={{
-                      backgroundColor: 'white',
-                      border: 'none',
-                      boxShadow: 'none',
-                      width: '50%',
-                    }}
-                  />
-                  <Button
-                    onClick={toggleSidebar}
-                    className="btn rounded-pill position-absolute end-0 top-0 h-100 d-flex align-items-center justify-content-center"
-                    style={{
-                      width: '40px',
-                      color: 'white',
-                      backgroundColor: 'white',
-                    }}
-                  >
-                    <FilterOutlined style={{ color: '#0066cc' }} />
-                  </Button>
-                </div>
-
-                <h2 className="fs-4 fw-bold mb-2">Explore</h2>
+                <Input
+                  prefix={<SearchOutlined style={{ color: '#bfbfbf' }} />}
+                  placeholder="Search"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  style={{
+                    width: '100%',
+                    borderRadius: '999px',
+                    padding: '0.5rem 1rem',
+                    paddingRight: '40px',
+                  }}
+                />
+                <Button
+                  onClick={toggleSidebar}
+                  style={{
+                    position: 'absolute',
+                    right: 0,
+                    top: 0,
+                    height: '100%',
+                    width: '40px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    borderRadius: '999px',
+                  }}
+                >
+                  <FilterOutlined style={{ color: '#0066cc' }} />
+                </Button>
               </div>
             </div>
-            {isLoading ? (
-              <div className="d-flex justify-content-center align-items-center">
-                <LoadingOutlined style={{ fontSize: '50px' }} />
-              </div>
-            ) : (
-              filterTournaments(data).map((tournament) => (
-                <TournamentCard
-                  key={tournament.id}
-                  id={tournament.id}
-                  title={tournament.name}
-                  dates={formatDates(tournament.startDate, tournament.endDate)}
-                  location={tournament.location}
-                  type={tournament.type}
-                  registeredCount={tournament.maxPlayer}
-                  skillLevels={
-                    tournament.isMinRanking + ' - ' + tournament.isMaxRanking
-                  }
-                  entryFee={tournament.entryFee}
-                  status={tournament.status}
-                  banner={tournament.banner}
-                />
-              ))
-            )}
           </div>
-        </div>
-      </main>
+
+          {isLoading ? (
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                height: '100%',
+              }}
+            >
+              <LoadingOutlined style={{ fontSize: '50px' }} />
+            </div>
+          ) : (
+            filterTournaments(data).map((tournament) => (
+              <TournamentCard
+                key={tournament.id}
+                id={tournament.id}
+                title={tournament.name}
+                dates={formatDates(tournament.startDate, tournament.endDate)}
+                location={tournament.location}
+                type={tournament.type}
+                registeredCount={tournament.maxPlayer}
+                skillLevels={`${tournament.isMinRanking} - ${tournament.isMaxRanking}`}
+                entryFee={tournament.entryFee}
+                status={tournament.status}
+                banner={tournament.banner}
+              />
+            ))
+          )}
+        </main>
+      </div>
     </div>
   );
 };

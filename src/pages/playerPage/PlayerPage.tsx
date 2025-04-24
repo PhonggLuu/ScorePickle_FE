@@ -9,7 +9,7 @@ import {
   UserAddOutlined,
 } from '@ant-design/icons';
 import './player-page.css';
-import { addFriend } from '@src/modules/Friend/hooks/useAddFriend';
+import { useAddFriend } from '@src/modules/Friend/hooks/useAddFriend';
 import { useSelector } from 'react-redux';
 import { RootState } from '@src/redux/store';
 import { useGetNoneUserPlayer } from '@src/modules/User/hooks/useGetUnfriendByUserId';
@@ -99,6 +99,7 @@ export const PlayersPage: React.FC = () => {
   const user = useSelector((state: RootState) => state.auth.user);
   const { data, isLoading } = useGetNoneUserPlayer(user?.id ?? 0);
   const navigate = useNavigate();
+  const { mutate: addFriend } = useAddFriend();
 
   const { ref, inView } = useInView({
     triggerOnce: false, // Kiểm tra liên tục khi cuộn
@@ -138,7 +139,7 @@ export const PlayersPage: React.FC = () => {
 
   function handleAddFriend(id: number) {
     if (user?.id !== undefined) {
-      addFriend({ user1Id: user.id, user2Id: id });
+      addFriend({ data: { user1Id: user.id, user2Id: id } });
     } else {
       message.error(
         'You have no permission to use this. Please login to add friend.'
@@ -231,7 +232,10 @@ export const PlayersPage: React.FC = () => {
                           gender={player.gender}
                           level={player.userDetails.experienceLevel}
                           checkUser={user?.id}
-                          onAddFriendClick={() => handleAddFriend(player.id)}
+                          onAddFriendClick={(e) => {
+                            e.stopPropagation();
+                            handleAddFriend(player.id);
+                          }}
                         />
                       </div>
                     ))}

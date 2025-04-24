@@ -8,6 +8,10 @@ import scorePickleImage from '@src/assets/images/ScorePickle.png';
 import { UpcomingEvent } from './home/UpcomingEvent';
 import { useGetAllTournamentsForHomePage } from '@src/modules/Tournament/hooks/useGetAllTournaments';
 import FooterCustom from '@components/Footer/FooterCustom';
+import { useEffect } from 'react';
+import { useSelector } from 'react-redux';
+import { RootState } from '@src/redux/store';
+import { prefetchListMatchAndScore } from '@src/modules/Match/hooks/useGetListMatchesAndScore';
 
 const { Title, Text } = Typography;
 
@@ -18,7 +22,14 @@ export const HomePage = () => {
   const isMobile = useMediaQuery({ maxWidth: 769 });
   const isTablet = useMediaQuery({ maxWidth: 992 });
   const { data } = useGetAllTournamentsForHomePage();
-  const tournaments = (data ?? []).slice(0, 6); // Only load first 6 tournaments
+  const tournaments = (data ?? []).slice(0, 6); // Only load first 6 tournamentsuseEffect(() => {
+
+  const user = useSelector((state: RootState) => state.auth.user);
+  useEffect(() => {
+    if (user?.id) {
+      prefetchListMatchAndScore(user.id);
+    }
+  }, [user?.id]);
 
   return (
     <div

@@ -11,11 +11,13 @@ import {
   MenuUnfoldOutlined,
   ReadOutlined,
   TeamOutlined,
+  ThunderboltOutlined,
   TrophyOutlined,
   UserAddOutlined,
   UserOutlined,
 } from '@ant-design/icons';
 import {
+  PATH_MATCH_PAGE,
   PATH_PLAYER_PAGE,
   PATH_RANKING_PAGE,
   PATH_RULE_PAGE,
@@ -86,6 +88,11 @@ export const GuestLayout = () => {
       path: PATH_TOURNAMENT_PAGE.root,
       label: 'Tournaments',
       icon: <TrophyOutlined />,
+    },
+    {
+      path: PATH_MATCH_PAGE.root,
+      label: 'Matches',
+      icon: <ThunderboltOutlined />,
     },
     {
       path: PATH_PLAYER_PAGE.root,
