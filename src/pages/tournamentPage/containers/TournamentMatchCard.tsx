@@ -1,4 +1,9 @@
-import { CalendarOutlined, RightOutlined, TrophyOutlined, UserOutlined } from '@ant-design/icons';
+import {
+  CalendarOutlined,
+  RightOutlined,
+  TrophyOutlined,
+  UserOutlined,
+} from '@ant-design/icons';
 import {
   MatchFormat,
   MatchStatus,
@@ -8,6 +13,7 @@ import { Avatar, Badge, Button, Typography } from 'antd';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { motion } from 'framer-motion';
 import './tournament-match-card.css';
+import { useNavigate } from 'react-router-dom';
 
 const { Text, Title } = Typography;
 
@@ -18,6 +24,7 @@ interface TournamentMatchCardProps {
 export default function TournamentMatchCard({
   value,
 }: TournamentMatchCardProps) {
+  const navigate = useNavigate();
   // Safe defaults for team responses
   const teams = value.teamResponse ?? [];
   const teamA = teams[0] ?? { members: [] };
@@ -26,98 +33,98 @@ export default function TournamentMatchCard({
   // Animation variants
   const cardVariants = {
     hidden: { opacity: 0, y: 20 },
-    visible: { 
-      opacity: 1, 
+    visible: {
+      opacity: 1,
       y: 0,
       transition: {
-        type: "spring",
+        type: 'spring',
         stiffness: 100,
         damping: 15,
-        when: "beforeChildren",
-        staggerChildren: 0.1
-      }
+        when: 'beforeChildren',
+        staggerChildren: 0.1,
+      },
     },
     hover: {
       y: -5,
-      boxShadow: "0px 10px 20px rgba(13, 110, 253, 0.15)",
-      transition: { 
-        type: "spring",
+      boxShadow: '0px 10px 20px rgba(13, 110, 253, 0.15)',
+      transition: {
+        type: 'spring',
         stiffness: 300,
-        damping: 15
-      }
-    }
+        damping: 15,
+      },
+    },
   };
 
   const contentVariants = {
     hidden: { opacity: 0, y: 10 },
-    visible: { 
-      opacity: 1, 
+    visible: {
+      opacity: 1,
       y: 0,
-      transition: { duration: 0.4 }
-    }
+      transition: { duration: 0.4 },
+    },
   };
 
   const playerVariants = {
     hidden: { opacity: 0, scale: 0.8 },
-    visible: { 
-      opacity: 1, 
+    visible: {
+      opacity: 1,
       scale: 1,
-      transition: { 
-        type: "spring",
+      transition: {
+        type: 'spring',
         stiffness: 200,
-        damping: 10
-      }
+        damping: 10,
+      },
     },
-    hover: { 
+    hover: {
       y: -5,
-      transition: { 
-        type: "spring",
+      transition: {
+        type: 'spring',
         stiffness: 300,
-        damping: 10
-      }
-    }
+        damping: 10,
+      },
+    },
   };
 
   const buttonVariants = {
     hidden: { opacity: 0, scale: 0.9 },
-    visible: { 
-      opacity: 1, 
+    visible: {
+      opacity: 1,
       scale: 1,
-      transition: { 
+      transition: {
         delay: 0.3,
-        type: "spring",
+        type: 'spring',
         stiffness: 300,
-        damping: 10
-      }
+        damping: 10,
+      },
     },
-    hover: { 
+    hover: {
       scale: 1.05,
-      backgroundColor: "#0a58ca",
-      transition: { duration: 0.2 }
+      backgroundColor: '#0a58ca',
+      transition: { duration: 0.2 },
     },
-    tap: { 
+    tap: {
       scale: 0.98,
-      transition: { duration: 0.1 }
-    }
+      transition: { duration: 0.1 },
+    },
   };
 
   const vsVariants = {
     initial: { scale: 0.8, opacity: 0 },
-    animate: { 
-      scale: 1, 
+    animate: {
+      scale: 1,
       opacity: 1,
       transition: {
-        type: "spring",
+        type: 'spring',
         stiffness: 300,
         damping: 10,
-        delay: 0.2
-      }
+        delay: 0.2,
+      },
     },
-    hover: { 
-      scale: 1.2, 
-      color: "#0d6efd",
-      transition: { duration: 0.3 }
-    }
+    hover: {
+      scale: 1.2,
+      color: '#0d6efd',
+      transition: { duration: 0.3 },
+    },
   };
 
   // Format date for better display
@@ -129,13 +136,13 @@ export default function TournamentMatchCard({
       month: 'short',
       year: 'numeric',
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
     });
   };
 
   // Get status color based on match status
   const getStatusColor = (status) => {
-    switch(status) {
+    switch (status) {
       case 'Upcoming':
         return '#1890ff';
       case 'Live':
@@ -154,8 +161,8 @@ export default function TournamentMatchCard({
     members: Array<{ id: number; playerId: number }>;
   }) =>
     team.members.slice(0, 2).map((member) => (
-      <motion.div 
-        key={member.id} 
+      <motion.div
+        key={member.id}
         className="d-flex flex-column align-items-center mx-2"
         variants={playerVariants}
         whileHover="hover"
@@ -172,37 +179,40 @@ export default function TournamentMatchCard({
     ));
 
   return (
-    <motion.div 
-      className="match-card border-0 rounded-4 mb-4 bg-white" 
+    <motion.div
+      className="match-card border-0 rounded-4 mb-4 bg-white"
       style={{
         border: '1px solid rgba(13, 110, 253, 0.3)',
         padding: '20px',
         borderRadius: '16px',
-        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.05)'
+        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.05)',
       }}
       variants={cardVariants}
       initial="hidden"
       animate="visible"
       whileHover="hover"
     >
-      <motion.div 
+      <motion.div
         className="d-flex justify-content-between align-items-start mb-3"
         variants={contentVariants}
       >
         <div className="d-flex align-items-center">
-          <CalendarOutlined className="me-2 text-primary" style={{ fontSize: '16px' }} />
+          <CalendarOutlined
+            className="me-2 text-primary"
+            style={{ fontSize: '16px' }}
+          />
           <Text className="text-secondary me-5 date-text">
             {formatMatchDate(value.matchDate)}
           </Text>
         </div>
-        <Badge 
-          color={getStatusColor(MatchStatus[value.status])} 
+        <Badge
+          color={getStatusColor(MatchStatus[value.status])}
           text={MatchStatus[value.status]}
           className="status-badge"
           style={{
             padding: '2px 10px',
             borderRadius: '12px',
-            fontWeight: '500'
+            fontWeight: '500',
           }}
         />
       </motion.div>
@@ -216,7 +226,7 @@ export default function TournamentMatchCard({
         </Text>
       </motion.div>
 
-      <motion.div 
+      <motion.div
         className="match-info d-flex align-items-center mb-4"
         variants={contentVariants}
       >
@@ -231,21 +241,21 @@ export default function TournamentMatchCard({
               : '2 v 2'
           }
           className="format-badge me-3"
-          style={{ 
-            backgroundColor: 'rgba(13, 110, 253, 0.1)', 
+          style={{
+            backgroundColor: 'rgba(13, 110, 253, 0.1)',
             color: '#0d6efd',
-            padding: '0 8px'
+            padding: '0 8px',
           }}
         />
         <TrophyOutlined className="me-2 text-warning" />
       </motion.div>
 
-      <motion.div 
+      <motion.div
         className="teams-container d-flex align-items-center justify-content-between py-3 my-2"
-        style={{ 
+        style={{
           background: 'rgba(13, 110, 253, 0.03)',
           borderRadius: '12px',
-          padding: '16px'
+          padding: '16px',
         }}
         variants={contentVariants}
       >
@@ -261,10 +271,10 @@ export default function TournamentMatchCard({
           animate="animate"
           whileHover="hover"
         >
-          <Text 
-            className="vs-text" 
-            style={{ 
-              fontSize: '24px', 
+          <Text
+            className="vs-text"
+            style={{
+              fontSize: '24px',
               fontWeight: 'bold',
               background: 'rgba(13, 110, 253, 0.1)',
               width: '50px',
@@ -273,7 +283,7 @@ export default function TournamentMatchCard({
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              color: '#0d6efd'
+              color: '#0d6efd',
             }}
           >
             VS
@@ -286,16 +296,13 @@ export default function TournamentMatchCard({
         </div>
       </motion.div>
 
-      <motion.div 
+      <motion.div
         className="d-flex justify-content-end mt-4"
         variants={buttonVariants}
         whileHover="hover"
         whileTap="tap"
         style={{
-      
           borderRadius: '12px',
-          
-          
         }}
       >
         <Button
@@ -306,11 +313,12 @@ export default function TournamentMatchCard({
             width: '100%',
             height: 'auto',
             fontWeight: '600',
-            fontSize: '15px'
-
+            fontSize: '15px',
           }}
+          onClick={() => navigate(`/match-detail/${value.id}`)}
         >
-          View Details <RightOutlined style={{ fontSize: '12px', marginLeft: '5px' }} />
+          View Details{' '}
+          <RightOutlined style={{ fontSize: '12px', marginLeft: '5px' }} />
         </Button>
       </motion.div>
     </motion.div>
