@@ -9,8 +9,6 @@ import {
   Collapse,
   Typography,
   Select,
-  Card,
-  Image,
   Tag,
   AutoComplete,
   message,
@@ -23,8 +21,6 @@ import dayjs from 'dayjs';
 import { RootState } from '@src/redux/store';
 import { useSelector } from 'react-redux';
 import { useGetFriendByUserId } from '@src/modules/Friend/hooks/useGetFriendByUserId';
-import { useGetReferees } from '@src/modules/User/hooks/useGetAllReferee';
-import { useGetVenueAll } from '@src/modules/Venues/hooks/useGetAllVenue';
 import { GetFriendByUserIdResponse } from '@src/modules/Friend/models';
 import {
   MatchCategory,
@@ -35,7 +31,7 @@ import {
 import { createMatch } from '@src/modules/Match/hooks/useCreateMatch';
 import { useNavigate } from 'react-router-dom';
 
-const { Title, Text } = Typography;
+const { Title } = Typography;
 //const { TabPane } = Tabs;
 
 interface Player {
