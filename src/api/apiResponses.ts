@@ -18,4 +18,5 @@ export type ApiResponse<T = undefined> = {
   data: T;
   totalItems?: number;
   totalPages?: number;
+  message?: string;
 };

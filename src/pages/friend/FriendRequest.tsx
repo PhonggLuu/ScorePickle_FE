@@ -1,12 +1,14 @@
 import { useGetFriendRequestByUserId } from '@src/modules/Friend/hooks/useGetFriendRequestByUserId';
 import { FriendStatus } from '@src/modules/Friend/models';
-import { Button, message } from 'antd';
+import { Avatar, Button, message } from 'antd';
 import { useRespondFriendRequest } from '@src/modules/Friend/hooks/useRespondFriendRequest';
+import { useNavigate } from 'react-router-dom';
 
 const FriendRequest = ({ userId }) => {
   const { data, error, isLoading, refetch } =
     useGetFriendRequestByUserId(userId);
   const { mutate: responseFriendRequest } = useRespondFriendRequest();
+  const navigate = useNavigate();
 
   if (isLoading) {
     return <p>Loading...</p>;
@@ -52,11 +54,21 @@ const FriendRequest = ({ userId }) => {
     <ul>
       {data.map((Friend, index) => (
         <li key={index} className="row mb-2">
-          <strong className="col-8">
+          <strong
+            className="col-8"
+            style={{ cursor: 'pointer' }}
+            onClick={() => navigate(`/profile/${Friend.user1Id}`)}
+          >
+            <Avatar src={Friend.userFriendAvatar} size={40} />
+            <span className="ms-1" style={{ color: 'coral' }}>
+              {Friend.userFriendName}
+            </span>{' '}
+            send you a friend request
+            {/* 
             Friend Request By{' '}
             <span style={{ color: 'coral' }}>
               {Friend.userFriendName ?? Friend.user1Id}
-            </span>{' '}
+            </span>{' '} */}
             {/* <span>{Friend.status === FriendStatus.Accepted ? "was accepted" : "was rejected"}</span> */}
           </strong>
           {Friend.status === FriendStatus.Pending ? (

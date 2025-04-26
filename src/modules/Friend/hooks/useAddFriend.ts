@@ -8,6 +8,7 @@ export const addFriend = async (
 ): Promise<AddFriendResponse> => {
   try {
     const response = await api.post(`/Friend/AddFriend/`, data);
+    message.info(response.message);
     return response.data as AddFriendResponse;
   } catch (error) {
     throw new Error('Error add friend');
@@ -24,9 +25,6 @@ export function useAddFriend() {
         message.success('You and ' + data.userFriendName + ' are friends ');
       if (data.status === FriendStatus.Blocked)
         message.success('You request was rejected');
-    },
-    onError: () => {
-      message.error('Failed to send request');
     },
   });
 }

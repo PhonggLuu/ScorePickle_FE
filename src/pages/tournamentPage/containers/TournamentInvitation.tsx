@@ -3,6 +3,7 @@ import { useGetTournamentTeamRequestByPlayerId } from '@src/modules/TournamentRe
 import { useRespondTeamRequest } from '@src/modules/TournamentRegistration/hooks/useRespondTeamRequest';
 import { InvitationStatus } from '@src/modules/TournamentRegistration/models';
 import { Button, message, Spin } from 'antd';
+import { useNavigate } from 'react-router-dom';
 
 const TournamentInvitation = ({ playerId }) => {
   const { data, error, isLoading, refetch } =
@@ -14,6 +15,7 @@ const TournamentInvitation = ({ playerId }) => {
     refetch: refetchNoti,
   } = useGetTournamentTeamRequestNotification(playerId);
   const { mutate } = useRespondTeamRequest();
+  const navigate = useNavigate();
 
   if (isLoading && loadingNoti) {
     return <Spin />;
@@ -54,11 +56,19 @@ const TournamentInvitation = ({ playerId }) => {
     }
   };
 
+  const handleNavigateTournament = (tournamentId) => () => {
+    navigate(`/tournament-detail/${tournamentId}`);
+  };
+
   return (
     <ul>
       {(data ?? []).map((invitation, index) => (
         <li key={index} className="row mb-2">
-          <strong className="col-8">
+          <strong
+            className="col-8"
+            style={{ cursor: 'pointer' }}
+            onClick={handleNavigateTournament(invitation.tournamentId)}
+          >
             Team Request Tournament{' '}
             <span style={{ color: 'blueviolet' }}>
               {invitation.tournamentName}
@@ -71,7 +81,8 @@ const TournamentInvitation = ({ playerId }) => {
             <div className="col-4 d-flex justify-content-end">
               <Button
                 style={{ borderColor: 'green', color: 'green' }}
-                onClick={() => {
+                onClick={(e) => {
+                  e.stopPropagation();
                   handleAcceptInvitation(invitation.id);
                 }}
               >
@@ -79,7 +90,8 @@ const TournamentInvitation = ({ playerId }) => {
               </Button>
               <Button
                 style={{ borderColor: 'red', color: 'red' }}
-                onClick={() => {
+                onClick={(e) => {
+                  e.stopPropagation();
                   handleRejectInvitation(invitation.id);
                 }}
                 className="ms-2"
@@ -114,13 +126,9 @@ const TournamentInvitation = ({ playerId }) => {
       ))}
       {(notifications ?? []).map((noti, index) => (
         <li key={index} className="row mb-2">
-          <div className="p-2">
-            <strong className="col-8">
-              <span>
-                {noti.message} by {noti.referenceName}
-              </span>
-            </strong>
-          </div>
+          <strong>
+            {noti.message} by {noti.referenceName}
+          </strong>
         </li>
       ))}
     </ul>
