@@ -64,11 +64,11 @@ const AddMatches: React.FC = () => {
   const [title, setTitle] = useState<string>('');
   const [description, setDescription] = useState<string>('');
 
-  const { data: venueData } = useGetVenueAll();
-  const [venue, setVenue] = useState<number>(venueData?.[0]?.id ?? 0);
+  // const { data: venueData } = useGetVenueAll();
+  // const [venue, setVenue] = useState<number>(venueData?.[0]?.id ?? 0);
 
-  const { data: refereeData } = useGetReferees();
-  const [referee, setReferee] = useState<number>(refereeData?.[0]?.id ?? 0);
+  // const { data: refereeData } = useGetReferees();
+  // const [referee, setReferee] = useState<number>(refereeData?.[0]?.id ?? 0);
 
   const { data: allFriend } = useGetFriendByUserId(user?.id ?? 0);
   const [friendData, setFriendData] = useState<GetFriendByUserIdResponse[]>([]);
@@ -232,7 +232,7 @@ const AddMatches: React.FC = () => {
       description: description,
       matchDate: selectedDate.toISOString(),
       status: MatchStatus.Scheduled,
-      venueId: venue !== 0 ? venue : null,
+      venueId: null,
       matchCategory: isComp ? MatchCategory.Competitive : MatchCategory.Custom,
       matchFormat: isComp
         ? user?.gender?.toLowerCase().includes('female')
@@ -258,7 +258,7 @@ const AddMatches: React.FC = () => {
         : isSingle
           ? null
           : playersSelected.players[3].id,
-      refereeId: referee !== 0 ? venue : null,
+      refereeId: null,
       tournamentId: null,
     };
     const data = await createMatch(payload);
@@ -289,8 +289,8 @@ const AddMatches: React.FC = () => {
     setTitle('');
     setDescription('');
     setSelectedDate(dayjs());
-    setVenue(venueData?.[0]?.id ?? 0);
-    setReferee(refereeData?.[0]?.id ?? 0);
+    // setVenue(venueData?.[0]?.id ?? 0);
+    // setReferee(refereeData?.[0]?.id ?? 0);
     setPlayersSelected(getInitialPlayers());
     setFriendData(allFriend || []);
     setMatchCategory('custom');
@@ -659,7 +659,7 @@ const AddMatches: React.FC = () => {
                   ))}
                 </Select>
               </div>
-              <div className="d-flex justify-content-between align-items-center mb-3">
+              {/* <div className="d-flex justify-content-between align-items-center mb-3">
                 <label className="form-label">Venue</label>
                 <Select
                   className="w-50"
@@ -710,7 +710,7 @@ const AddMatches: React.FC = () => {
                       </Select.Option>
                     ))}
                 </Select>
-              </div>
+              </div> */}
             </div>
           </div>
         </div>

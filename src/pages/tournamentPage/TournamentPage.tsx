@@ -114,17 +114,63 @@ export const TournamentPage = () => {
         display: 'flex',
         flexDirection: 'column',
         height: '100vh',
-        width: '100vw',
-        justifyContent: 'center',
-        alignItems: 'stretch',
+        width: '100%', // use percentage to avoid overflow
+        boxSizing: 'border-box', // include padding in width
+        overflowX: 'hidden', // prevent horizontal scroll
       }}
       className="text-white"
     >
       {/* HEADER */}
-      <div style={{ padding: '1rem 2rem' }}>
+      <div
+        style={{
+          padding: '1rem 2rem',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          width: '100%',
+          boxSizing: 'border-box',
+          marginLeft: isSidebarHidden ? '0' : '2rem',
+        }}
+      >
         <h1 style={{ fontSize: '2.5rem', fontWeight: 700, margin: 0 }}>
           Tournaments
         </h1>
+        <div
+          style={{
+            display: 'flex', // thành flex để Input và Button nằm cạnh
+            alignItems: 'center',
+            width: '50%',
+            gap: '0.5rem', // khoảng cách giữa 2 phần tử
+            boxSizing: 'border-box',
+          }}
+        >
+          <Input
+            prefix={<SearchOutlined style={{ color: '#bfbfbf' }} />}
+            placeholder="Search"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            style={{
+              flex: 1, // chiếm hết không gian còn lại
+              borderRadius: '999px',
+              padding: '0.5rem 1rem',
+              boxSizing: 'border-box',
+            }}
+          />
+          <Button
+            onClick={toggleSidebar}
+            style={{
+              height: '40px', // hoặc '100%' nếu muốn cao bằng Input
+              width: '40px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              borderRadius: '999px',
+              marginRight: '5rem',
+            }}
+          >
+            <FilterOutlined style={{ color: '#0066cc' }} />
+          </Button>
+        </div>
       </div>
 
       {/* CONTENT WRAPPER */}
@@ -134,6 +180,7 @@ export const TournamentPage = () => {
           flexGrow: 1,
           overflow: 'hidden',
           color: 'white',
+          height: '100vh',
         }}
       >
         {/* SIDEBAR */}
@@ -145,12 +192,13 @@ export const TournamentPage = () => {
             transform: isSidebarHidden ? 'translateX(-100%)' : 'translateX(0)',
             transition: 'transform .3s ease, max-width .3s ease',
             height: '100%',
-            overflowY: 'auto',
+            overflowY: 'hidden',
             msOverflowStyle: 'none',
             scrollbarWidth: 'none',
             overscrollBehaviorY: 'contain',
             padding: isSidebarHidden ? '0' : '1rem',
-            marginLeft: '80px',
+            marginTop: '30px',
+            marginLeft: isSidebarHidden ? '0' : '3rem',
           }}
         >
           <div style={{ position: 'sticky', top: 0 }}>
@@ -201,6 +249,7 @@ export const TournamentPage = () => {
                 }}
               >
                 <Checkbox
+                  className="text-white"
                   onChange={() =>
                     handleCheckboxChange('tournamentType', 'singles')
                   }
@@ -208,6 +257,7 @@ export const TournamentPage = () => {
                   Single
                 </Checkbox>
                 <Checkbox
+                  className="text-white"
                   onChange={() =>
                     handleCheckboxChange('tournamentType', 'doubles')
                   }
@@ -231,11 +281,22 @@ export const TournamentPage = () => {
               <div
                 style={{ display: 'flex', flexDirection: 'row', gap: '1rem' }}
               >
-                <div>
+                <div
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '0.5rem',
+                  }}
+                >
                   {[1, 2, 3, 4, 5].map((level) => (
                     <Checkbox
+                      className="text-white"
                       key={level}
-                      style={{ display: 'block' }}
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        whiteSpace: 'nowrap',
+                      }}
                       onChange={() =>
                         handleCheckboxChange('skillLevel', String(level))
                       }
@@ -244,11 +305,22 @@ export const TournamentPage = () => {
                     </Checkbox>
                   ))}
                 </div>
-                <div>
+                <div
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '0.5rem',
+                  }}
+                >
                   {[6, 7, 8, 9].map((level) => (
                     <Checkbox
+                      className="text-white"
                       key={level}
-                      style={{ display: 'block' }}
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        whiteSpace: 'nowrap',
+                      }}
                       onChange={() =>
                         handleCheckboxChange('skillLevel', String(level))
                       }
@@ -279,16 +351,19 @@ export const TournamentPage = () => {
                 }}
               >
                 <Checkbox
+                  className="text-white"
                   onChange={() => handleCheckboxChange('status', 'Scheduled')}
                 >
                   Coming Soon
                 </Checkbox>
                 <Checkbox
+                  className="text-white"
                   onChange={() => handleCheckboxChange('status', 'Ongoing')}
                 >
                   Ongoing
                 </Checkbox>
                 <Checkbox
+                  className="text-white"
                   onChange={() => handleCheckboxChange('status', 'Completed')}
                 >
                   Past Tournaments
@@ -308,63 +383,77 @@ export const TournamentPage = () => {
           style={{
             flex: isSidebarHidden ? '0 0 90%' : '0 0 70%',
             height: '100%',
+            minHeight: '0',
             overflowY: 'auto',
             msOverflowStyle: 'none',
             scrollbarWidth: 'none',
-            padding: '1rem',
+            margin: '1rem',
             transition: 'all .3s ease',
             willChange: 'width',
+            marginTop: '0px',
           }}
         >
-          <div style={{ marginBottom: '1rem', color: 'inherit' }}>
-            <div
-              style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-              }}
-            >
-              <h2 style={{ fontSize: '1.5rem', fontWeight: 700, margin: 0 }}>
-                Events
-              </h2>
+          {/* Header sticky */}
+          {/* <div
+            style={{
+              position: 'sticky',
+              top: 0,
+              zIndex: 10, // đảm bảo nổi trên content
+              background: 'inherit', // hoặc '#fff' nếu cần
+              paddingBottom: '1rem',
+              marginBottom: '1rem',
+            }}
+          >
+            <div style={{ marginBottom: '1rem', color: 'inherit' }}>
               <div
                 style={{
-                  position: 'relative',
-                  width: '50%',
-                  paddingRight: '40px',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
                 }}
               >
-                <Input
-                  prefix={<SearchOutlined style={{ color: '#bfbfbf' }} />}
-                  placeholder="Search"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
+                <h2 style={{ fontSize: '1.5rem', fontWeight: 700, margin: 0 }}>
+                  Tournaments Open
+                </h2>
+                <div
                   style={{
-                    width: '100%',
-                    borderRadius: '999px',
-                    padding: '0.5rem 1rem',
+                    position: 'relative',
+                    width: '50%',
                     paddingRight: '40px',
                   }}
-                />
-                <Button
-                  onClick={toggleSidebar}
-                  style={{
-                    position: 'absolute',
-                    right: 0,
-                    top: 0,
-                    height: '100%',
-                    width: '40px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    borderRadius: '999px',
-                  }}
                 >
-                  <FilterOutlined style={{ color: '#0066cc' }} />
-                </Button>
+                  <Input
+                    prefix={<SearchOutlined style={{ color: '#bfbfbf' }} />}
+                    placeholder="Search"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    style={{
+                      width: '100%',
+                      borderRadius: '999px',
+                      padding: '0.5rem 1rem',
+                      paddingRight: '40px',
+                    }}
+                  />
+                  <Button
+                    onClick={toggleSidebar}
+                    style={{
+                      position: 'absolute',
+                      right: 0,
+                      top: 0,
+                      height: '100%',
+                      width: '40px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      borderRadius: '999px',
+                    }}
+                  >
+                    <FilterOutlined style={{ color: '#0066cc' }} />
+                  </Button>
+                </div>
               </div>
             </div>
-          </div>
+          </div> */}
 
           {isLoading ? (
             <div
@@ -378,21 +467,30 @@ export const TournamentPage = () => {
               <LoadingOutlined style={{ fontSize: '50px' }} />
             </div>
           ) : (
-            filterTournaments(data).map((tournament) => (
-              <TournamentCard
-                key={tournament.id}
-                id={tournament.id}
-                title={tournament.name}
-                dates={formatDates(tournament.startDate, tournament.endDate)}
-                location={tournament.location}
-                type={tournament.type}
-                registeredCount={tournament.maxPlayer}
-                skillLevels={`${tournament.isMinRanking} - ${tournament.isMaxRanking}`}
-                entryFee={tournament.entryFee}
-                status={tournament.status}
-                banner={tournament.banner}
-              />
-            ))
+            // Grid 2 cột cho các TournamentCard
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(2, 1fr)',
+                gap: '1rem',
+              }}
+            >
+              {filterTournaments(data).map((tournament) => (
+                <TournamentCard
+                  key={tournament.id}
+                  id={tournament.id}
+                  title={tournament.name}
+                  dates={formatDates(tournament.startDate, tournament.endDate)}
+                  location={tournament.location}
+                  type={tournament.type}
+                  registeredCount={tournament.maxPlayer}
+                  skillLevels={`${tournament.isMinRanking} - ${tournament.isMaxRanking}`}
+                  entryFee={tournament.entryFee}
+                  status={tournament.status}
+                  banner={tournament.banner}
+                />
+              ))}
+            </div>
           )}
         </main>
       </div>

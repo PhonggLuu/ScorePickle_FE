@@ -3,18 +3,29 @@ import { Input, Card, Avatar, Button } from 'antd';
 import { useInView } from 'react-intersection-observer';
 import 'antd/dist/reset.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { LoadingOutlined, SearchOutlined } from '@ant-design/icons';
+import {
+  LoadingOutlined,
+  SearchOutlined,
+  UserDeleteOutlined,
+} from '@ant-design/icons';
 import { useSelector } from 'react-redux';
 import { RootState } from '@src/redux/store';
 import { useGetFriendByUserId } from '@src/modules/Friend/hooks/useGetFriendByUserId';
+import { useNavigate } from 'react-router-dom';
+import { useRemoveFriend } from '@src/modules/Friend/hooks/useRemoveFriend';
 
 const PlayerCard = ({
   userFriendName,
   userFriendAvatar,
   gender,
   exeprienceLevel,
+  onClickCancelFriend,
+  onClickNavigateToProfile,
 }) => (
-  <Card className="profile-card border rounded shadow-sm mb-2">
+  <Card
+    className="profile-card border rounded shadow-sm mb-2 cursor-pointer"
+    onClick={onClickNavigateToProfile}
+  >
     <div className="d-flex align-items-center" style={{ padding: '10px' }}>
       <div className="avatar-container">
         <Avatar
@@ -41,6 +52,14 @@ const PlayerCard = ({
           {gender && <span>{gender}</span>}
         </p>
       </div>
+      {/* <Button
+        type="text"
+        className="ms-auto"
+        style={{ background: '#05155E1A' }}
+        aria-readonly
+      >
+        <span className="fw-200">Level {exeprienceLevel}</span>
+      </Button>
       <Button
         type="text"
         className="ms-auto d-flex justify-content-center align-items-center"
@@ -48,7 +67,24 @@ const PlayerCard = ({
         aria-readonly
       >
         <span className="fw-200">Level {exeprienceLevel}</span>
-      </Button>
+      </Button> */}
+      <>
+        <Button
+          type="text"
+          className="ms-auto d-flex justify-content-center align-items-center"
+          style={{ marginRight: '60px', background: '#05155E1A' }}
+          aria-readonly
+        >
+          <span className="fw-200">Level {exeprienceLevel}</span>
+        </Button>
+        <Button
+          className="position-absolute end-0 translate-middle-y me-3 d-flex justify-content-center align-items-center"
+          style={{ top: '50%', transform: 'translateY(-50%)' }}
+          onClick={onClickCancelFriend}
+        >
+          <UserDeleteOutlined />
+        </Button>
+      </>
     </div>
   </Card>
 );
@@ -59,6 +95,8 @@ export const FriendPage: React.FC = () => {
   const [loading, setLoading] = useState(false); // Trạng thái tải dữ liệu
   const user = useSelector((state: RootState) => state.auth.user);
   const { data, isLoading } = useGetFriendByUserId(user?.id ?? 0);
+  const navigate = useNavigate();
+  const { mutate: removeFriend } = useRemoveFriend();
 
   const { ref, inView } = useInView({
     triggerOnce: false, // Kiểm tra liên tục khi cuộn
@@ -106,6 +144,16 @@ export const FriendPage: React.FC = () => {
     });
 
     setVisiblePlayers(filtered); // Cập nhật visiblePlayers với danh sách đã lọc
+  };
+
+  const handleNavigateToProfile = (id: number) => {
+    navigate(`/profile/${id}`);
+  };
+
+  const handleCancelFriend = (id: number) => {
+    if (user?.id !== undefined) {
+      removeFriend({ data: { user1Id: user.id, user2Id: id } });
+    }
   };
 
   return (
@@ -160,6 +208,22 @@ export const FriendPage: React.FC = () => {
                         userFriendAvatar={player.userFriendAvatar}
                         gender={player.gender}
                         exeprienceLevel={player.exeprienceLevel}
+                        onClickNavigateToProfile={(e) => {
+                          e.stopPropagation();
+                          handleNavigateToProfile(
+                            player.user1Id === user?.id
+                              ? player.user2Id
+                              : player.user1Id
+                          );
+                        }}
+                        onClickCancelFriend={(e) => {
+                          e.stopPropagation();
+                          handleCancelFriend(
+                            player.user1Id === user?.id
+                              ? player.user2Id
+                              : player.user1Id
+                          );
+                        }}
                       />
                     ))}
                 </div>
