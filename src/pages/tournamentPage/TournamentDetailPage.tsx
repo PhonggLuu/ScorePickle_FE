@@ -25,7 +25,7 @@ import './tournament-detail.css';
 import { motion, AnimatePresence } from 'framer-motion';
 import Rank from '@src/components/Rank';
 
-const { Title, Paragraph } = Typography;
+const { Title } = Typography;
 const { TabPane } = Tabs;
 
 // Animation variants

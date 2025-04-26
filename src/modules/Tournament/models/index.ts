@@ -35,7 +35,7 @@ export interface TournamentDetail {
 }
 
 export interface RegistrationDetail {
-  [x: string]: unknown;
+  [x: string]: any;
   status: TouramentregistrationStatus;
   partnerId?: number;
   id: number;
