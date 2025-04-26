@@ -1,344 +1,407 @@
-import type React from 'react';
-import { Card, Button, Tabs, Tag, Typography, message, Spin } from 'antd';
+import React, { useState, useEffect } from 'react';
 import {
-  CalendarOutlined,
-  EnvironmentOutlined,
-  TrophyOutlined,
-  //   MailOutlined,
-  //   PhoneOutlined,
-} from '@ant-design/icons';
+  Input,
+  Card,
+  Avatar,
+  Button,
+  message,
+  Spin,
+  Empty,
+  Typography,
+  Row,
+  Col,
+} from 'antd';
+import { useInView } from 'react-intersection-observer';
+import 'antd/dist/reset.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import './tournament-detail.css';
-import { useParams } from 'react-router-dom';
-import { Tournament } from '@src/modules/Tournament/models';
-import TournamentInfo from './containers/TournamentInfo';
-import Participants from './containers/Participants';
-import { useState } from 'react';
-import { RegistrationFormModal } from './containers/RegistrationForm';
-import { useGetTournamentTeamRequestByPlayerIdAndTournamentId } from '@src/modules/TournamentRegistration/hooks/useGetTournamentTeamRequestByTournamentAndPlayerId';
-import { RootState } from '@src/redux/store';
+import {
+  LoadingOutlined,
+  SearchOutlined,
+  UserAddOutlined,
+  TeamOutlined,
+  TrophyOutlined,
+  EnvironmentOutlined,
+  CalendarOutlined,
+  ManOutlined,
+  WomanOutlined,
+} from '@ant-design/icons';
+import './player-page.css';
+import { useAddFriend } from '@src/modules/Friend/hooks/useAddFriend';
 import { useSelector } from 'react-redux';
-import { useGetTournamentById } from '@src/modules/Tournament/hooks/useGetTournamentById';
-import { getPaymentUrl } from '@src/modules/Payment/hooks/useGetPaymentUrl';
-import { createRegistration } from '@src/modules/TournamentRegistration/hooks/useCreateRegistration';
-import { useCheckJoinTournament } from '@src/modules/Tournament/hooks/useCheckJoinTournament';
-import TournamentMatches from './containers/TournamentMatchPage';
+import { RootState } from '@src/redux/store';
+import { useGetNoneUserPlayer } from '@src/modules/User/hooks/useGetUnfriendByUserId';
+import { useNavigate } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 
-const { Title, Paragraph } = Typography;
-const { TabPane } = Tabs;
+const { Title, Text } = Typography;
 
-export const TournamentDetailPage: React.FC = () => {
-  const { id } = useParams<{ id: string }>();
-  const user = useSelector((state: RootState) => state.auth.user);
-  console.log('user', user);
-  const {
-    data: tournamentData,
-    isLoading,
-    error: notFoundTournament,
-  } = useGetTournamentById(Number(id || 0));
+const PlayerCard = ({
+  firstName,
+  secondName,
+  lastName,
+  avatarUrl,
+  province,
+  city,
+  dateOfBirth,
+  gender,
+  level,
+  checkUser,
+  onAddFriendClick,
+  index,
+}) => {
+  // Calculate age if dateOfBirth exists
+  const age = dateOfBirth
+    ? new Date().getFullYear() - new Date(dateOfBirth).getFullYear()
+    : null;
 
-  const { data: isTeamRegistered } =
-    useGetTournamentTeamRequestByPlayerIdAndTournamentId(
-      user?.id ?? 0,
-      Number(id || 0)
+  // Get first letter of name for avatar fallback
+  const nameInitial = firstName ? firstName.charAt(0).toUpperCase() : '?';
+
+  // Full name formatting
+  const fullName = `${firstName || ''} ${secondName || ''} ${
+    lastName || ''
+  }`.trim();
+
+  // Get gender icon
+  const getGenderIcon = () => {
+    if (!gender) return null;
+    return gender.toLowerCase() === 'male' ? (
+      <ManOutlined style={{ color: '#1677ff' }} />
+    ) : (
+      <WomanOutlined style={{ color: '#eb2f96' }} />
     );
-  const { data: isRegistered } = useCheckJoinTournament(
-    user?.id ?? 0,
-    Number(id || 0)
-  );
-
-  const [isModalVisible, setIsModalVisible] = useState(false);
-
-  // If data is still loading or there's an error, render appropriate messages
-  if (isLoading)
-    return (
-      <div
-        className="d-flex justify-content-center align-items-center"
-        style={{ height: '100vh' }}
-      >
-        <Spin style={{ fontSize: '50px' }} />
-      </div>
-    );
-  if (notFoundTournament) return <div>Error loading tournament details</div>;
-
-  const tournament: Tournament = tournamentData as Tournament;
-
-  const formatDates = (date: string) => {
-    const newDate = new Date(date);
-
-    const options: Intl.DateTimeFormatOptions = {
-      month: 'long',
-      day: 'numeric',
-      year: 'numeric',
-    };
-
-    const formattedDate = newDate.toLocaleDateString('en-US', options);
-
-    return `${formattedDate}`;
-  };
-
-  const handlePayment = async (registrationId) => {
-    const userId = user?.id || 0;
-    const paymentUrl = await getPaymentUrl(userId, registrationId);
-    window.location.href = paymentUrl;
-  };
-
-  const handleJoinSingleTournament = async () => {
-    const request = {
-      tournamentId: tournament.id,
-      playerId: user?.id || 0,
-      partnerId: null,
-    };
-    const registration = await createRegistration(request);
-    if (registration?.id != null) {
-      const userId = user?.id || 0;
-      const paymentUrl = await getPaymentUrl(userId, registration?.id);
-      if (paymentUrl !== null) window.location.href = paymentUrl;
-      else message.success('You joined tournament succesfully');
-    }
-  };
-
-  const showButton = () => {
-    if (user?.userDetails?.experienceLevel === undefined) {
-      return (
-        <Button
-          type="primary"
-          size="large"
-          style={{ width: '100%' }}
-          onClick={() => {
-            message.info('You have to login to join this tournament');
-            window.location.href = '/auth/signin';
-          }}
-        >
-          Register Now
-        </Button>
-      );
-    }
-    if (tournament.status !== 'Scheduled') {
-      return (
-        <Button
-          type="primary"
-          size="large"
-          style={{ width: '100%' }}
-          disabled={true}
-        >
-          The tournament has closed accepting applications
-        </Button>
-      );
-    }
-    if (
-      ((user?.userDetails?.experienceLevel ?? 0) >= tournament.isMinRanking &&
-        (user?.userDetails?.experienceLevel ?? 0) <= tournament.isMaxRanking &&
-        tournament.type
-          .toLocaleLowerCase()
-          .includes(user?.gender?.toLocaleLowerCase() ?? '')) ||
-      tournament.type.toLocaleLowerCase().includes('mix')
-    ) {
-      if (tournament.type.toLocaleLowerCase().includes('single')) {
-        if (isRegistered) {
-          return (
-            <Button
-              type="primary"
-              size="large"
-              disabled={true}
-              style={{ width: '100%' }}
-            >
-              Registered
-            </Button>
-          );
-        } else {
-          return (
-            <Button
-              type="primary"
-              size="large"
-              disabled={!tournament.isAccept}
-              onClick={() => handleJoinSingleTournament()}
-              style={{ width: '100%' }}
-            >
-              Register Now
-            </Button>
-          );
-        }
-      }
-      if (tournament.type.toLocaleLowerCase().includes('double')) {
-        if (isTeamRegistered === undefined) {
-          return (
-            <Button
-              type="primary"
-              size="large"
-              disabled={!tournament.isAccept}
-              onClick={() => setIsModalVisible(true)}
-              style={{ width: '100%' }}
-            >
-              Register Now
-            </Button>
-          );
-        } else if (
-          isTeamRegistered?.playerId === user?.id &&
-          isTeamRegistered?.isApproved === 1
-        ) {
-          return (
-            <Button
-              type="primary"
-              size="large"
-              onClick={() => handlePayment(isTeamRegistered.id)}
-              style={{ width: '100%' }}
-            >
-              Pay Registration Fee
-            </Button>
-          );
-        } else if (
-          isTeamRegistered?.playerId === user?.id &&
-          isTeamRegistered?.isApproved === 2
-        ) {
-          return (
-            <Button
-              type="primary"
-              size="large"
-              disabled={true}
-              style={{ width: '100%' }}
-            >
-              Paid
-            </Button>
-          );
-        } else if (
-          isTeamRegistered?.partnerId === user?.id &&
-          isTeamRegistered?.isApproved === 2
-        ) {
-          return (
-            <Button
-              type="primary"
-              size="large"
-              className="me-3"
-              disabled={true}
-              style={{ width: '100%' }}
-            >
-              Paid
-            </Button>
-          );
-        } else {
-          return (
-            <Button
-              type="primary"
-              size="large"
-              disabled={true}
-              style={{ width: '100%' }}
-            >
-              Registered
-            </Button>
-          );
-        }
-      }
-    } else {
-      return (
-        <Button
-          type="primary"
-          size="large"
-          style={{
-            width: '100%',
-            border: '2px solid red', // sửa dòng này
-            color: 'red', // tuỳ chọn: để chữ cùng tông với border
-            backgroundColor: 'white', // tuỳ chọn: làm nổi bật viền đỏ
-          }}
-          disabled={true}
-        >
-          You are not eligible to participate in this tournament
-        </Button>
-      );
-    }
   };
 
   return (
-    <>
-      <div className="container mt-4 mb-5">
-        {/* Tournament Header */}
-        <div className="row mb-3 mt-5">
-          <div className="col-md-8">
-            <div
-              className="d-flex align-items-center"
-              style={{ fontWeight: 'bold' }}
-            >
-              <Title level={2} className="mb-0 me-2 text-white">
-                {tournament.name}
-              </Title>
-              <Tag color="green" className="registration-tag">
-                {/* {tournament.isAccept &&
-                new Date(tournament.startDate) > new Date()
-                  ? 'Registration Open'
-                  : 'Registration Closed'} */}
-              </Tag>
-            </div>
-            <div
-              className="tournament-meta mt-2 text-white"
-              style={{ fontSize: '20px' }}
-            >
-              <span className="meta-item">
-                <CalendarOutlined /> {formatDates(tournament.startDate)} -{' '}
-                {formatDates(tournament.endDate)}
-              </span>
-              <span className="meta-item">
-                <EnvironmentOutlined /> {tournament.location}
-              </span>
-              <span className="meta-item">
-                <TrophyOutlined /> {tournament.type}
-              </span>
-            </div>
-          </div>
-          <div className="col-md-4 d-flex justify-content-end align-items-start mt-2">
-            {showButton()}
-          </div>
-        </div>
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{
+        duration: 0.4,
+        delay: index * 0.05,
+        ease: 'easeOut',
+      }}
+      whileHover={{
+        y: -5,
+        boxShadow: '0 10px 25px rgba(0,0,0,0.08)',
+        transition: { duration: 0.2 },
+      }}
+      className="player-card-wrapper"
+    >
+      <Card
+        className="player-card player-card-white"
+        bordered={false}
+        hoverable
+      >
+        <div className="player-card-content">
+          <motion.div
+            className="avatar-container"
+            whileHover={{ scale: 1.05 }}
+            transition={{ type: 'spring', stiffness: 400, damping: 10 }}
+          >
+            <Avatar size={70} src={avatarUrl} className="player-avatar-white">
+              {!avatarUrl && nameInitial}
+            </Avatar>
+          </motion.div>
 
-        {/* Navigation Tabs */}
-        <Tabs defaultActiveKey="details" className="tournament-tabs">
-          <TabPane tab="Details" key="details">
-            <TournamentInfo id={tournament.id} />
-          </TabPane>
-          <TabPane tab="Schedule" key="schedule">
-            {/* <Card>
-              <Paragraph>
-                Schedule information will be displayed here.
-              </Paragraph>
-            </Card> */}
-            <TournamentMatches id={tournament.id} />
-          </TabPane>
-          <TabPane tab="Participants" key="participants">
-            <Participants
-              registrations={tournament.registrationDetails}
-              tournamentId={tournament.id}
-              refetch={() => {
-                // Add logic to refetch tournament data if needed
-                console.log('Refetching tournament data...');
-              }}
-            />
-          </TabPane>
-          <TabPane tab="Results" key="results">
-            <Card>
-              <Paragraph>Results information will be displayed here.</Paragraph>
-            </Card>
-          </TabPane>
-        </Tabs>
-      </div>
-      <RegistrationFormModal
-        tournamentId={tournament.id}
-        visible={isModalVisible}
-        onClose={() => setIsModalVisible(false)}
-      />
-      <div className="container mt-4 mb-5">
-        {/* Tournament Header */}
-        <div className="row mb-3">
-          <div className="col-md-12">
-            <div
-              className="d-flex align-items-center"
-              style={{ fontWeight: 'bold' }}
-            >
-              {showButton()}
+          <div className="player-info">
+            <div className="player-name-row">
+              <h3 className="player-name-white">{fullName}</h3>
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="player-level-badge"
+              >
+                <Button type="text" className="level-badge-white">
+                  <TrophyOutlined style={{ color: '#faad14' }} /> Level{' '}
+                  {level || '?'}
+                </Button>
+              </motion.div>
+            </div>
+
+            <div className="player-details-row">
+              {(province || city) && (
+                <div className="detail-item location">
+                  <EnvironmentOutlined className="detail-icon" />
+                  <span>
+                    {province}
+                    {city ? `, ${city}` : ''}
+                  </span>
+                </div>
+              )}
+
+              {age && (
+                <div className="detail-item">
+                  <CalendarOutlined className="detail-icon" />
+                  <span>{age} years</span>
+                </div>
+              )}
+
+              {gender && (
+                <div className="detail-item">
+                  {getGenderIcon()}
+                  <span>{gender}</span>
+                </div>
+              )}
+            </div>
+
+            <div className="player-actions">
+              {checkUser && (
+                <motion.div
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                  className="add-friend-btn-wrapper"
+                >
+                  <Button
+                    className="add-friend-btn-white"
+                    onClick={onAddFriendClick}
+                    icon={<UserAddOutlined />}
+                    shape="circle"
+                    title="Add Friend"
+                  />
+                </motion.div>
+              )}
             </div>
           </div>
         </div>
-      </div>
-    </>
+      </Card>
+    </motion.div>
   );
 };
 
-export default TournamentDetailPage;
+export const PlayersPage: React.FC = () => {
+  const [searchTerm, setSearchTerm] = useState('');
+  // @ts-ignore
+  const [visiblePlayers, setVisiblePlayers] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+  const user = useSelector((state: RootState) => state.auth.user);
+  const { data, isLoading } = useGetNoneUserPlayer(user?.id ?? 0);
+  const navigate = useNavigate();
+  const { mutate: addFriend } = useAddFriend();
+
+  const { ref, inView } = useInView({
+    triggerOnce: false,
+    threshold: 0.5,
+    rootMargin: '0px 0px 200px 0px',
+  });
+
+  // Load more players when scrolling
+  const loadMore = () => {
+    if (loading || !data || visiblePlayers.length >= data.length) return;
+
+    setLoading(true);
+    setTimeout(() => {
+      setVisiblePlayers((prevPlayers) => [
+        ...prevPlayers,
+        ...data.slice(prevPlayers.length, prevPlayers.length + 10),
+      ]);
+      setLoading(false);
+    }, 300);
+  };
+
+  // Initial load
+  useEffect(() => {
+    if (data && data.length > 0) {
+      setVisiblePlayers(data.slice(0, 10));
+    }
+  }, [data]);
+
+  // Load more when scrolling to bottom
+  useEffect(() => {
+    if (inView) {
+      loadMore();
+    }
+  }, [inView]);
+
+  // Add friend handler
+  function handleAddFriend(id: number) {
+    if (user?.id !== undefined) {
+      addFriend(
+        { data: { user1Id: user.id, user2Id: id } },
+        {
+          onSuccess: () => {
+            message.success('Friend request sent successfully!');
+          },
+          onError: () => {
+            message.error('Failed to send friend request. Please try again.');
+          },
+        }
+      );
+    } else {
+      message.error('You must be logged in to add friends');
+    }
+  }
+
+  // Search handler
+  const handleSearch = (e) => {
+    const term = e.target.value;
+    setSearchTerm(term);
+
+    if (!data) return;
+
+    // If search is empty, reset to first 10 players
+    if (!term.trim()) {
+      setVisiblePlayers(data.slice(0, 10));
+      return;
+    }
+
+    // Filter players by name
+    const filtered = data.filter((player) => {
+      const fullName = `${player.firstName || ''} ${player.secondName || ''} ${
+        player.lastName || ''
+      }`.toLowerCase();
+      return fullName.includes(term.toLowerCase());
+    });
+
+    setVisiblePlayers(filtered);
+  };
+
+  // Navigate to profile page
+  const goToProfile = (id: string) => {
+    navigate(`/profile/${id}`);
+  };
+
+  // Filter players based on search term
+  const filteredPlayers = visiblePlayers.filter((player) => {
+    const fullName = `${player.firstName || ''} ${player.secondName || ''} ${
+      player.lastName || ''
+    }`.toLowerCase();
+    return fullName.includes(searchTerm.toLowerCase());
+  });
+
+  return (
+    <motion.div
+      className="players-page-container"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+    >
+      <div className="content-container">
+        <div className="header-container">
+          <motion.div
+            className="page-header"
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+          >
+            <Title level={2} className="page-title">
+              <TeamOutlined className="title-icon" />
+              Find Players
+            </Title>
+
+            <Text className="page-subtitle">
+              Connect with other players and make new friends
+            </Text>
+          </motion.div>
+
+          <motion.div
+            className="search-container"
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.3 }}
+          >
+            <Input
+              prefix={<SearchOutlined className="search-icon" />}
+              placeholder="Search players by name..."
+              value={searchTerm}
+              onChange={handleSearch}
+              className="search-input"
+              allowClear
+            />
+          </motion.div>
+        </div>
+
+        <AnimatePresence>
+          {isLoading ? (
+            <motion.div
+              className="loading-container"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            >
+              <Spin
+                indicator={<LoadingOutlined style={{ fontSize: 48 }} spin />}
+                tip="Loading players..."
+              />
+            </motion.div>
+          ) : filteredPlayers.length > 0 ? (
+            <motion.div
+              className="players-grid-container"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5, delay: 0.4 }}
+            >
+              <Row gutter={[16, 16]} className="players-grid">
+                {filteredPlayers.map((player, index) => (
+                  <Col xs={24} sm={12} md={8} lg={8} key={player.id}>
+                    <div
+                      onClick={() => goToProfile(player.id)}
+                      className="player-item"
+                    >
+                      <PlayerCard
+                        firstName={player.firstName}
+                        secondName={player.secondName}
+                        lastName={player.lastName}
+                        avatarUrl={player.avatarUrl}
+                        province={player.userDetails?.province}
+                        city={player.userDetails?.city}
+                        dateOfBirth={player.dateOfBirth}
+                        gender={player.gender}
+                        level={player.userDetails?.experienceLevel}
+                        checkUser={user?.id}
+                        index={index}
+                        onAddFriendClick={(e) => {
+                          e.stopPropagation();
+                          handleAddFriend(player.id);
+                        }}
+                      />
+                    </div>
+                  </Col>
+                ))}
+              </Row>
+
+              {/* Load more trigger */}
+              {!loading && visiblePlayers.length < (data?.length ?? 0) && (
+                <div ref={ref} className="load-trigger">
+                  {/* This element will trigger loading more when it comes into view */}
+                </div>
+              )}
+
+              {/* Loading indicator at bottom */}
+              {loading && (
+                <motion.div
+                  className="loading-more"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0 }}
+                >
+                  <LoadingOutlined /> Loading more players...
+                </motion.div>
+              )}
+            </motion.div>
+          ) : (
+            <motion.div
+              className="empty-state"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.4 }}
+            >
+              <Empty
+                description={
+                  <Text style={{ color: '#595959' }}>
+                    {searchTerm
+                      ? 'No players found matching your search'
+                      : 'No players available'}
+                  </Text>
+                }
+                image={Empty.PRESENTED_IMAGE_SIMPLE}
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    </motion.div>
+  );
+};
+
+export default PlayersPage;
