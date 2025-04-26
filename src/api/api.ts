@@ -112,14 +112,13 @@ class Api {
 
   static async delete<T>(
     url: string,
-    body?: unknown,
     queryParams?: unknown,
     config: AxiosRequestConfig = {}
   ) {
     const _url = url + convertObjectToQueryParams(queryParams);
-    return axiosInstance.delete<T>(_url, body, {
-      ...config,
-    }) as unknown as Promise<ApiResponse<T>>;
+    return axiosInstance.delete<T>(_url, { ...config }) as unknown as Promise<
+      ApiResponse<T>
+    >;
   }
 }
 

@@ -7,7 +7,7 @@ export const removeFriend = async (
   data: AddFriendRequest
 ): Promise<boolean> => {
   try {
-    const response = await api.delete(`/Friend/RemoveFriend`, { params: data });
+    const response = await api.delete(`/Friend/RemoveFriend`, data);
     message.info(response.message);
     return response.data as boolean;
   } catch (error) {
