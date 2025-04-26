@@ -11,7 +11,7 @@ import { Tournament } from '@src/modules/Tournament/models';
 import { createRegistration } from '@src/modules/TournamentRegistration/hooks/useCreateRegistration';
 import { useGetTournamentTeamRequestByPlayerIdAndTournamentId } from '@src/modules/TournamentRegistration/hooks/useGetTournamentTeamRequestByTournamentAndPlayerId';
 import { RootState } from '@src/redux/store';
-import { Button, Card, message, Spin, Tabs, Typography } from 'antd';
+import { Button, message, Spin, Tabs, Typography } from 'antd';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import type React from 'react';
 import { useState } from 'react';
@@ -23,6 +23,7 @@ import TournamentInfo from './containers/TournamentInfo';
 import TournamentMatches from './containers/TournamentMatchPage';
 import './tournament-detail.css';
 import { motion, AnimatePresence } from 'framer-motion';
+import Rank from '@src/components/Rank';
 
 const { Title, Paragraph } = Typography;
 const { TabPane } = Tabs;
@@ -586,7 +587,7 @@ export const TournamentDetailPage: React.FC = () => {
               </AnimatePresence>
             </TabPane>
 
-            <TabPane tab="Results" key="results">
+            {/* <TabPane tab="Results" key="results">
               <AnimatePresence mode="wait">
                 {activeKey === 'results' && (
                   <motion.div
@@ -601,6 +602,21 @@ export const TournamentDetailPage: React.FC = () => {
                         Results information will be displayed here.
                       </Paragraph>
                     </Card>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </TabPane> */}
+            <TabPane tab="Rank" key="rank">
+              <AnimatePresence mode="wait">
+                {activeKey === 'rank' && (
+                  <motion.div
+                    key="rank"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -20 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <Rank tournamentId={tournament.id} />
                   </motion.div>
                 )}
               </AnimatePresence>

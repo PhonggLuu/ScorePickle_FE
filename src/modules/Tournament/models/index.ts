@@ -35,7 +35,7 @@ export interface TournamentDetail {
 }
 
 export interface RegistrationDetail {
-  [x: string]: any;
+  [x: string]: unknown;
   status: TouramentregistrationStatus;
   partnerId?: number;
   id: number;
@@ -76,7 +76,7 @@ export interface Team {
 }
 
 export interface Member {
-  playerDetails: any;
+  playerDetails: unknown;
   id: number;
   playerId: number;
   teamId: number;
@@ -111,4 +111,16 @@ export enum TouramentregistrationStatus {
 export interface PlayerTournament {
   touramentId: number;
   status: number;
+}
+
+export interface RankPlayer {
+  userId: number;
+  fullName: string;
+  avatar: string;
+  rankingPoint: number;
+  exeprienceLevel: number;
+  totalMatch: number;
+  totalWins: number;
+  point: number;
+  position: number;
 }
