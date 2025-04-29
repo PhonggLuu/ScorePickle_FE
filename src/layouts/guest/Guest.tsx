@@ -109,6 +109,11 @@ export const GuestLayout = () => {
       label: 'Top Rankings',
       icon: <ApartmentOutlined />,
     },
+    {
+      path: 'announcement',
+      label: 'Announcement',
+      icon: <BellOutlined />,
+    },
   ];
 
   // User menu items
@@ -257,6 +262,21 @@ export const GuestLayout = () => {
         <Link to={`match-calendar`} className="menu-item">
           <CalendarOutlined className="me-2" />
           Matches Calendar
+        </Link>
+      ),
+      style: {
+        padding: '10px 16px',
+      },
+    },
+    {
+      type: 'divider',
+    },
+    {
+      key: 'transaction',
+      label: (
+        <Link to={`transaction`} className="menu-item">
+          <CalendarOutlined className="me-2" />
+           Transaction
         </Link>
       ),
       style: {

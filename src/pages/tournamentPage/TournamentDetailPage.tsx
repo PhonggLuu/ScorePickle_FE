@@ -24,6 +24,7 @@ import TournamentMatches from './containers/TournamentMatchPage';
 import './tournament-detail.css';
 import { motion, AnimatePresence } from 'framer-motion';
 import Rank from '@src/components/Rank';
+import Donate from '../tournament/containers/Donate';
 
 const { Title } = Typography;
 const { TabPane } = Tabs;
@@ -621,9 +622,25 @@ export const TournamentDetailPage: React.FC = () => {
                 )}
               </AnimatePresence>
             </TabPane>
+            <TabPane tab="Donate" key="donate">
+              <AnimatePresence mode="wait">
+                {activeKey === 'donate' && (
+                  <motion.div
+                    key="donate"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -20 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <Donate tournamentId={tournament.id} />
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </TabPane>
           </Tabs>
         </motion.div>
       </div>
+      {/* Donate Tab */}
 
       <RegistrationFormModal
         tournamentId={tournament.id}

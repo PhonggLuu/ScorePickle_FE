@@ -91,6 +91,8 @@ import PlayerMatchesPage from '@src/pages/matchPage/PlayerMatches.tsx';
 import MatchDetail from '@src/pages/matchPage/MatchDetail.tsx';
 import MatchesPage from '@src/pages/matchPage/MatchPage.tsx';
 import MatchDetailToJoin from '@src/pages/matchPage/components/MatchDetailToJoin.tsx';
+import Transaction from '@src/pages/transaction/index.tsx';
+import Announcement from '@src/pages/announcement/index.tsx';
 
 // Custom scroll restoration function
 export const ScrollToTop: React.FC = () => {
@@ -222,6 +224,16 @@ const router = createBrowserRouter([
         index: true,
         path: 'join-match/:id',
         element: <MatchDetailToJoin />,
+      },
+      {
+        index: true,
+        path: 'transaction',
+        element: <Transaction />,
+      },
+      {
+        index: true,
+        path: 'announcement',
+        element: <Announcement />,
       },
     ],
   },
