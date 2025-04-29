@@ -6,6 +6,7 @@ import PlayersTable from './containers/PlayerRegistration';
 import TournamentInfoForm from './containers/TournamentInfoForm';
 import Policy from './containers/Policy';
 import BillTab from './containers/BillTab';
+import Donate from './containers/Donate';
 
 const { TabPane } = Tabs;
 
