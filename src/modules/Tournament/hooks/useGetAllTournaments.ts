@@ -81,7 +81,10 @@ const fetchTournamentsForPlayer = async (): Promise<Tournament[]> => {
 
     // Lọc bỏ các tournament có status là 'Pending'
     return tournaments
-      .filter((tournament) => tournament.status !== 'Pending')
+      .filter(
+        (tournament) =>
+          tournament.status !== 'Pending' && tournament.status !== 'Disable'
+      )
       .sort(
         (a, b) =>
           new Date(a.startDate).getTime() - new Date(b.startDate).getTime()

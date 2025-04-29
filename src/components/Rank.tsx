@@ -23,7 +23,7 @@ import {
   Typography,
 } from 'antd';
 import { AnimatePresence, motion } from 'framer-motion';
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 
 const { Title, Text } = Typography;
@@ -39,6 +39,14 @@ const Rank: React.FC<RankProps> = ({ tournamentId }) => {
     error,
   } = useGetLeaderboardByTournamentId(tournamentId);
   const userId = useSelector((state: RootState) => state.auth.user?.id);
+  const [pagination, setPagination] = useState({ current: 1, pageSize: 10 });
+
+  const handleTableChange = (newPagination: any) => {
+    setPagination({
+      current: newPagination.current,
+      pageSize: newPagination.pageSize,
+    });
+  };
 
   const topThreePlayers = useMemo(() => {
     if (!leaderboard || leaderboard.length === 0) return [];
@@ -128,7 +136,7 @@ const Rank: React.FC<RankProps> = ({ tournamentId }) => {
             borderRadius: '12px',
           }}
         >
-          #{index + 1}
+          #{(pagination.current - 1) * pagination.pageSize + index + 1}
         </Tag>
       ),
     },
@@ -769,6 +777,7 @@ const Rank: React.FC<RankProps> = ({ tournamentId }) => {
             rowKey="userId"
             pagination={{ pageSize: 10 }}
             style={{ marginTop: 16 }}
+            onChange={handleTableChange}
             rowClassName={(record: RankPlayer, index) => {
               if (record.userId === userId) {
                 return 'current-user-row';

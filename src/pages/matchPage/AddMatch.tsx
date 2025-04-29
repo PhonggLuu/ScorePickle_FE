@@ -45,6 +45,31 @@ interface PlayersSelected {
   players: Player[];
 }
 
+const PlayerCard = ({ player, index, removePlayer }) => (
+  <div
+    className="selected-player border p-2 rounded-pill mb-2"
+    style={{
+      background: 'rgba(177, 177, 177, 0.5)',
+      display: 'flex',
+      alignItems: 'center',
+      gap: '0.5rem',
+    }}
+  >
+    <Avatar icon={<UserOutlined />} className="player-avatar" />
+    <span className="player-name ms-2">{player.name}</span>
+    <Tag color="blue" className="player-rating ms-3">
+      {player.level}
+    </Tag>
+    <Button
+      type="text"
+      icon={<MinusCircleOutlined />}
+      onClick={removePlayer}
+      className={index === 0 ? 'remove-player' : undefined}
+      disabled={index === 0}
+    />
+  </div>
+);
+
 const AddMatches: React.FC = () => {
   const navigate = useNavigate();
   const user = useSelector((state: RootState) => state.auth.user);
@@ -315,6 +340,7 @@ const AddMatches: React.FC = () => {
                   setTitle(e.target.value);
                   if (titleError) setTitleError(false);
                 }}
+                style={{ background: 'rgb(255, 255, 255)' }}
                 required
               />
             </div>
@@ -353,52 +379,22 @@ const AddMatches: React.FC = () => {
 
               {/* This player (PLAYER 1)*/}
               {playersSelected.players[0] && (
-                <div
-                  className="selected-player border p-2 rounded-pill mb-2"
-                  style={{ background: 'rgba(177, 177, 177, 0.5)' }}
-                >
-                  <Avatar icon={<UserOutlined />} className="player-avatar" />
-                  <span className="player-name ms-2">
-                    {playersSelected.players[0].name}
-                  </span>
-                  <Tag color="blue" className="player-rating ms-3">
-                    {playersSelected.players[0].level}
-                  </Tag>
-                  <Button
-                    type="text"
-                    icon={<MinusCircleOutlined />}
-                    onClick={() => removePlayer(0)}
-                    className="remove-player"
-                    disabled
-                  />
-                </div>
+                <PlayerCard
+                  player={playersSelected.players[0]}
+                  index={0}
+                  removePlayer={() => removePlayer(0)}
+                />
               )}
               {matchCategory === 'custom' && (
                 <>
                   {/* Player 2 if select match type team */}
                   {matchType === 'team' ? (
                     playersSelected.players[1] ? (
-                      <div
-                        className="selected-player border p-2 rounded-pill"
-                        style={{ background: 'rgba(177, 177, 177, 0.5)' }}
-                      >
-                        <Avatar
-                          icon={<UserOutlined />}
-                          className="player-avatar"
-                        />
-                        <span className="player-name ms-2">
-                          {playersSelected.players[1].name}
-                        </span>
-                        <Tag color="blue" className="player-rating ms-3">
-                          {playersSelected.players[1].level}
-                        </Tag>
-                        <Button
-                          type="text"
-                          icon={<MinusCircleOutlined />}
-                          onClick={() => removePlayer(1)}
-                          className="remove-player"
-                        />
-                      </div>
+                      <PlayerCard
+                        player={playersSelected.players[1]}
+                        index={1}
+                        removePlayer={() => removePlayer(1)}
+                      />
                     ) : (
                       <AutoComplete
                         options={handleSearch()?.map((f) => ({
@@ -438,27 +434,11 @@ const AddMatches: React.FC = () => {
                   {/* Player 3 if select match type team*/}
                   {matchType === 'team' ? (
                     playersSelected.players[2] ? (
-                      <div
-                        className="selected-player border p-2 rounded-pill mb-2"
-                        style={{ background: 'rgba(177, 177, 177, 0.5)' }}
-                      >
-                        <Avatar
-                          icon={<UserOutlined />}
-                          className="player-avatar"
-                        />
-                        <span className="player-name ms-2">
-                          {playersSelected.players[2].name}
-                        </span>
-                        <Tag color="blue" className="player-rating ms-3">
-                          {playersSelected.players[2].level}
-                        </Tag>
-                        <Button
-                          type="text"
-                          icon={<MinusCircleOutlined />}
-                          onClick={() => removePlayer(2)}
-                          className="remove-player"
-                        />
-                      </div>
+                      <PlayerCard
+                        player={playersSelected.players[2]}
+                        index={2}
+                        removePlayer={() => removePlayer(2)}
+                      />
                     ) : (
                       <AutoComplete
                         options={handleSearch()?.map((f) => ({
@@ -489,27 +469,11 @@ const AddMatches: React.FC = () => {
                     )
                   ) : // Player 2 if select match type team
                   playersSelected.players[1] ? (
-                    <div
-                      className="selected-player border p-2 rounded-pill mb-2"
-                      style={{ background: 'rgba(177, 177, 177, 0.5)' }}
-                    >
-                      <Avatar
-                        icon={<UserOutlined />}
-                        className="player-avatar"
-                      />
-                      <span className="player-name ms-2">
-                        {playersSelected.players[1].name}
-                      </span>
-                      <Tag color="blue" className="player-rating ms-3">
-                        {playersSelected.players[1].level}
-                      </Tag>
-                      <Button
-                        type="text"
-                        icon={<MinusCircleOutlined />}
-                        onClick={() => removePlayer(1)}
-                        className="remove-player"
-                      />
-                    </div>
+                    <PlayerCard
+                      player={playersSelected.players[1]}
+                      index={1}
+                      removePlayer={() => removePlayer(1)}
+                    />
                   ) : (
                     <AutoComplete
                       options={handleSearch()?.map((f) => ({
@@ -540,27 +504,11 @@ const AddMatches: React.FC = () => {
                   {/* Player 4 if select match type team */}
                   {matchType === 'team' ? (
                     playersSelected.players[3] ? (
-                      <div
-                        className="selected-player border p-2 rounded-pill mt-2"
-                        style={{ background: 'rgba(177, 177, 177, 0.5)' }}
-                      >
-                        <Avatar
-                          icon={<UserOutlined />}
-                          className="player-avatar"
-                        />
-                        <span className="player-name ms-2">
-                          {playersSelected.players[3].name}
-                        </span>
-                        <Tag color="blue" className="player-rating ms-3">
-                          {playersSelected.players[3].level}
-                        </Tag>
-                        <Button
-                          type="text"
-                          icon={<MinusCircleOutlined />}
-                          onClick={() => removePlayer(3)}
-                          className="remove-player"
-                        />
-                      </div>
+                      <PlayerCard
+                        player={playersSelected.players[3]}
+                        index={3}
+                        removePlayer={() => removePlayer(3)}
+                      />
                     ) : (
                       <AutoComplete
                         options={handleSearch()?.map((f) => ({

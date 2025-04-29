@@ -23,14 +23,23 @@ export const TournamentPage = () => {
     setIsSidebarHidden((prevState) => !prevState);
   };
 
+  const initialFilters = {
+    tournamentType: [] as string[],
+    skillLevel: [] as string[],
+    status: [] as string[],
+    gender: [] as string[],
+  };
+
   const [filters, setFilters] = useState<{
     tournamentType: string[];
     skillLevel: string[];
     status: string[];
+    gender: string[];
   }>({
     tournamentType: [],
     skillLevel: [],
     status: [],
+    gender: [],
   });
 
   const user = useSelector((state: RootState) => state.auth.user);
@@ -79,8 +88,30 @@ export const TournamentPage = () => {
         tournament.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         tournament.location.toLowerCase().includes(searchTerm.toLowerCase());
 
+      const isGenderMatch =
+        filters.gender.length === 0 ||
+        filters.gender.some((gender) => {
+          if (gender === 'male') {
+            return ['SinglesMale', 'DoublesMale', 'DoublesMix'].includes(
+              tournament.type
+            );
+          }
+          if (gender === 'female') {
+            return ['SinglesFemale', 'DoublesFemale', 'DoublesMix'].includes(
+              tournament.type
+            );
+          }
+          return false;
+        });
+
       // Return true if all conditions are met
-      return isTypeMatch && isSkillLevelMatch && isStatusMatch && isSearchMatch;
+      return (
+        isTypeMatch &&
+        isSkillLevelMatch &&
+        isStatusMatch &&
+        isSearchMatch &&
+        isGenderMatch
+      );
     });
   };
 
@@ -99,21 +130,23 @@ export const TournamentPage = () => {
     setFilters({
       tournamentType: [],
       skillLevel: [user?.userDetails?.experienceLevel?.toString() ?? '0'],
-      status: ['Scheduled'],
+      status: [],
+      gender: [user?.gender?.toLowerCase() ?? 'male'],
     });
     message.success('Filter follow your level and gender succesfully');
   };
 
-  // const handleResetFilters = () => {
-  //   window.location.reload();
-  // };
+  const handleResetFilters = () => {
+    setFilters(initialFilters);
+    message.success('Filters reset successfully');
+  };
 
   return (
     <div
       style={{
         display: 'flex',
         flexDirection: 'column',
-        height: '100vh',
+        height: '150vh',
         width: '100%', // use percentage to avoid overflow
         boxSizing: 'border-box', // include padding in width
         overflowX: 'hidden', // prevent horizontal scroll
@@ -223,12 +256,23 @@ export const TournamentPage = () => {
               </div>
             )}
 
-            {/* <div style={{ marginBottom: '1rem' }}>
-              <h2 style={{ fontSize: '1.25rem', fontWeight: 500, margin: '0 0 .75rem' }}>Filters</h2>
-              <Button style={{ width: '100%', marginBottom: '1rem' }} onClick={handleResetFilters}>
+            <div style={{ marginBottom: '1rem' }}>
+              <h2
+                style={{
+                  fontSize: '1.25rem',
+                  fontWeight: 500,
+                  margin: '0 0 .75rem',
+                }}
+              >
+                Filters
+              </h2>
+              <Button
+                style={{ width: '100%', marginBottom: '1rem' }}
+                onClick={handleResetFilters}
+              >
                 Reset Filters
               </Button>
-            </div> */}
+            </div>
 
             {/* Tournament Type */}
             <div style={{ marginBottom: '1rem' }}>
@@ -267,6 +311,41 @@ export const TournamentPage = () => {
               </div>
             </div>
 
+            {/* Tournament Gender */}
+            <div style={{ marginBottom: '1rem' }}>
+              <h3
+                style={{
+                  fontSize: '1rem',
+                  fontWeight: 500,
+                  margin: '0 0 .5rem',
+                }}
+              >
+                Gender
+              </h3>
+              <div
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '0.5rem',
+                }}
+              >
+                <Checkbox
+                  className="text-white"
+                  checked={filters.gender.includes('male')}
+                  onChange={() => handleCheckboxChange('gender', 'male')}
+                >
+                  Male
+                </Checkbox>
+                <Checkbox
+                  className="text-white"
+                  checked={filters.gender.includes('female')}
+                  onChange={() => handleCheckboxChange('gender', 'female')}
+                >
+                  Female
+                </Checkbox>
+              </div>
+            </div>
+
             {/* Skill Level */}
             <div style={{ marginBottom: '1rem' }}>
               <h3
@@ -297,6 +376,7 @@ export const TournamentPage = () => {
                         alignItems: 'center',
                         whiteSpace: 'nowrap',
                       }}
+                      checked={filters.skillLevel.includes(String(level))}
                       onChange={() =>
                         handleCheckboxChange('skillLevel', String(level))
                       }
@@ -321,6 +401,7 @@ export const TournamentPage = () => {
                         alignItems: 'center',
                         whiteSpace: 'nowrap',
                       }}
+                      checked={filters.skillLevel.includes(String(level))}
                       onChange={() =>
                         handleCheckboxChange('skillLevel', String(level))
                       }

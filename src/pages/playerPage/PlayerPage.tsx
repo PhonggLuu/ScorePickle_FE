@@ -215,17 +215,7 @@ export const PlayersPage: React.FC = () => {
   // Add friend handler
   function handleAddFriend(id: number) {
     if (user?.id !== undefined) {
-      addFriend(
-        { data: { user1Id: user.id, user2Id: id } },
-        {
-          onSuccess: () => {
-            message.success('Friend request sent successfully!');
-          },
-          onError: () => {
-            message.error('Failed to send friend request. Please try again.');
-          },
-        }
-      );
+      addFriend({ data: { user1Id: user.id, user2Id: id } });
     } else {
       message.error('You must be logged in to add friends');
     }

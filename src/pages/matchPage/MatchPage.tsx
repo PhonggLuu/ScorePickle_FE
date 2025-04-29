@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Input, Spin } from 'antd';
+import { Button, Input, Spin } from 'antd';
 import { useInView } from 'react-intersection-observer';
 import 'antd/dist/reset.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -14,6 +14,7 @@ export const MatchesPage: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const { data, isLoading } = useGetAllMatches();
   const navigate = useNavigate();
+  const [isHover, setIsHover] = useState(false);
 
   const { ref, inView } = useInView({
     triggerOnce: false, // Kiểm tra liên tục khi cuộn
@@ -72,6 +73,10 @@ export const MatchesPage: React.FC = () => {
     navigate(`/match-detail/${id}`);
   };
 
+  const navigateCreateMatch = () => {
+    navigate('/add-match');
+  };
+
   // if (isLoading) {
   //   return (
   //     <div className="d-flex justify-content-center align-items-center">
@@ -83,7 +88,23 @@ export const MatchesPage: React.FC = () => {
   return (
     <div className="d-flex flex-column min-vh-100 text-white justify-content-center">
       <div className="flex-grow-1 container py-4">
-        <h1 className="display-4 fw-bold mb-4">Matches</h1>
+        <div className="d-flex align-items-center mb-4">
+          <h1 className="display-4 fw-bold mb-0">Matches</h1>
+          <Button
+            onClick={navigateCreateMatch}
+            onMouseEnter={() => setIsHover(true)}
+            onMouseLeave={() => setIsHover(false)}
+            className="ms-auto"
+            style={{
+              /* chuyển động nâng nhẹ khi hover */
+              transform: isHover ? 'translateY(-4px)' : 'translateY(0)',
+              transition: 'transform 0.2s ease-in-out',
+              cursor: 'pointer',
+            }}
+          >
+            <span className="">Create Match</span>
+          </Button>
+        </div>
 
         <div
           className="row justify-content-center"
