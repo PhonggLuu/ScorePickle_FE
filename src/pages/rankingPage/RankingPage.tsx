@@ -28,11 +28,7 @@ import { useSelector } from 'react-redux';
 
 const { Title, Text } = Typography;
 
-interface RankProps {
-  tournamentId: number;
-}
-
-export const RankingPage: React.FC<RankProps> = () => {
+export const RankingPage: React.FC = () => {
   const { data: leaderboard, isLoading, error } = useGetTopPlayer();
   const userId = useSelector((state: RootState) => state.auth.user?.id);
   const [pagination, setPagination] = useState({ current: 1, pageSize: 10 });
