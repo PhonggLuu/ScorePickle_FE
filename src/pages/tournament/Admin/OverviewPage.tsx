@@ -40,15 +40,6 @@ const { TabPane } = Tabs;
 
 type DataIndex = string;
 
-// Tournament type enum
-enum TournamentType {
-  SinglesMale = 1,
-  SinglesFemale = 2,
-  DoublesMale = 3,
-  DoublesFemale = 4,
-  DoublesMix = 5,
-}
-
 export const OverviewAdminPage = () => {
   const { data, isLoading, refetch } = useGetAllTournaments();
   const { mutate: updateTournament } = useUpdateTournament();
