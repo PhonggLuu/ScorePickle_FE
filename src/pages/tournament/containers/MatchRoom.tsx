@@ -33,7 +33,7 @@ import {
 import type { ColumnsType, ColumnType } from 'antd/es/table';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { IMatch } from '@src/modules/Match/models';
+import { IMatch, MatchStatus } from '@src/modules/Match/models';
 import { useGetMatchByTournamentId } from '@src/modules/Match/hooks/useGetMatchByTournamentId';
 import { Match, Member } from '@src/modules/Tournament/models';
 import { fetchUserById } from '@src/modules/User/hooks/useGetUserById';
@@ -94,9 +94,14 @@ const MatchRoom = ({ id }: MatchRoomProps) => {
 
     return {
       totalMatches: matchData.length,
-      scheduled: matchData.filter((match) => match.status === 1).length,
-      ongoing: matchData.filter((match) => match.status === 3).length,
-      completed: matchData.filter((match) => match.status === 2).length,
+      scheduled: matchData.filter(
+        (match) => match.status === MatchStatus.Scheduled
+      ).length,
+      ongoing: matchData.filter((match) => match.status === MatchStatus.Ongoing)
+        .length,
+      completed: matchData.filter(
+        (match) => match.status === MatchStatus.Completed
+      ).length,
     };
   }, [matchData]);
 
@@ -154,7 +159,7 @@ const MatchRoom = ({ id }: MatchRoomProps) => {
   const getVenueById = (id: number) => venues?.find((venue) => venue.id === id);
 
   const getRefereeById = (id: number) =>
-    referees?.find((referee) => referee.id === id);
+    referees?.find((referee) => referee.refreeId === id);
 
   const getResultTagColor = (status: number) => {
     switch (status) {
@@ -174,11 +179,11 @@ const MatchRoom = ({ id }: MatchRoomProps) => {
       case 1:
         return 'Scheduled';
       case 2:
-        return 'Completed';
-      case 3:
         return 'Ongoing';
+      case 3:
+        return 'Completed';
       default:
-        return 'Cancelled';
+        return 'Disabled';
     }
   };
 
@@ -371,14 +376,14 @@ const MatchRoom = ({ id }: MatchRoomProps) => {
                     borderRadius: '4px',
                   }}
                 >
-                  <Avatar size="large" src={referee.avatarUrl} />
+                  <Avatar size="large" src={referee.user.avatarUrl} />
                   <div style={{ marginLeft: 12 }}>
                     <Text strong>
-                      {referee.firstName} {referee.lastName}
+                      {referee.user.firstName} {referee.user.lastName}
                     </Text>
                     <div>
                       <Text type="secondary">
-                        <MailFilled /> {referee.email}
+                        <MailFilled /> {referee.user.email}
                       </Text>
                     </div>
                   </div>
@@ -728,10 +733,10 @@ const MatchRoom = ({ id }: MatchRoomProps) => {
                   <Option value="1">
                     <CalendarOutlined /> Scheduled
                   </Option>
-                  <Option value="3">
+                  <Option value="2">
                     <TeamOutlined /> Ongoing
                   </Option>
-                  <Option value="2">
+                  <Option value="3">
                     <TrophyOutlined /> Completed
                   </Option>
                 </Select>
@@ -755,8 +760,8 @@ const MatchRoom = ({ id }: MatchRoomProps) => {
                       : filterStatus === '1'
                         ? 'Scheduled Matches'
                         : filterStatus === '2'
-                          ? 'Completed Matches'
-                          : 'Ongoing Matches'}
+                          ? 'Ongoing Matches'
+                          : 'Completed Matches'}
                   </Text>
                 </Badge>
               </div>
@@ -804,7 +809,7 @@ const MatchRoom = ({ id }: MatchRoomProps) => {
                 <TeamOutlined /> Ongoing ({statistics.ongoing})
               </span>
             }
-            key="3"
+            key="2"
           />
           <TabPane
             tab={
@@ -812,7 +817,7 @@ const MatchRoom = ({ id }: MatchRoomProps) => {
                 <TrophyOutlined /> Completed ({statistics.completed})
               </span>
             }
-            key="2"
+            key="3"
           />
         </Tabs>
 

@@ -16,7 +16,11 @@ import {
 import type { ColumnsType, ColumnType } from 'antd/es/table';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useGetAllBillsByTournamentId } from '@src/modules/Payment/hooks/useGetAllBillsByTournamentId';
-import { Bill } from '@src/modules/Payment/models';
+import {
+  PaymentStatus,
+  TournamentPayment,
+  TypePayment,
+} from '@src/modules/Payment/models';
 
 const { Text } = Typography;
 
@@ -65,7 +69,7 @@ const BillTab = ({ id }: BillTabProps) => {
     refetch,
   } = useGetAllBillsByTournamentId(Number(id));
 
-  const [filteredBills, setFilteredBills] = useState<Bill[]>([]);
+  const [filteredBills, setFilteredBills] = useState<TournamentPayment[]>([]);
   const [, setSearchText] = useState<string>('');
   const [searchedColumn, setSearchedColumn] = useState<string>('');
   const searchInput = useRef<InputRef>(null);
@@ -79,25 +83,48 @@ const BillTab = ({ id }: BillTabProps) => {
     if (!bills || !bills.length) {
       return {
         totalAmount: 0,
-        totalPaid: 0,
-        totalPending: 0,
-        billCount: 0,
-        paidCount: 0,
-        pendingCount: 0,
+        totalSponsor: 0,
+        totalFee: 0,
+        totalAward: 0,
+        totalCount: 0,
+        sponsorCount: 0,
+        feeCount: 0,
+        awardCount: 0,
       };
     }
 
     // Ensure consistent type handling - convert status to number if it's a string
-    const paid = bills.filter((bill) => Number(bill.status) === 1);
-    const pending = bills.filter((bill) => Number(bill.status) === 2);
+    const total = bills.filter(
+      (bill) => bill.status === PaymentStatus.Completed
+    );
+    const sponsor = bills.filter(
+      (bill) =>
+        Number(bill.type) === TypePayment.Donate &&
+        bill.status === PaymentStatus.Completed
+    );
+    const fee = bills.filter(
+      (bill) =>
+        Number(bill.type) === TypePayment.Fee &&
+        bill.status === PaymentStatus.Completed
+    );
+    const award = bills.filter(
+      (bill) =>
+        Number(bill.type) === TypePayment.Award &&
+        bill.status === PaymentStatus.Completed
+    );
 
     return {
-      totalAmount: bills.reduce((sum, bill) => sum + bill.amount, 0),
-      totalPaid: paid.reduce((sum, bill) => sum + bill.amount, 0),
-      totalPending: pending.reduce((sum, bill) => sum + bill.amount, 0),
-      billCount: bills.length,
-      paidCount: paid.length,
-      pendingCount: pending.length,
+      totalAmount:
+        fee.reduce((sum, bill) => sum + bill.amount, 0) +
+        sponsor.reduce((sum, bill) => sum + bill.amount, 0) -
+        award.reduce((sum, bill) => sum + bill.amount, 0),
+      totalSponsor: sponsor.reduce((sum, bill) => sum + bill.amount, 0),
+      totalFee: fee.reduce((sum, bill) => sum + bill.amount, 0),
+      totalAward: award.reduce((sum, bill) => sum + bill.amount, 0),
+      totalCount: total.length,
+      sponsorCount: sponsor.length,
+      feeCount: fee.length,
+      awardCount: award.length,
     };
   }, [bills]);
 
@@ -183,7 +210,7 @@ const BillTab = ({ id }: BillTabProps) => {
       ),
   });
 
-  const columns: ColumnsType<Bill> = [
+  const columns: ColumnsType<TournamentPayment> = [
     {
       title: 'ID',
       dataIndex: 'id',
@@ -285,41 +312,55 @@ const BillTab = ({ id }: BillTabProps) => {
     <div className="bill-tab-container">
       {/* Summary Cards */}
       <Row gutter={16} style={{ marginBottom: 16 }}>
-        <Col span={8}>
+        <Col span={12}>
           <Card bordered={false} className="summary-card">
             <Statistic
-              title="Total Revenue"
+              title="Total Profit"
               value={statistics.totalAmount}
-              precision={0}
-              valueStyle={{ color: '#3f8600' }}
-              prefix="₫"
-              suffix=""
-              formatter={(value) => value?.toLocaleString()}
-            />
-          </Card>
-        </Col>
-        <Col span={8}>
-          <Card bordered={false} className="summary-card">
-            <Statistic
-              title="Total Paid"
-              value={statistics.totalPaid}
               precision={0}
               valueStyle={{ color: '#52c41a' }}
               prefix="₫"
-              suffix={`(${statistics.paidCount} bills)`}
               formatter={(value) => value?.toLocaleString()}
             />
           </Card>
         </Col>
-        <Col span={8}>
+        <Col span={12}>
           <Card bordered={false} className="summary-card">
             <Statistic
-              title="Total Pending"
-              value={statistics.totalPending}
+              title="Total Fee"
+              value={statistics.totalFee}
               precision={0}
               valueStyle={{ color: '#faad14' }}
               prefix="₫"
-              suffix={`(${statistics.pendingCount} bills)`}
+              suffix={`(${statistics.feeCount} transactions)`}
+              formatter={(value) => value?.toLocaleString()}
+            />
+          </Card>
+        </Col>
+      </Row>
+      <Row gutter={16} style={{ marginBottom: 16 }}>
+        <Col span={12}>
+          <Card bordered={false} className="summary-card">
+            <Statistic
+              title="Total Sponsor"
+              value={statistics.totalSponsor}
+              precision={0}
+              valueStyle={{ color: 'rgb(233, 90, 90)' }}
+              prefix="₫"
+              suffix={`(${statistics.sponsorCount} sponsorships)`}
+              formatter={(value) => value?.toLocaleString()}
+            />
+          </Card>
+        </Col>
+        <Col span={12}>
+          <Card bordered={false} className="summary-card">
+            <Statistic
+              title="Total Award"
+              value={statistics.totalAward}
+              precision={0}
+              valueStyle={{ color: 'rgba(1,1,1,1)' }}
+              prefix="₫"
+              suffix={`(${statistics.awardCount} awards)`}
               formatter={(value) => value?.toLocaleString()}
             />
           </Card>

@@ -37,7 +37,7 @@ const { Title, Paragraph } = Typography;
 
 type DataIndex = string;
 
-export const VenusPage = () => {
+export const VenuePage = () => {
   const user = useSelector((state: RootState) => state.auth.user);
 
   const id = useMemo(() => user?.id || '', [user?.id]);
@@ -607,4 +607,4 @@ export const VenusPage = () => {
   );
 };
 
-export default VenusPage;
+export default VenuePage;

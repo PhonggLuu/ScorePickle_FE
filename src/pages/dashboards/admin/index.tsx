@@ -3,10 +3,11 @@ import {
   SearchOutlined,
   DollarOutlined,
   FileDoneOutlined,
-  ClockCircleOutlined,
   PieChartOutlined,
   BarChartOutlined,
   UserOutlined,
+  ApartmentOutlined,
+  GiftOutlined,
 } from '@ant-design/icons';
 import type { InputRef } from 'antd';
 import {
@@ -29,7 +30,11 @@ import {
 } from 'antd';
 import type { ColumnsType, ColumnType } from 'antd/es/table';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Bill } from '../../../modules/Payment/models';
+import {
+  Bill,
+  PaymentStatus,
+  TypePayment,
+} from '../../../modules/Payment/models';
 import { useGetAllBill } from '../../../modules/Payment/hooks/useGetAllBill';
 import { Column, Pie } from '@ant-design/charts';
 import { User } from '../../../modules/User/models';
@@ -153,41 +158,48 @@ export const PaymentAdmin = () => {
     if (!bills || !bills.length) {
       return {
         totalAmount: 0,
-        totalPaid: 0,
-        totalPending: 0,
-        billCount: 0,
-        paidCount: 0,
-        pendingCount: 0,
-        registrationAmount: 0,
-        sponsorshipAmount: 0,
-        registrationCount: 0,
-        sponsorshipCount: 0,
+        totalSponsor: 0,
+        totalFee: 0,
+        totalAward: 0,
+        totalCount: 0,
+        sponsorCount: 0,
+        feeCount: 0,
+        awardCount: 0,
       };
     }
 
     // Ensure consistent type handling - convert status to number if it's a string
-    const paid = bills.filter((bill) => Number(bill.status) === 1);
-    const pending = bills.filter((bill) => Number(bill.status) === 2);
-    const registrations = bills.filter((bill) => Number(bill.type) === 1);
-    const sponsorships = bills.filter((bill) => Number(bill.type) === 2);
+    const total = bills.filter(
+      (bill) => bill.status === PaymentStatus.Completed
+    );
+    const sponsor = bills.filter(
+      (bill) =>
+        Number(bill.type) === TypePayment.Donate &&
+        bill.status === PaymentStatus.Completed
+    );
+    const fee = bills.filter(
+      (bill) =>
+        Number(bill.type) === TypePayment.Fee &&
+        bill.status === PaymentStatus.Completed
+    );
+    const award = bills.filter(
+      (bill) =>
+        Number(bill.type) === TypePayment.Award &&
+        bill.status === PaymentStatus.Completed
+    );
 
     return {
-      totalAmount: bills.reduce((sum, bill) => sum + bill.amount, 0),
-      totalPaid: paid.reduce((sum, bill) => sum + bill.amount, 0),
-      totalPending: pending.reduce((sum, bill) => sum + bill.amount, 0),
-      billCount: bills.length,
-      paidCount: paid.length,
-      pendingCount: pending.length,
-      registrationAmount: registrations.reduce(
-        (sum, bill) => sum + bill.amount,
-        0
-      ),
-      sponsorshipAmount: sponsorships.reduce(
-        (sum, bill) => sum + bill.amount,
-        0
-      ),
-      registrationCount: registrations.length,
-      sponsorshipCount: sponsorships.length,
+      totalAmount:
+        fee.reduce((sum, bill) => sum + bill.amount, 0) +
+        sponsor.reduce((sum, bill) => sum + bill.amount, 0) -
+        award.reduce((sum, bill) => sum + bill.amount, 0),
+      totalSponsor: sponsor.reduce((sum, bill) => sum + bill.amount, 0),
+      totalFee: fee.reduce((sum, bill) => sum + bill.amount, 0),
+      totalAward: award.reduce((sum, bill) => sum + bill.amount, 0),
+      totalCount: total.length,
+      sponsorCount: sponsor.length,
+      feeCount: fee.length,
+      awardCount: award.length,
     };
   }, [bills]);
 
@@ -483,6 +495,7 @@ export const PaymentAdmin = () => {
       filters: [
         { text: 'VNPAY', value: 'VNPAY' },
         { text: 'Cash', value: 'Cash' },
+        { text: 'PayOs', value: 'PayOs' },
         { text: 'Bank Transfer', value: 'Bank Transfer' },
       ],
       onFilter: (value, record) => record.paymentMethod === value,
@@ -525,11 +538,24 @@ export const PaymentAdmin = () => {
       render: (type: number | string) => {
         const typeNum = Number(type);
         const typeText = getTypeText(typeNum);
-        return <Tag color={typeNum === 1 ? 'green' : 'purple'}>{typeText}</Tag>;
+        return (
+          <Tag
+            color={
+              typeNum === TypePayment.Donate
+                ? 'green'
+                : typeNum === TypePayment.Donate
+                  ? 'purple'
+                  : 'orange'
+            }
+          >
+            {typeText}
+          </Tag>
+        );
       },
       filters: [
-        { text: 'Registration', value: 1 },
-        { text: 'Sponsorship', value: 2 },
+        { text: 'Registration', value: TypePayment.Fee },
+        { text: 'Sponsorship', value: TypePayment.Donate },
+        { text: 'Award', value: TypePayment.Award },
       ],
       onFilter: (value, record) => Number(record.type) === value,
     },
@@ -649,12 +675,24 @@ export const PaymentAdmin = () => {
     switch (activeTab) {
       case 'paid':
         return bills.filter((bill) => Number(bill.status) === 1);
-      case 'pending':
-        return bills.filter((bill) => Number(bill.status) === 2);
       case 'registration':
-        return bills.filter((bill) => Number(bill.type) === 1);
+        return bills.filter(
+          (bill) =>
+            Number(bill.status) === PaymentStatus.Completed &&
+            Number(bill.type) === TypePayment.Fee
+        );
       case 'sponsorship':
-        return bills.filter((bill) => Number(bill.type) === 2);
+        return bills.filter(
+          (bill) =>
+            Number(bill.status) === PaymentStatus.Completed &&
+            Number(bill.type) === TypePayment.Donate
+        );
+      case 'award':
+        return bills.filter(
+          (bill) =>
+            Number(bill.status) === PaymentStatus.Completed &&
+            Number(bill.type) === TypePayment.Award
+        );
       case 'all':
       default:
         return bills;
@@ -722,7 +760,7 @@ export const PaymentAdmin = () => {
                 status="success"
                 text={
                   <Text type="secondary">
-                    {statistics.billCount} transactions
+                    {statistics.totalCount} transactions
                   </Text>
                 }
               />
@@ -742,10 +780,10 @@ export const PaymentAdmin = () => {
             <Statistic
               title={
                 <Text strong style={{ fontSize: '16px' }}>
-                  Paid
+                  Registration Fee
                 </Text>
               }
-              value={statistics.totalPaid}
+              value={statistics.totalFee}
               precision={0}
               valueStyle={{ color: '#52c41a', fontSize: '24px' }}
               prefix={<FileDoneOutlined />}
@@ -756,7 +794,7 @@ export const PaymentAdmin = () => {
               <Badge
                 status="success"
                 text={
-                  <Text type="secondary">{statistics.paidCount} payments</Text>
+                  <Text type="secondary">{statistics.feeCount} payments</Text>
                 }
               />
             </div>
@@ -775,13 +813,13 @@ export const PaymentAdmin = () => {
             <Statistic
               title={
                 <Text strong style={{ fontSize: '16px' }}>
-                  Pending
+                  Sponsorship
                 </Text>
               }
-              value={statistics.totalPending}
+              value={statistics.sponsorCount}
               precision={0}
               valueStyle={{ color: '#faad14', fontSize: '24px' }}
-              prefix={<ClockCircleOutlined />}
+              prefix={<GiftOutlined />}
               suffix="₫"
               formatter={(value) => value?.toLocaleString()}
             />
@@ -790,7 +828,7 @@ export const PaymentAdmin = () => {
                 status="warning"
                 text={
                   <Text type="secondary">
-                    {statistics.pendingCount} payments
+                    {statistics.sponsorCount} sponsorships
                   </Text>
                 }
               />
@@ -807,40 +845,27 @@ export const PaymentAdmin = () => {
               boxShadow: '0 2px 8px rgba(0,0,0,0.09)',
             }}
           >
-            <Row gutter={8}>
-              <Col span={12}>
-                <Statistic
-                  title={
-                    <Text strong style={{ fontSize: '14px' }}>
-                      Registration
-                    </Text>
-                  }
-                  value={statistics.registrationAmount}
-                  precision={0}
-                  valueStyle={{ color: '#52c41a', fontSize: '18px' }}
-                  formatter={(value) => `₫${value?.toLocaleString()}`}
-                />
-                <Text type="secondary">
-                  {statistics.registrationCount} payments
+            <Statistic
+              title={
+                <Text strong style={{ fontSize: '16px' }}>
+                  Awards
                 </Text>
-              </Col>
-              <Col span={12}>
-                <Statistic
-                  title={
-                    <Text strong style={{ fontSize: '14px' }}>
-                      Sponsorship
-                    </Text>
-                  }
-                  value={statistics.sponsorshipAmount}
-                  precision={0}
-                  valueStyle={{ color: '#722ed1', fontSize: '18px' }}
-                  formatter={(value) => `₫${value?.toLocaleString()}`}
-                />
-                <Text type="secondary">
-                  {statistics.sponsorshipCount} payments
-                </Text>
-              </Col>
-            </Row>
+              }
+              value={statistics.totalAward}
+              precision={0}
+              valueStyle={{ color: 'rgb(69, 115, 231)', fontSize: '24px' }}
+              prefix={<ApartmentOutlined />}
+              suffix="₫"
+              formatter={(value) => value?.toLocaleString()}
+            />
+            <div style={{ marginTop: '8px' }}>
+              <Badge
+                status="warning"
+                text={
+                  <Text type="secondary">{statistics.awardCount} awards</Text>
+                }
+              />
+            </div>
           </Card>
         </Col>
       </Row>
@@ -944,7 +969,7 @@ export const PaymentAdmin = () => {
                 <Space>
                   <span>All</span>
                   <Badge
-                    count={statistics.billCount}
+                    count={statistics.totalCount}
                     style={{ backgroundColor: '#1890ff' }}
                   />
                 </Space>
@@ -956,57 +981,43 @@ export const PaymentAdmin = () => {
             tab={
               <Tooltip title="Paid Payments">
                 <Space>
-                  <span>Paid</span>
+                  <span>Registration Fee</span>
                   <Badge
-                    count={statistics.paidCount}
+                    count={statistics.feeCount}
                     style={{ backgroundColor: '#52c41a' }}
                   />
                 </Space>
               </Tooltip>
             }
-            key="paid"
+            key="fee"
           />
           <TabPane
             tab={
-              <Tooltip title="Pending Payments">
+              <Tooltip title="Sponsorships">
                 <Space>
-                  <span>Pending</span>
+                  <span>Sponsorships</span>
                   <Badge
-                    count={statistics.pendingCount}
+                    count={statistics.sponsorCount}
                     style={{ backgroundColor: '#faad14' }}
                   />
                 </Space>
               </Tooltip>
             }
-            key="pending"
+            key="sponsorship"
           />
           <TabPane
             tab={
-              <Tooltip title="Registration Payments">
+              <Tooltip title="Award Payments">
                 <Space>
-                  <span>Registration</span>
+                  <span>Awards</span>
                   <Badge
-                    count={statistics.registrationCount}
+                    count={statistics.awardCount}
                     style={{ backgroundColor: '#52c41a' }}
                   />
                 </Space>
               </Tooltip>
             }
-            key="registration"
-          />
-          <TabPane
-            tab={
-              <Tooltip title="Sponsorship Payments">
-                <Space>
-                  <span>Sponsorship</span>
-                  <Badge
-                    count={statistics.sponsorshipCount}
-                    style={{ backgroundColor: '#722ed1' }}
-                  />
-                </Space>
-              </Tooltip>
-            }
-            key="sponsorship"
+            key="award"
           />
         </Tabs>
 

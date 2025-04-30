@@ -15,11 +15,17 @@ const createTournament = async (
 
 export function useCreateTournament() {
   const queryClient = useQueryClient();
-  return useMutation({
+  const mutation = useMutation({
     mutationFn: createTournament,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [CREATE_TOURNAMENT] });
       queryClient.invalidateQueries({ queryKey: [GET_ALL_TOURNAMENTS] });
     },
   });
+
+  return {
+    ...mutation,
+    mutate: mutation.mutate,
+    isLoading: mutation.isPending,
+  };
 }

@@ -28,21 +28,25 @@ import type { ColumnsType } from 'antd/es/table';
 import React, { useState } from 'react';
 
 import { useQueryClient } from '@tanstack/react-query';
+import { useRegisterReferees } from '@src/modules/User/hooks/useRegisterReferee';
 import { RegisterUserRequest } from '@src/modules/User/models';
 
 import { useSelector } from 'react-redux';
 import { useUpdateReferee } from '@src/modules/Referee/hooks/useUpdateRefee';
 import { RootState } from '@src/redux/store';
-import { useGetAllReferees } from '@src/modules/User/hooks/useGetAllReferee';
-import { useRegisterReferees } from '@src/modules/User/hooks/useRegisterReferee';
+import { useGetRefereeBySponsorId } from '@src/modules/User/hooks/useGetAllReferee';
 
 const { Text, Title } = Typography;
 const { Option } = Select;
 
-export const RefereesAdminPage: React.FC = () => {
+const RefereesPage: React.FC = () => {
   const queryClient = useQueryClient();
   const user = useSelector((state: RootState) => state.auth.user);
-  const { data: referees, isLoading, error } = useGetAllReferees();
+  const {
+    data: referees,
+    isLoading,
+    error,
+  } = useGetRefereeBySponsorId(user?.id.toString() || '');
   const { mutate: registerUser } = useRegisterReferees();
   const { mutate: updateReferee } = useUpdateReferee();
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -535,4 +539,4 @@ export const RefereesAdminPage: React.FC = () => {
   );
 };
 
-export default RefereesAdminPage;
+export default RefereesPage;

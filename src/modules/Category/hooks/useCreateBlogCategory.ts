@@ -1,6 +1,5 @@
 import { useMutation } from '@tanstack/react-query';
 import api from '@src/api/api';
-import { message } from 'antd';
 import { BlogCategory } from '../models';
 
 interface CreateBlogCategoryPayload {
@@ -30,11 +29,5 @@ export function useCreateBlogCategory() {
     CreateBlogCategoryPayload
   >({
     mutationFn: createBlogCategory,
-    onSuccess: (data) => {
-      message.success(data.message);
-    },
-    onError: () => {
-      message.error('Failed to create blog category');
-    },
   });
 }

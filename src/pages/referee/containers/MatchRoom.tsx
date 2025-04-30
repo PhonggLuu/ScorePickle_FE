@@ -1,5 +1,7 @@
 import {
   CalendarOutlined,
+  FilterOutlined,
+  LockFilled,
   MailFilled,
   ReloadOutlined,
   SearchOutlined,
@@ -9,17 +11,19 @@ import {
 import type { InputRef } from 'antd';
 import {
   Avatar,
+  Badge,
   Button,
   Card,
   Col,
-  Divider,
   Empty,
   Input,
+  Progress,
   Row,
   Select,
   Space,
   Statistic,
   Table,
+  Tabs,
   Tag,
   Tooltip,
   Typography,
@@ -28,40 +32,44 @@ import type { ColumnsType, ColumnType } from 'antd/es/table';
 import Title from 'antd/es/typography/Title';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { useGetMatchByTournamentId } from '@src/modules/Match/hooks/useGetMatchByTournamentId';
-import { useGetVenueBySponserId } from '@src/modules/Venues/hooks/useGetVenueBySponserId';
-import { useGetAllReferees } from '@src/modules/User/hooks/useGetAllReferee';
+import { IMatch } from '@src/modules/Match/models';
+import { useGetMatchByRefereeId } from '@src/modules/Referee/hooks/useGetMatchByRefereeId';
 import { Match, Member } from '@src/modules/Tournament/models';
-import { RootState } from '@src/redux/store';
-import { User } from '@src/modules/User/models';
+import { useGetAllReferees } from '@src/modules/User/hooks/useGetAllReferee';
 import { fetchUserById } from '@src/modules/User/hooks/useGetUserById';
+import { User } from '@src/modules/User/models';
+import { useGetVenueAll } from '@src/modules/Venues/hooks/useGetAllVenue';
+import { RootState } from '@src/redux/store';
+import MatchScoreModal from '../../tournament/containers/MatchScoreModal';
 
 const { Text } = Typography;
 const { Option } = Select;
 const { Meta } = Card;
+const { TabPane } = Tabs;
 
 type DataIndex = string;
 
-type MatchRoomProps = {
-  id: number;
-};
-
-const MatchRoom = ({ id }: MatchRoomProps) => {
+const MatchRoom = () => {
   const user = useSelector((state: RootState) => state.auth.user);
   const {
     data: matchData,
     isLoading: isLoadingMatches,
     error: errorMatches,
     refetch,
-  } = useGetMatchByTournamentId(Number(id));
-  const { data: venues } = useGetVenueBySponserId(user?.id || 0);
+  } = useGetMatchByRefereeId(user?.id ?? 0);
+
   const { data: referees } = useGetAllReferees();
+  const { data: venues } = useGetVenueAll();
   const [userDetails, setUserDetails] = useState<any[]>([]);
   const [filteredDetails, setFilteredDetails] = useState<Match[]>([]);
   const [filterStatus, setFilterStatus] = useState<string>('All');
   const [, setSearchText] = useState<string>('');
   const [searchedColumn, setSearchedColumn] = useState<string>('');
   const searchInput = useRef<InputRef>(null);
+  const [isScoreModalVisible, setIsScoreModalVisible] =
+    useState<boolean>(false);
+  const [selectedMatchForScores, setSelectedMatchForScores] =
+    useState<IMatch | null>(null);
 
   // Calculate statistics
   const statistics = useMemo(() => {
@@ -77,8 +85,8 @@ const MatchRoom = ({ id }: MatchRoomProps) => {
     return {
       totalMatches: matchData.length,
       scheduled: matchData.filter((match) => match.status === 1).length,
-      ongoing: matchData.filter((match) => match.status === 3).length,
-      completed: matchData.filter((match) => match.status === 2).length,
+      ongoing: matchData.filter((match) => match.status === 2).length,
+      completed: matchData.filter((match) => match.status === 3).length,
     };
   }, [matchData]);
 
@@ -125,6 +133,11 @@ const MatchRoom = ({ id }: MatchRoomProps) => {
     }
   }, [filterStatus, matchData]);
 
+  useEffect(() => {
+    // Initial load
+    setFilteredDetails(matchData || []);
+  }, [matchData]);
+
   const getUserById = (id: number) =>
     userDetails.find((user: User) => user?.id === id);
 
@@ -138,11 +151,37 @@ const MatchRoom = ({ id }: MatchRoomProps) => {
       case 1:
         return 'blue';
       case 2:
-        return 'green';
-      case 3:
         return 'orange';
+      case 3:
+        return 'green';
       default:
-        return 'gray';
+        return 'red';
+    }
+  };
+
+  const getStatusText = (status: number) => {
+    switch (status) {
+      case 1:
+        return 'Scheduled';
+      case 2:
+        return 'Ongoing';
+      case 3:
+        return 'Completed';
+      default:
+        return 'Cancelled';
+    }
+  };
+
+  const getStatusIcon = (status: number) => {
+    switch (status) {
+      case 1:
+        return <CalendarOutlined />;
+      case 2:
+        return <TeamOutlined />;
+      case 3:
+        return <TrophyOutlined />;
+      default:
+        return null;
     }
   };
 
@@ -161,6 +200,20 @@ const MatchRoom = ({ id }: MatchRoomProps) => {
       clearFilters();
     }
     setSearchText('');
+  };
+
+  const handleSearchByTitle = (value: string) => {
+    if (!value) {
+      setFilteredDetails(matchData || []);
+      return;
+    }
+
+    const filteredMatches =
+      matchData?.filter((match) =>
+        match.title.toLowerCase().includes(value.toLowerCase())
+      ) || [];
+
+    setFilteredDetails(filteredMatches);
   };
 
   const getColumnSearchProps = (dataIndex: DataIndex): ColumnType<any> => ({
@@ -252,9 +305,12 @@ const MatchRoom = ({ id }: MatchRoomProps) => {
       defaultSortOrder: 'ascend',
       onHeaderCell: () => ({
         style: {
-          backgroundColor: '#fff', // hoặc bất kỳ màu nền bạn muốn
-          // nếu muốn đè mọi thứ thì thêm !important:
-          // backgroundColor: '#fff !important',
+          backgroundColor: '#fff',
+        },
+      }),
+      onCell: () => ({
+        style: {
+          backgroundColor: '#fff',
         },
       }),
     },
@@ -264,17 +320,8 @@ const MatchRoom = ({ id }: MatchRoomProps) => {
       key: 'status',
       render: (status: number) => {
         const color = getResultTagColor(status);
-        const text =
-          status === 1 ? 'Scheduled' : status === 2 ? 'Completed' : 'Ongoing';
-        const icon =
-          status === 1 ? (
-            <CalendarOutlined />
-          ) : status === 2 ? (
-            <TrophyOutlined />
-          ) : (
-            <TeamOutlined />
-          );
-
+        const text = getStatusText(status);
+        const icon = getStatusIcon(status);
         return (
           <Tag color={color} icon={icon}>
             {text}
@@ -283,8 +330,8 @@ const MatchRoom = ({ id }: MatchRoomProps) => {
       },
       filters: [
         { text: 'Scheduled', value: 1 },
-        { text: 'Completed', value: 2 },
-        { text: 'Ongoing', value: 3 },
+        { text: 'Completed', value: 3 },
+        { text: 'Ongoing', value: 2 },
       ],
       onFilter: (value, record) => record.status === value,
     },
@@ -295,6 +342,7 @@ const MatchRoom = ({ id }: MatchRoomProps) => {
       render: (venueId: number, record: Match) => {
         const venue = getVenueById(venueId);
         const referee = getRefereeById(record?.refereeId || 0);
+
         return venue ? (
           <Card
             hoverable
@@ -348,7 +396,7 @@ const MatchRoom = ({ id }: MatchRoomProps) => {
     {
       title: 'Teams',
       key: 'team',
-      render: (record: Match) => {
+      render: (_, record: Match) => {
         const team1 = record.teamResponse?.[0];
         const team2 = record?.teamResponse?.[1];
 
@@ -400,6 +448,15 @@ const MatchRoom = ({ id }: MatchRoomProps) => {
                               <MailFilled /> {user.email}
                             </Text>
                           </Tooltip>
+                          <br />
+                          <Text type="secondary">
+                            <LockFilled />{' '}
+                            {user.userDetails?.joinedAt
+                              ? new Date(
+                                  user.userDetails?.joinedAt
+                                ).toLocaleDateString()
+                              : 'N/A'}
+                          </Text>
                         </div>
                       </div>
                     ) : null;
@@ -458,6 +515,15 @@ const MatchRoom = ({ id }: MatchRoomProps) => {
                               <MailFilled /> {user.email}
                             </Text>
                           </Tooltip>
+                          <br />
+                          <Text type="secondary">
+                            <LockFilled />{' '}
+                            {user.userDetails?.joinedAt
+                              ? new Date(
+                                  user.userDetails?.joinedAt
+                                ).toLocaleDateString()
+                              : 'N/A'}
+                          </Text>
                         </div>
                       </div>
                     ) : null;
@@ -474,20 +540,30 @@ const MatchRoom = ({ id }: MatchRoomProps) => {
         );
       },
     },
+    {
+      title: 'Actions',
+      key: 'actions',
+      render: (_, record: any) => (
+        <Space>
+          <Button
+            icon={<ReloadOutlined />}
+            onClick={() => {
+              setSelectedMatchForScores(record);
+              setIsScoreModalVisible(true);
+            }}
+          >
+            Scores
+          </Button>
+        </Space>
+      ),
+    },
   ];
 
   if (isLoadingMatches) {
     return (
       <div style={{ textAlign: 'center', padding: '50px 0' }}>
         <Space direction="vertical" size="large" align="center">
-          <div className="ant-spin ant-spin-lg ant-spin-spinning">
-            <span className="ant-spin-dot ant-spin-dot-spin">
-              <i className="ant-spin-dot-item"></i>
-              <i className="ant-spin-dot-item"></i>
-              <i className="ant-spin-dot-item"></i>
-              <i className="ant-spin-dot-item"></i>
-            </span>
-          </div>
+          <Progress type="circle" status="active" />
           <Text>Loading match data...</Text>
         </Space>
       </div>
@@ -498,9 +574,7 @@ const MatchRoom = ({ id }: MatchRoomProps) => {
     return (
       <div style={{ textAlign: 'center', padding: '50px 0' }}>
         <Space direction="vertical" size="large" align="center">
-          <div style={{ fontSize: '48px', color: '#ff4d4f' }}>
-            <i className="anticon anticon-warning" />
-          </div>
+          <Progress type="circle" status="exception" percent={100} />
           <Text type="danger">
             Error loading matches: {(errorMatches as Error).message}
           </Text>
@@ -519,10 +593,7 @@ const MatchRoom = ({ id }: MatchRoomProps) => {
         <Col span={6}>
           <Card
             bordered={false}
-            style={{
-              boxShadow: '0 2px 8px rgba(0,0,0,0.09)',
-              borderRadius: 8,
-            }}
+            style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.09)', borderRadius: 8 }}
           >
             <Statistic
               title={<Text strong>Total Matches</Text>}
@@ -535,10 +606,7 @@ const MatchRoom = ({ id }: MatchRoomProps) => {
         <Col span={6}>
           <Card
             bordered={false}
-            style={{
-              boxShadow: '0 2px 8px rgba(0,0,0,0.09)',
-              borderRadius: 8,
-            }}
+            style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.09)', borderRadius: 8 }}
           >
             <Statistic
               title={<Text strong>Scheduled</Text>}
@@ -559,10 +627,7 @@ const MatchRoom = ({ id }: MatchRoomProps) => {
         <Col span={6}>
           <Card
             bordered={false}
-            style={{
-              boxShadow: '0 2px 8px rgba(0,0,0,0.09)',
-              borderRadius: 8,
-            }}
+            style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.09)', borderRadius: 8 }}
           >
             <Statistic
               title={<Text strong>Ongoing</Text>}
@@ -583,10 +648,7 @@ const MatchRoom = ({ id }: MatchRoomProps) => {
         <Col span={6}>
           <Card
             bordered={false}
-            style={{
-              boxShadow: '0 2px 8px rgba(0,0,0,0.09)',
-              borderRadius: 8,
-            }}
+            style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.09)', borderRadius: 8 }}
           >
             <Statistic
               title={<Text strong>Completed</Text>}
@@ -606,82 +668,138 @@ const MatchRoom = ({ id }: MatchRoomProps) => {
         </Col>
       </Row>
 
-      {/* Filter Controls */}
-      <Row style={{ marginBottom: 16 }} align="middle">
-        <Col span={16}>
-          <Space size="large">
-            <Text strong>Filter by Status:</Text>
-            <Select
-              defaultValue="All"
-              style={{ width: 150 }}
-              onChange={(value) => setFilterStatus(value)}
-            >
-              <Option value="All">All Matches</Option>
-              <Option value="1">
-                <Space>
-                  <CalendarOutlined />
-                  <span>Scheduled</span>
-                </Space>
-              </Option>
-              <Option value="3">
-                <Space>
-                  <TeamOutlined />
-                  <span>Ongoing</span>
-                </Space>
-              </Option>
-              <Option value="2">
-                <Space>
-                  <TrophyOutlined />
-                  <span>Completed</span>
-                </Space>
-              </Option>
-            </Select>
-            <Input.Search
-              placeholder="Search match title"
-              style={{ width: 250 }}
-              onSearch={(value) => {
-                const filtered =
-                  matchData?.filter((match) =>
-                    match.title.toLowerCase().includes(value.toLowerCase())
-                  ) || [];
-                setFilteredDetails(filtered);
-              }}
-              allowClear
-            />
-          </Space>
-        </Col>
-        <Col span={8} style={{ textAlign: 'right' }}>
-          <Button
-            type="primary"
-            icon={<ReloadOutlined />}
-            onClick={() => refetch()}
-          >
-            Refresh Matches
-          </Button>
-        </Col>
-      </Row>
+      {/* Match Management Header */}
+      <Card
+        title={
+          <Title level={4} style={{ margin: 0 }}>
+            Match Management
+          </Title>
+        }
+        style={{ marginBottom: 24, boxShadow: '0 2px 8px rgba(0,0,0,0.09)' }}
+      >
+        <Row gutter={[16, 16]} align="middle">
+          <Col xs={24} md={8}>
+            <Input.Group compact>
+              <Select
+                defaultValue="All"
+                style={{ width: '40%' }}
+                onChange={(value) => setFilterStatus(value)}
+              >
+                <Option value="All">All Matches</Option>
+                <Option value="1">
+                  <CalendarOutlined /> Scheduled
+                </Option>
+                <Option value="2">
+                  <TeamOutlined /> Ongoing
+                </Option>
+                <Option value="3">
+                  <TrophyOutlined /> Completed
+                </Option>
+              </Select>
+              <Input.Search
+                placeholder="Search match title"
+                style={{ width: '60%' }}
+                onSearch={handleSearchByTitle}
+                allowClear
+              />
+            </Input.Group>
+          </Col>
+          <Col xs={24} md={8}>
+            <div style={{ textAlign: 'center' }}>
+              <Badge
+                count={filteredDetails.length}
+                style={{ backgroundColor: '#52c41a' }}
+              >
+                <Text strong style={{ fontSize: 16 }}>
+                  {filterStatus === 'All'
+                    ? 'All Matches'
+                    : filterStatus === '1'
+                      ? 'Scheduled Matches'
+                      : filterStatus === '3'
+                        ? 'Completed Matches'
+                        : 'Ongoing Matches'}
+                </Text>
+              </Badge>
+            </div>
+          </Col>
+          <Col xs={24} md={8}>
+            <div style={{ textAlign: 'right' }}>
+              <Button
+                type="default"
+                icon={<ReloadOutlined />}
+                onClick={() => refetch()}
+              >
+                Refresh Data
+              </Button>
+            </div>
+          </Col>
+        </Row>
+      </Card>
 
-      <Divider orientation="left">Match List</Divider>
+      {/* Tab View for Different Status */}
+      <Tabs
+        defaultActiveKey="all"
+        onChange={(key) => setFilterStatus(key === 'all' ? 'All' : key)}
+        type="card"
+        style={{ marginBottom: 16 }}
+      >
+        <TabPane
+          tab={
+            <span>
+              <FilterOutlined /> All Matches
+            </span>
+          }
+          key="all"
+        />
+        <TabPane
+          tab={
+            <span>
+              <CalendarOutlined /> Scheduled ({statistics.scheduled})
+            </span>
+          }
+          key="1"
+        />
+        <TabPane
+          tab={
+            <span>
+              <TeamOutlined /> Ongoing ({statistics.ongoing})
+            </span>
+          }
+          key="2"
+        />
+        <TabPane
+          tab={
+            <span>
+              <TrophyOutlined /> Completed ({statistics.completed})
+            </span>
+          }
+          key="3"
+        />
+      </Tabs>
 
       {/* Matches Table */}
       <Table
         columns={columns}
         dataSource={filteredDetails || []}
         rowKey="id"
+        bordered
         pagination={{
           showTotal: (total) => `Total ${total} matches`,
           showQuickJumper: true,
+          showSizeChanger: true,
+        }}
+        style={{
+          backgroundColor: '#ffffff',
+          borderRadius: 8,
+          overflow: 'hidden',
+          boxShadow: '0 2px 8px rgba(0,0,0,0.09)',
         }}
         expandable={{
           expandedRowRender: (record) => (
             <div style={{ padding: '20px' }}>
               <Row gutter={24}>
                 <Col span={12}>
-                  <Card
-                    title="Match Details"
-                    bordered={false}
-                    style={{ boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}
-                  >
+                  <Card title="Match Details" bordered={false}>
                     <p>
                       <strong>Match ID:</strong> {record.id}
                     </p>
@@ -693,21 +811,12 @@ const MatchRoom = ({ id }: MatchRoomProps) => {
                       {new Date(record.matchDate).toLocaleString()}
                     </p>
                     <p>
-                      <strong>Status:</strong>{' '}
-                      {record.status === 1
-                        ? 'Scheduled'
-                        : record.status === 2
-                          ? 'Completed'
-                          : 'Ongoing'}
+                      <strong>Status:</strong> {getStatusText(record.status)}
                     </p>
                   </Card>
                 </Col>
                 <Col span={12}>
-                  <Card
-                    title="Additional Information"
-                    bordered={false}
-                    style={{ boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}
-                  >
+                  <Card title="Additional Information" bordered={false}>
                     <p>
                       <strong>Created:</strong>{' '}
                       {record.createdDate
@@ -730,14 +839,18 @@ const MatchRoom = ({ id }: MatchRoomProps) => {
             </div>
           ),
         }}
-        bordered
-        style={{
-          backgroundColor: '#ffffff',
-          borderRadius: 8,
-          overflow: 'hidden',
-          boxShadow: '0 2px 8px rgba(0,0,0,0.09)',
-        }}
       />
+      {selectedMatchForScores && (
+        <MatchScoreModal
+          visible={isScoreModalVisible}
+          onClose={() => {
+            setIsScoreModalVisible(false);
+            setSelectedMatchForScores(null);
+          }}
+          match={selectedMatchForScores}
+          refetch={refetch}
+        />
+      )}
     </div>
   );
 };

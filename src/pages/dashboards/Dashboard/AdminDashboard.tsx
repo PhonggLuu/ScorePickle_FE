@@ -33,6 +33,7 @@ import { useGetAllReferees } from '@src/modules/User/hooks/useGetAllReferee';
 import { useGetAllBill } from '@src/modules/Payment/hooks/useGetAllBill';
 import { useGetAllBlogCategories } from '@src/modules/Category/hooks/useGetBlogCategories';
 import { useGetAllRules } from '@src/modules/Category/hooks/useGetAllRules';
+import { PaymentStatus } from '@src/modules/Payment/models';
 
 const { Title, Text } = Typography;
 
@@ -141,8 +142,9 @@ const AdminDashboard: React.FC<AdminDashboardProps> = () => {
           : 0,
       completedPayments:
         billsData && Array.isArray(billsData)
-          ? billsData.filter((bill) => bill && bill.status === 'Completed')
-              .length
+          ? billsData.filter(
+              (bill) => bill && bill.status === PaymentStatus.Completed
+            ).length
           : 0,
       category:
         blogCategoriesData && Array.isArray(blogCategoriesData)

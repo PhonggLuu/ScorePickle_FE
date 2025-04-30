@@ -7,7 +7,7 @@ import { Bill } from '../models';
  */
 const fetchSponsorBills = async (sponnerId: number): Promise<Bill[]> => {
   const response = await Api.get<Bill[]>(
-    `/payment/vn-pay/GetAllBillBySponnerId/${sponnerId}`
+    `/payment/vn-pay/GetAllBillByUserId/${sponnerId}`
   );
   return response.data as Bill[]; // Extract bills array from data property
 };
@@ -20,5 +20,17 @@ export function useGetAllBillBySponnerId(sponnerId: number) {
     queryKey: ['sponsorBills', sponnerId],
     queryFn: () => fetchSponsorBills(sponnerId),
     enabled: !!sponnerId, // Only run query if sponnerId is provided
+  });
+}
+
+/**
+ * Hook to query payment bills for a specific sponsor
+ */
+export function useGetAllBillBySponsorId(sponnerId: number) {
+  return useQuery<Bill[], Error>({
+    queryKey: ['sponsorBills', sponnerId],
+    queryFn: () => fetchSponsorBills(sponnerId),
+    enabled: !!sponnerId, // Only run query if sponnerId is provided
+    refetchInterval: 3000,
   });
 }

@@ -8,7 +8,7 @@ import { getPaymentUrl } from '@src/modules/Payment/hooks/useGetPaymentUrl';
 import { useCheckJoinTournament } from '@src/modules/Tournament/hooks/useCheckJoinTournament';
 import { useGetTournamentById } from '@src/modules/Tournament/hooks/useGetTournamentById';
 import { Tournament } from '@src/modules/Tournament/models';
-import { createRegistration } from '@src/modules/TournamentRegistration/hooks/useCreateRegistration';
+import { useCreateRegistration } from '@src/modules/TournamentRegistration/hooks/useCreateRegistration';
 import { useGetTournamentTeamRequestByPlayerIdAndTournamentId } from '@src/modules/TournamentRegistration/hooks/useGetTournamentTeamRequestByTournamentAndPlayerId';
 import { RootState } from '@src/redux/store';
 import { Button, message, Spin, Tabs, Typography } from 'antd';
@@ -128,6 +128,7 @@ export const TournamentDetailPage: React.FC = () => {
     user?.id ?? 0,
     Number(id || 0)
   );
+  const { mutate: createRegistration } = useCreateRegistration();
 
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [activeKey, setActiveKey] = useState('details');
@@ -209,18 +210,29 @@ export const TournamentDetailPage: React.FC = () => {
   };
 
   const handleJoinSingleTournament = async () => {
-    const request = {
+    const payload = {
       tournamentId: tournament.id,
       playerId: user?.id || 0,
       partnerId: null,
     };
-    const registration = await createRegistration(request);
-    if (registration?.id != null) {
-      const userId = user?.id || 0;
-      const paymentUrl = await getPaymentUrl(userId, registration?.id);
-      if (paymentUrl !== null) window.location.href = paymentUrl;
-      else message.success('You joined tournament successfully');
-    }
+    createRegistration(payload, {
+      onSuccess: async (data) => {
+        // data.id chính là id mới
+        if (data.id) {
+          const userId = user?.id ?? 0;
+          const paymentUrl = await getPaymentUrl(userId, data.id);
+          if (paymentUrl) {
+            window.location.href = paymentUrl;
+          }
+        }
+      },
+      onError: (error) => {
+        message.error(
+          'Failed to register for the tournament. Please try again.'
+        );
+        console.error(error);
+      },
+    });
   };
 
   const showButton = () => {
@@ -306,11 +318,22 @@ export const TournamentDetailPage: React.FC = () => {
               <Button
                 type="primary"
                 size="large"
-                disabled={!tournament.isAccept}
-                onClick={() => handleJoinSingleTournament()}
+                disabled={
+                  !tournament.isAccept ||
+                  tournament.registrationDetails.length === tournament.maxPlayer
+                }
+                onClick={() => {
+                  if (
+                    tournament.registrationDetails.length < tournament.maxPlayer
+                  ) {
+                    handleJoinSingleTournament();
+                  }
+                }}
                 style={{ width: '100%' }}
               >
-                Register Now
+                {tournament.registrationDetails.length < tournament.maxPlayer
+                  ? 'Register Now'
+                  : 'Full registration'}
               </Button>
             </motion.div>
           );
@@ -330,11 +353,16 @@ export const TournamentDetailPage: React.FC = () => {
               <Button
                 type="primary"
                 size="large"
-                disabled={!tournament.isAccept}
+                disabled={
+                  !tournament.isAccept ||
+                  tournament.registrationDetails.length === tournament.maxPlayer
+                }
                 onClick={() => setIsModalVisible(true)}
                 style={{ width: '100%' }}
               >
-                Register Now
+                {tournament.registrationDetails.length < tournament.maxPlayer
+                  ? 'Register Now'
+                  : 'Full registration'}
               </Button>
             </motion.div>
           );

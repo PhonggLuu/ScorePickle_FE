@@ -56,8 +56,8 @@ import {
   // Sponsor pages
   PaymentSponsor,
   OverviewAdminPage,
-  VenuePage,
-  RefereesPage,
+  VenueAdminPage,
+  RefereesAdminPage,
 } from '../pages';
 import {
   CorporateLayout,
@@ -93,6 +93,11 @@ import MatchesPage from '@src/pages/matchPage/MatchPage.tsx';
 import MatchDetailToJoin from '@src/pages/matchPage/components/MatchDetailToJoin.tsx';
 import Transaction from '@src/pages/transaction/index.tsx';
 import Announcement from '@src/pages/announcement/index.tsx';
+import { VenuePage } from '@src/pages/tournament/VenusPage.tsx';
+import RefereesPage from '@src/pages/tournament/RefereesPage.tsx';
+import { RefereeLayout } from '@src/layouts/referee/index.tsx';
+import RefereeDashboard from '@src/pages/referee/RefereeDashboard.tsx';
+import RefereeDetail from '@src/pages/referee/RefereeDetail.tsx';
 
 // Custom scroll restoration function
 export const ScrollToTop: React.FC = () => {
@@ -284,12 +289,12 @@ const router = createBrowserRouter([
       {
         index: true,
         path: 'venues',
-        element: <VenuePage />,
+        element: <VenueAdminPage />,
       },
       {
         index: true,
         path: 'referees',
-        element: <RefereesPage />,
+        element: <RefereesAdminPage />,
       },
       {
         index: true,
@@ -312,6 +317,22 @@ const router = createBrowserRouter([
         index: true,
         path: 'block-user',
         element: <BlockUser />,
+      },
+    ],
+  },
+  {
+    path: '/referee',
+    element: <PageWrapper children={<RefereeLayout />} />,
+    errorElement: <ErrorPage />,
+    children: [
+      {
+        index: true,
+        path: 'dashboard',
+        element: <RefereeDashboard />,
+      },
+      {
+        path: ':id',
+        element: <RefereeDetail />,
       },
     ],
   },
@@ -339,6 +360,14 @@ const router = createBrowserRouter([
       {
         path: ':id',
         element: <TournamentDetail />,
+      },
+      {
+        path: 'venues',
+        element: <VenuePage />,
+      },
+      {
+        path: 'referees',
+        element: <RefereesPage />,
       },
     ],
   },

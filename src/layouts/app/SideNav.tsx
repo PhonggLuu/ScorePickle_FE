@@ -10,7 +10,6 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { COLOR } from '../../App.tsx';
 import { Logo } from '../../components';
-import { PATH_LANDING } from '../../constants';
 import {
   PATH_ADMIN_PAYMENT,
   PATH_ADMIN_TOURNAMENT,
@@ -117,32 +116,40 @@ const SideNav = ({ ...others }: SiderProps) => {
       : user?.roleId === 4
         ? [
             getItem(
-              <Link to={PATH_REFEREE.root}>Dashboard</Link>,
+              <Link to={PATH_REFEREE.dashboard}>Dashboard</Link>,
               'refOverview'
             ),
           ]
-        : [
-            getItem('Tournament', 'tournament', <TrophyOutlined />, [
-              getItem(
-                <Link to={PATH_TOURNAMENT.overview}>List</Link>,
-                'overview'
-              ),
-              getItem(
-                <Link to={PATH_TOURNAMENT.venues}>Venues</Link>,
-                'schedule'
-              ),
-              getItem(
-                <Link to={PATH_TOURNAMENT.referees}>Referees</Link>,
-                'referees'
-              ),
-            ]),
-            getItem('Payments', 'payment', <PieChartOutlined />, [
-              getItem(
-                <Link to={PATH_SPONSOR_PAYMENT.root}>Transactions</Link>,
-                'List'
-              ),
-            ]),
-          ]),
+        : user?.roleId === 3
+          ? [
+              getItem('Dashboard', 'dashboard/default', <PieChartOutlined />, [
+                getItem(
+                  <Link to={PATH_DASHBOARD.default}>Default</Link>,
+                  'Default'
+                ),
+              ]),
+              getItem('Tournament', 'tournament', <TrophyOutlined />, [
+                getItem(
+                  <Link to={PATH_TOURNAMENT.overview}>List</Link>,
+                  'overview'
+                ),
+                getItem(
+                  <Link to={PATH_TOURNAMENT.venues}>Venues</Link>,
+                  'schedule'
+                ),
+                getItem(
+                  <Link to={PATH_TOURNAMENT.referees}>Referees</Link>,
+                  'referees'
+                ),
+              ]),
+              getItem('Payments', 'payment', <PieChartOutlined />, [
+                getItem(
+                  <Link to={PATH_SPONSOR_PAYMENT.root}>Transactions</Link>,
+                  'List'
+                ),
+              ]),
+            ]
+          : []),
   ];
 
   const rootSubmenuKeys = [
@@ -157,7 +164,7 @@ const SideNav = ({ ...others }: SiderProps) => {
       <Logo
         color="blue"
         asLink
-        href={PATH_LANDING.root}
+        href={PATH_DASHBOARD.default}
         justify="center"
         gap="small"
         imgSize={{ h: 28, w: 28 }}

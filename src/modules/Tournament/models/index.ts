@@ -124,3 +124,9 @@ export interface RankPlayer {
   point: number;
   position: number;
 }
+
+export interface RuleOfAward {
+  id: number;
+  percentOfPrize: number;
+  position: number;
+}

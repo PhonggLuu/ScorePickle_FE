@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import api from '@src/api/api';
 import { RefereeResponse } from '../models';
-import { GET_REFEREE_BY_CODE } from '../constants';
+import { GET_REFEREE_BY_SPONSOR } from '../constants';
 
 const fetchRefereeByCode = async (code: string): Promise<RefereeResponse[]> => {
   try {
@@ -14,7 +14,7 @@ const fetchRefereeByCode = async (code: string): Promise<RefereeResponse[]> => {
 
 export function useGetRefereeBySponsorId(code: string) {
   return useQuery<RefereeResponse[]>({
-    queryKey: [GET_REFEREE_BY_CODE, code],
+    queryKey: [GET_REFEREE_BY_SPONSOR, code],
     queryFn: () => fetchRefereeByCode(code),
     refetchInterval: 3000,
   });

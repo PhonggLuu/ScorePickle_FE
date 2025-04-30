@@ -35,8 +35,6 @@ enum UserRole {
   Sponsor = 3,
   Referee = 4,
   User = 5,
-  Staff = 6,
-  AdminClub = 7,
 }
 
 // Define role colors
@@ -46,8 +44,6 @@ const roleColors: Record<number, string> = {
   [UserRole.Sponsor]: '#faad14', // Gold
   [UserRole.Referee]: '#eb2f96', // Pink
   [UserRole.User]: '#52c41a', // Green
-  [UserRole.Staff]: '#13c2c2', // Cyan
-  [UserRole.AdminClub]: '#fa541c', // Orange
 };
 
 // Map role IDs to names for display
@@ -57,8 +53,6 @@ const roleNames: Record<number, string> = {
   [UserRole.Sponsor]: 'Sponsor',
   [UserRole.Referee]: 'Referee',
   [UserRole.User]: 'User',
-  [UserRole.Staff]: 'Staff',
-  [UserRole.AdminClub]: 'Admin Club',
 };
 
 // Extend User interface to include roleId
@@ -365,15 +359,16 @@ export const BlockUser: React.FC = () => {
     {
       title: 'Action',
       key: 'action',
-      render: (record: ExtendedUser) => (
-        <Button
-          type="primary"
-          danger={record.status}
-          onClick={() => handleAction(record.id, record.status)}
-        >
-          {record.status ? 'Ban' : 'Unban'}
-        </Button>
-      ),
+      render: (record: ExtendedUser) =>
+        record.roleId !== UserRole.Admin && (
+          <Button
+            type="primary"
+            danger={record.status}
+            onClick={() => handleAction(record.id, record.status)}
+          >
+            {record.status ? 'Ban' : 'Unban'}
+          </Button>
+        ),
     },
   ];
 
