@@ -316,49 +316,6 @@ export const OverviewAdminPage = () => {
     data?.filter((t) => t.status === 'Disable' || t.status === 'Canceled')
       .length || 0;
 
-  // Count tournaments by type using type checking to handle different possible formats
-  const singlesMaleTournaments =
-    data?.filter(
-      (t) =>
-        (typeof t.type === 'number' && t.type === TournamentType.SinglesMale) ||
-        (typeof t.type === 'number' && t.type === 1) ||
-        (typeof t.type === 'string' && t.type === 'SinglesMale')
-    ).length || 0;
-
-  const singleFemaleTournaments =
-    data?.filter(
-      (t) =>
-        (typeof t.type === 'number' &&
-          t.type === TournamentType.SinglesFemale) ||
-        (typeof t.type === 'number' && t.type === 2) ||
-        (typeof t.type === 'string' && t.type === 'SinglesFemale')
-    ).length || 0;
-
-  const doublesMaleTournaments =
-    data?.filter(
-      (t) =>
-        (typeof t.type === 'number' && t.type === TournamentType.DoublesMale) ||
-        (typeof t.type === 'number' && t.type === 3) ||
-        (typeof t.type === 'string' && t.type === 'DoublesMale')
-    ).length || 0;
-
-  const doubleFemaleTournaments =
-    data?.filter(
-      (t) =>
-        (typeof t.type === 'number' &&
-          t.type === TournamentType.DoublesFemale) ||
-        (typeof t.type === 'number' && t.type === 4) ||
-        (typeof t.type === 'string' && t.type === 'DoublesFemale')
-    ).length || 0;
-
-  const doublesMixTournaments =
-    data?.filter(
-      (t) =>
-        (typeof t.type === 'number' && t.type === TournamentType.DoublesMix) ||
-        (typeof t.type === 'number' && t.type === 5) ||
-        (typeof t.type === 'string' && t.type === 'DoublesMix')
-    ).length || 0;
-
   // Get filtered data based on active tab
   const getFilteredData = () => {
     if (!data || !Array.isArray(data)) return [];

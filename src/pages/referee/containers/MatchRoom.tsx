@@ -396,7 +396,7 @@ const MatchRoom = () => {
     {
       title: 'Teams',
       key: 'team',
-      render: (text: any, record: Match) => {
+      render: (_, record: Match) => {
         const team1 = record.teamResponse?.[0];
         const team2 = record?.teamResponse?.[1];
 
