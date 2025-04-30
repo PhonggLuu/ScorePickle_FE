@@ -266,7 +266,7 @@ const SponsorDashboard: React.FC<SponsorDashboardProps> = ({ user }) => {
           </Col>
           <Col xs={24} md={8} style={{ textAlign: 'right' }}>
             <Space>
-              <Link to="/tournament/create">
+              <Link to="/tournament/overview">
                 <Button
                   type="primary"
                   style={{
@@ -365,7 +365,7 @@ const SponsorDashboard: React.FC<SponsorDashboardProps> = ({ user }) => {
                 showInfo={false}
                 style={{ marginTop: '12px' }}
               />
-              <Link to="/tournament/create">
+              <Link to="/tournament//overview">
                 <Button
                   type="primary"
                   style={{

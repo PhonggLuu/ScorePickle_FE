@@ -1,13 +1,20 @@
 import { useMutation } from '@tanstack/react-query';
 import Api from '@src/api/api';
-import { RegisterUserRequest, RoleFactory } from '../models';
+import { RefereeResponse, RegisterUserRequest, RoleFactory } from '../models';
+import { message } from 'antd';
 
-const registerReferees = async (user: RegisterUserRequest): Promise<void> => {
+const registerReferees = async (
+  user: RegisterUserRequest
+): Promise<RefereeResponse> => {
   const payload: RegisterUserRequest = {
     ...user,
     RoleId: RoleFactory.Refree,
   };
-  await Api.post('/User/create-referee', payload);
+  const response = await Api.post('/User/create-referee', payload);
+  if (response.statusCode !== 200) {
+    message.info(response.message);
+  }
+  return response.data as RefereeResponse;
 };
 
 export function useRegisterReferees() {

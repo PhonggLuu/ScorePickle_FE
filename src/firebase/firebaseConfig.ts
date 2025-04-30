@@ -10,13 +10,15 @@ import { getDatabase } from 'firebase/database';
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-  apiKey: 'AIzaSyAd4Djt-SnF9yyu7qvalWunQurZt_eYfQs',
-  authDomain: 'scorepickle.firebaseapp.com',
-  projectId: 'scorepickle',
-  storageBucket: 'scorepickle.firebasestorage.app',
-  messagingSenderId: '915476865503',
-  appId: '1:915476865503:web:9401e8b32d3c191f4e246a',
-  measurementId: 'G-VDNNQHGV61',
+  apiKey: 'AIzaSyAmskRuFz3SAGrjVd-ctrPYZLCCJEebLR4',
+  authDomain: 'spocepicker.firebaseapp.com',
+  databaseURL:
+    'https://spocepicker-default-rtdb.asia-southeast1.firebasedatabase.app',
+  projectId: 'spocepicker',
+  storageBucket: 'spocepicker.firebasestorage.app',
+  messagingSenderId: '443076766052',
+  appId: '1:443076766052:web:946e6ef75213dd3b863271',
+  measurementId: 'G-GTEMM5X7SJ',
 };
 
 // Initialize Firebase

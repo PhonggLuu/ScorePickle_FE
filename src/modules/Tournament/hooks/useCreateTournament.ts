@@ -9,7 +9,7 @@ import {
 const createTournament = async (
   tournament: TournamentRequest
 ): Promise<Tournament> => {
-  const response = await Api.post<Tournament>('Tournament/Create', tournament);
+  const response = await Api.post<Tournament>('Tourament/Create', tournament);
   return response.data;
 };
 

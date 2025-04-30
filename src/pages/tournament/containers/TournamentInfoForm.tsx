@@ -42,6 +42,7 @@ const TournamentInfoForm = ({ data, onSave }: TournamentInfoFormProps) => {
   const [form] = Form.useForm();
   const { mutate: updateTournament } = useUpdateTournament();
   const [isFree, setIsFree] = useState<boolean>(data?.isFree || false);
+  const isDisabled = data.status !== 'Pending';
 
   // Banner upload states
   const [bannerInputType, setBannerInputType] = useState<'url' | 'upload'>(
@@ -180,7 +181,7 @@ const TournamentInfoForm = ({ data, onSave }: TournamentInfoFormProps) => {
               label="Status"
               rules={[{ required: true, message: 'Please select the status!' }]}
             >
-              <Select disabled={isFieldDisabled}>
+              <Select disabled={isFieldDisabled || isDisabled}>
                 <Option value="Scheduled">Scheduled</Option>
                 <Option value="Ongoing">Ongoing</Option>
                 <Option value="Completed">Completed</Option>
@@ -198,7 +199,7 @@ const TournamentInfoForm = ({ data, onSave }: TournamentInfoFormProps) => {
             >
               <DatePicker
                 style={{ width: '100%' }}
-                disabled={isFieldDisabled}
+                disabled={isFieldDisabled || isDisabled}
               />
             </Form.Item>
           </Col>
@@ -212,7 +213,7 @@ const TournamentInfoForm = ({ data, onSave }: TournamentInfoFormProps) => {
             >
               <DatePicker
                 style={{ width: '100%' }}
-                disabled={isFieldDisabled}
+                disabled={isFieldDisabled || isDisabled}
               />
             </Form.Item>
           </Col>
@@ -235,7 +236,7 @@ const TournamentInfoForm = ({ data, onSave }: TournamentInfoFormProps) => {
               label="Tournament Name"
               rules={[{ required: true, message: 'Please input the name!' }]}
             >
-              <Input disabled={isFieldDisabled} />
+              <Input disabled={isFieldDisabled || isDisabled} />
             </Form.Item>
           </Col>
           <Col span={8}>
@@ -249,7 +250,7 @@ const TournamentInfoForm = ({ data, onSave }: TournamentInfoFormProps) => {
                 },
               ]}
             >
-              <Select disabled={isFieldDisabled}>
+              <Select disabled={isFieldDisabled || isDisabled}>
                 <Option value={0}>Singles</Option>
                 <Option value={1}>Doubles</Option>
                 <Option value={2}>Mixed</Option>
@@ -266,7 +267,7 @@ const TournamentInfoForm = ({ data, onSave }: TournamentInfoFormProps) => {
                 { required: true, message: 'Please input the location!' },
               ]}
             >
-              <Input disabled={isFieldDisabled} />
+              <Input disabled={isFieldDisabled || isDisabled} />
             </Form.Item>
           </Col>
         </Row>
@@ -331,7 +332,7 @@ const TournamentInfoForm = ({ data, onSave }: TournamentInfoFormProps) => {
               <Switch
                 checkedChildren="Free"
                 unCheckedChildren="Paid"
-                disabled={isFieldDisabled}
+                disabled={isFieldDisabled || isDisabled}
                 onChange={(checked) => {
                   setIsFree(checked);
                   if (checked) {
@@ -384,7 +385,7 @@ const TournamentInfoForm = ({ data, onSave }: TournamentInfoFormProps) => {
                 min={isFree ? 0 : 10000}
                 max={isFree ? 0 : 1000000}
                 style={{ width: '100%' }}
-                disabled={isFree || isFieldDisabled}
+                disabled={isFree || isFieldDisabled || isDisabled}
                 formatter={(value) =>
                   `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
                 }
@@ -441,7 +442,7 @@ const TournamentInfoForm = ({ data, onSave }: TournamentInfoFormProps) => {
                 min={1}
                 max={9}
                 style={{ width: '100%' }}
-                disabled={isFieldDisabled}
+                disabled={isFieldDisabled || isDisabled}
                 precision={0}
               />
             </Form.Item>
@@ -492,7 +493,7 @@ const TournamentInfoForm = ({ data, onSave }: TournamentInfoFormProps) => {
                 min={1}
                 max={9}
                 style={{ width: '100%' }}
-                disabled={isFieldDisabled}
+                disabled={isFieldDisabled || isDisabled}
                 precision={0}
               />
             </Form.Item>
