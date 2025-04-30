@@ -15,14 +15,14 @@ import {
   Tooltip,
 } from 'antd';
 import moment from 'moment';
-import { IMatch } from '../../../modules/Macths/models';
-import { useUpdateMatch } from '../../../modules/Macths/hooks/useUpdateMatch';
-import { useGetAllReferees } from '../../../modules/User/hooks/useGetAllReferees';
-import { useGetVenueBySponnerId } from '../../../modules/Venues/hooks/useGetVenueBySponnerId';
+import { IMatch } from '@src/modules/Match/models';
+import { useUpdateMatch } from '@src/modules/Match/hooks/useUpdateMatch';
+import { useGetAllReferees } from '@src/modules/User/hooks/useGetAllReferee';
+import { useGetVenueBySponserId } from '@src/modules/Venues/hooks/useGetVenueBySponserId';
 import { useSelector } from 'react-redux';
-import { RootState } from '../../../redux/store';
-import { fetchUserById } from '../../../modules/User/hooks/useGetUserById';
-import { User } from '../../../modules/User/models';
+import { RootState } from '@src/redux/store';
+import { fetchUserById } from '@src/modules/User/hooks/useGetUserById';
+import { User } from '@src/modules/User/models';
 
 const { Option } = Select;
 const { Panel } = Collapse;
@@ -42,12 +42,11 @@ const UpdateMatchModal: React.FC<UpdateMatchModalProps> = ({
   refetch,
 }) => {
   const [form] = Form.useForm();
-  const user = useSelector((state: RootState) => state.authencation.user);
+  const user = useSelector((state: RootState) => state.auth.user);
   const { data: referees } = useGetAllReferees();
-  const { data: venues } = useGetVenueBySponnerId(user?.id || 0);
+  const { data: venues } = useGetVenueBySponserId(user?.id || 0);
   const { mutate: updateMatch } = useUpdateMatch();
-  const [matchFormat, setMatchFormat] = useState<number>(match?.matchFormat);
-  const [userDetails, setUserDetails] = useState<User[]>([]);
+  const [, setUserDetails] = useState<User[]>([]);
   const userCache = useRef<Map<number, User>>(new Map());
   const [currentStatus, setCurrentStatus] = useState<number>(match?.status);
   const isEditable = currentStatus === 1; // Only editable if Scheduled (1)
@@ -79,9 +78,6 @@ const UpdateMatchModal: React.FC<UpdateMatchModalProps> = ({
       fetchUsers();
     }
   }, [match]);
-
-  const getUserById = (id: number) =>
-    userDetails.find((user) => user?.id === id);
 
   const handleStatusChange = (value: number) => {
     setCurrentStatus(value);

@@ -1,6 +1,5 @@
 import { Button, Spin, Tabs } from 'antd';
 import { useNavigate, useParams } from 'react-router-dom';
-import PlayersTable from '../tournament/containers/PlayerRegistration';
 import Rank from '../../components/Rank';
 import { useGetTournamentById } from '@src/modules/Tournament/hooks/useGetTournamentById';
 import MatchRoom from './containers/MatchRoom';
@@ -9,9 +8,7 @@ const { TabPane } = Tabs;
 
 const RefereeDetail = () => {
   const { id } = useParams<{ id: string }>();
-  const { data, isLoading, error, refetch } = useGetTournamentById(
-    Number(id || 0)
-  );
+  const { data, isLoading, error } = useGetTournamentById(Number(id || 0));
   const navigate = useNavigate();
 
   if (isLoading) {
@@ -37,7 +34,7 @@ const RefereeDetail = () => {
       </Button>
       <Tabs defaultActiveKey="1">
         <TabPane tab="Room" key="1">
-          <MatchRoom id={data.id} />
+          <MatchRoom />
         </TabPane>
         <TabPane tab="Rank" key="7">
           <Rank tournamentId={data.id} />

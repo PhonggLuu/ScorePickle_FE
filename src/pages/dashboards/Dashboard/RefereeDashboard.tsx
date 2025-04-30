@@ -11,7 +11,7 @@ const RefereeDashboard: React.FC<RefereeDashboardProps> = () => {
 
   useEffect(() => {
     // Simple redirect to referee page
-    navigate('/refeer');
+    navigate('/referee/dashboard', { replace: true });
   }, [navigate]);
 
   // Display loading while redirect happens

@@ -1,6 +1,5 @@
 import {
   CalendarOutlined,
-  EditOutlined,
   FilterOutlined,
   LockFilled,
   MailFilled,
@@ -50,11 +49,7 @@ const { TabPane } = Tabs;
 
 type DataIndex = string;
 
-type MatchRoomProps = {
-  id: number;
-};
-
-const MatchRoom = ({ id }: MatchRoomProps) => {
+const MatchRoom = () => {
   const user = useSelector((state: RootState) => state.auth.user);
   const {
     data: matchData,
@@ -71,8 +66,6 @@ const MatchRoom = ({ id }: MatchRoomProps) => {
   const [, setSearchText] = useState<string>('');
   const [searchedColumn, setSearchedColumn] = useState<string>('');
   const searchInput = useRef<InputRef>(null);
-  const [, setIsUpdateModalVisible] = useState(false);
-  const [, setSelectedMatch] = useState<IMatch | null>(null);
   const [isScoreModalVisible, setIsScoreModalVisible] =
     useState<boolean>(false);
   const [selectedMatchForScores, setSelectedMatchForScores] =
@@ -550,18 +543,8 @@ const MatchRoom = ({ id }: MatchRoomProps) => {
     {
       title: 'Actions',
       key: 'actions',
-      render: (text: any, record: any) => (
+      render: (_, record: any) => (
         <Space>
-          <Button
-            type="primary"
-            icon={<EditOutlined />}
-            onClick={() => {
-              setSelectedMatch(record);
-              setIsUpdateModalVisible(true);
-            }}
-          >
-            Update
-          </Button>
           <Button
             icon={<ReloadOutlined />}
             onClick={() => {
@@ -732,7 +715,7 @@ const MatchRoom = ({ id }: MatchRoomProps) => {
                     ? 'All Matches'
                     : filterStatus === '1'
                       ? 'Scheduled Matches'
-                      : filterStatus === '2'
+                      : filterStatus === '3'
                         ? 'Completed Matches'
                         : 'Ongoing Matches'}
                 </Text>

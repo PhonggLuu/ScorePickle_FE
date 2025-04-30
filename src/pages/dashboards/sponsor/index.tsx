@@ -226,24 +226,6 @@ export const PaymentSponsor = () => {
     }));
   }, [bills]);
 
-  const paymentMethodData = useMemo(() => {
-    if (!bills) return [];
-
-    const methodCounts = bills.reduce(
-      (acc, bill) => {
-        const method = bill.paymentMethod || 'Unknown';
-        acc[method] = (acc[method] || 0) + 1;
-        return acc;
-      },
-      {} as Record<string, number>
-    );
-
-    return Object.entries(methodCounts).map(([method, count]) => ({
-      type: method,
-      value: count,
-    }));
-  }, [bills]);
-
   const paymentTypeData = useMemo(() => {
     if (!bills) return [];
 
@@ -422,7 +404,7 @@ export const PaymentSponsor = () => {
       title: 'User',
       dataIndex: 'userId',
       key: 'userId',
-      render: (userId: number, record: Bill) => {
+      render: (userId: number) => {
         const user = getUserById(userId);
         if (loadingUsers) {
           return <Spin size="small" />;

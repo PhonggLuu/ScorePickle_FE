@@ -1,23 +1,22 @@
 import React, { useState } from 'react';
-import { 
-  Tabs, 
-  Card, 
-  Row, 
-  Col, 
-  Typography, 
-  Tag, 
-  Spin, 
+import {
+  Tabs,
+  Card,
+  Row,
+  Col,
+  Typography,
+  Tag,
+  Spin,
   Empty,
   Modal,
   Badge,
-  Divider
+  Divider,
 } from 'antd';
-import { 
-  AppstoreOutlined, 
-  FileTextOutlined,
+import {
+  AppstoreOutlined,
   InfoCircleOutlined,
   ReadOutlined,
-  BulbOutlined
+  BulbOutlined,
 } from '@ant-design/icons';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -37,41 +36,36 @@ interface Rule {
   image2?: string;
 }
 
-interface Category {
-  id: number;
-  name: string;
-}
-
 // Animation variants
 const containerVariants = {
   hidden: { opacity: 0 },
-  visible: { 
+  visible: {
     opacity: 1,
-    transition: { 
-      staggerChildren: 0.1
-    }
-  }
+    transition: {
+      staggerChildren: 0.1,
+    },
+  },
 };
 
 const itemVariants = {
   hidden: { y: 20, opacity: 0 },
-  visible: { 
-    y: 0, 
+  visible: {
+    y: 0,
     opacity: 1,
-    transition: { 
+    transition: {
       type: 'spring',
       stiffness: 300,
-      damping: 24
-    }
-  }
+      damping: 24,
+    },
+  },
 };
 
 const fadeIn = {
   hidden: { opacity: 0 },
-  visible: { 
+  visible: {
     opacity: 1,
-    transition: { duration: 0.6 }
-  }
+    transition: { duration: 0.6 },
+  },
 };
 
 const Announcement: React.FC = () => {
@@ -80,7 +74,8 @@ const Announcement: React.FC = () => {
   const [activeTabKey, setActiveTabKey] = useState<string>('all');
 
   // Fetch categories and rules
-  const { data: categoriesData, isLoading: loadingCategories } = useGetBlogCategories();
+  const { data: categoriesData, isLoading: loadingCategories } =
+    useGetBlogCategories();
   const { data: rulesData, isLoading: loadingRules } = useGetAllRules();
 
   const categories = categoriesData?.results || [];
@@ -97,18 +92,20 @@ const Announcement: React.FC = () => {
     if (activeTabKey === 'all') {
       return rules;
     }
-    return rules.filter(rule => rule.blogCategoryId === parseInt(activeTabKey));
+    return rules.filter(
+      (rule) => rule.blogCategoryId === parseInt(activeTabKey)
+    );
   };
 
   // Get category name by id
   const getCategoryName = (categoryId: number) => {
-    const category = categories.find(cat => cat.id === categoryId);
+    const category = categories.find((cat) => cat.id === categoryId);
     return category ? category.name : 'General';
   };
 
   if (loadingCategories || loadingRules) {
     return (
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         style={{ textAlign: 'center', padding: '50px' }}
@@ -126,7 +123,7 @@ const Announcement: React.FC = () => {
   }
 
   return (
-    <motion.div 
+    <motion.div
       className="announcement-container"
       initial="hidden"
       animate="visible"
@@ -138,12 +135,12 @@ const Announcement: React.FC = () => {
         animate={{ y: 0, opacity: 1 }}
         transition={{ type: 'spring', stiffness: 100, damping: 20 }}
       >
-        <Card 
-          style={{ 
-            marginBottom: 24, 
-            background: 'linear-gradient(135deg, #1890ff 0%, #722ed1 100%)', 
+        <Card
+          style={{
+            marginBottom: 24,
+            background: 'linear-gradient(135deg, #1890ff 0%, #722ed1 100%)',
             color: 'white',
-            borderRadius: '8px'
+            borderRadius: '8px',
           }}
           bodyStyle={{ padding: '24px' }}
           bordered={false}
@@ -158,7 +155,7 @@ const Announcement: React.FC = () => {
       </motion.div>
 
       {/* Main Content */}
-      <motion.div 
+      <motion.div
         style={{
           background: '#fff',
           padding: '24px',
@@ -168,34 +165,49 @@ const Announcement: React.FC = () => {
         animate={{ y: 0, opacity: 1 }}
         transition={{ type: 'spring', stiffness: 100, damping: 20, delay: 0.2 }}
       >
-        <Tabs 
+        <Tabs
           activeKey={activeTabKey}
           onChange={setActiveTabKey}
           type="card"
           className="announcement-tabs"
           tabBarExtraContent={
             <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
-              <Badge count={rules.length} style={{ backgroundColor: '#52c41a' }}>
-                <ReadOutlined style={{ fontSize: '20px', marginRight: '8px' }} />
+              <Badge
+                count={rules.length}
+                style={{ backgroundColor: '#52c41a' }}
+              >
+                <ReadOutlined
+                  style={{ fontSize: '20px', marginRight: '8px' }}
+                />
               </Badge>
             </motion.div>
           }
         >
-          <TabPane tab={<span><AppstoreOutlined /> All</span>} key="all">
+          <TabPane
+            tab={
+              <span>
+                <AppstoreOutlined /> All
+              </span>
+            }
+            key="all"
+          >
             {renderAnnouncementCards(getFilteredRules())}
           </TabPane>
-          
-          {categories.map(category => (
-            <TabPane 
+
+          {categories.map((category) => (
+            <TabPane
               tab={
                 <span>
                   {category.name}
-                  <Badge 
-                    count={rules.filter(r => r.blogCategoryId === category.id).length} 
+                  <Badge
+                    count={
+                      rules.filter((r) => r.blogCategoryId === category.id)
+                        .length
+                    }
                     style={{ marginLeft: 8 }}
                   />
                 </span>
-              } 
+              }
               key={category.id.toString()}
             >
               {renderAnnouncementCards(getFilteredRules())}
@@ -209,7 +221,7 @@ const Announcement: React.FC = () => {
         {isModalVisible && (
           <Modal
             title={
-              <motion.div 
+              <motion.div
                 initial={{ x: -20, opacity: 0 }}
                 animate={{ x: 0, opacity: 1 }}
                 style={{ display: 'flex', alignItems: 'center' }}
@@ -218,7 +230,13 @@ const Announcement: React.FC = () => {
                   animate={{ rotate: [0, 20, -20, 0] }}
                   transition={{ duration: 0.6, delay: 0.2 }}
                 >
-                  <BulbOutlined style={{ marginRight: '12px', color: '#1890ff', fontSize: '20px' }} />
+                  <BulbOutlined
+                    style={{
+                      marginRight: '12px',
+                      color: '#1890ff',
+                      fontSize: '20px',
+                    }}
+                  />
                 </motion.span>
                 <span>{viewingContent?.title}</span>
               </motion.div>
@@ -231,21 +249,28 @@ const Announcement: React.FC = () => {
             {viewingContent && (
               <>
                 {/* Category Tag and Info */}
-                <motion.div 
+                <motion.div
                   initial={{ y: 10, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
                   transition={{ delay: 0.1 }}
-                  style={{ marginBottom: 16, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+                  style={{
+                    marginBottom: 16,
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                  }}
                 >
                   <Tag color="blue" style={{ padding: '4px 8px' }}>
                     {getCategoryName(viewingContent.blogCategoryId)}
                   </Tag>
-                  <Text type="secondary">Announcement #{viewingContent.id}</Text>
+                  <Text type="secondary">
+                    Announcement #{viewingContent.id}
+                  </Text>
                 </motion.div>
-                
+
                 {/* Images Section */}
                 {(viewingContent.image1 || viewingContent.image2) && (
-                  <motion.div 
+                  <motion.div
                     initial={{ y: 20, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
                     transition={{ delay: 0.2 }}
@@ -254,30 +279,46 @@ const Announcement: React.FC = () => {
                     <Row gutter={16}>
                       {viewingContent.image1 && (
                         <Col span={viewingContent.image2 ? 12 : 24}>
-                          <motion.div 
+                          <motion.div
                             className="image-container"
                             whileHover={{ scale: 1.02 }}
-                            transition={{ type: 'spring', stiffness: 400, damping: 10 }}
+                            transition={{
+                              type: 'spring',
+                              stiffness: 400,
+                              damping: 10,
+                            }}
                           >
-                            <img 
-                              src={viewingContent.image1} 
+                            <img
+                              src={viewingContent.image1}
                               alt="Image 1"
-                              style={{ width: '100%', borderRadius: 8, boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
+                              style={{
+                                width: '100%',
+                                borderRadius: 8,
+                                boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                              }}
                             />
                           </motion.div>
                         </Col>
                       )}
                       {viewingContent.image2 && (
                         <Col span={viewingContent.image1 ? 12 : 24}>
-                          <motion.div 
+                          <motion.div
                             className="image-container"
                             whileHover={{ scale: 1.02 }}
-                            transition={{ type: 'spring', stiffness: 400, damping: 10 }}
+                            transition={{
+                              type: 'spring',
+                              stiffness: 400,
+                              damping: 10,
+                            }}
                           >
-                            <img 
-                              src={viewingContent.image2} 
+                            <img
+                              src={viewingContent.image2}
                               alt="Image 2"
-                              style={{ width: '100%', borderRadius: 8, boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
+                              style={{
+                                width: '100%',
+                                borderRadius: 8,
+                                boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                              }}
                             />
                           </motion.div>
                         </Col>
@@ -285,7 +326,7 @@ const Announcement: React.FC = () => {
                     </Row>
                   </motion.div>
                 )}
-                
+
                 <motion.div
                   initial={{ y: 20, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
@@ -297,7 +338,7 @@ const Announcement: React.FC = () => {
                     </Text>
                   </Divider>
                 </motion.div>
-                
+
                 {/* Content */}
                 <motion.div
                   initial={{ y: 30, opacity: 0 }}
@@ -453,7 +494,7 @@ const Announcement: React.FC = () => {
   function renderAnnouncementCards(rulesData: Rule[]) {
     if (rulesData.length === 0) {
       return (
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.2 }}
@@ -482,20 +523,26 @@ const Announcement: React.FC = () => {
                 <Card
                   className="announcement-card"
                   hoverable
-                  cover={rule.image1 && (
-                    <div className="card-image-container">
-                      <img 
-                        alt={rule.title} 
-                        src={rule.image1} 
-                        style={{ height: 180, width: '100%', objectFit: 'cover' }}
-                      />
-                    </div>
-                  )}
+                  cover={
+                    rule.image1 && (
+                      <div className="card-image-container">
+                        <img
+                          alt={rule.title}
+                          src={rule.image1}
+                          style={{
+                            height: 180,
+                            width: '100%',
+                            objectFit: 'cover',
+                          }}
+                        />
+                      </div>
+                    )
+                  }
                   onClick={() => handleViewContent(rule)}
                 >
                   <Card.Meta
                     title={
-                      <motion.div 
+                      <motion.div
                         style={{ height: '48px', overflow: 'hidden' }}
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
@@ -506,7 +553,11 @@ const Announcement: React.FC = () => {
                     }
                     description={
                       <>
-                        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}>
+                        <motion.div
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          transition={{ delay: 0.2 }}
+                        >
                           <Tag color="blue">
                             {getCategoryName(rule.blogCategoryId)}
                           </Tag>
@@ -516,14 +567,19 @@ const Announcement: React.FC = () => {
                             </Tag>
                           )}
                         </motion.div>
-                        <motion.div 
+                        <motion.div
                           className="rule-preview"
                           initial={{ opacity: 0, y: 10 }}
                           animate={{ opacity: 1, y: 0 }}
                           transition={{ delay: 0.3 }}
                         >
-                          {(rule.content?.replace(/<[^>]+>/g, '') || '').substring(0, 100)}
-                          {(rule.content?.replace(/<[^>]+>/g, '') || '').length > 100 ? '...' : ''}
+                          {(
+                            rule.content?.replace(/<[^>]+>/g, '') || ''
+                          ).substring(0, 100)}
+                          {(rule.content?.replace(/<[^>]+>/g, '') || '')
+                            .length > 100
+                            ? '...'
+                            : ''}
                         </motion.div>
                       </>
                     }

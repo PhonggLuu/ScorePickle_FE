@@ -23,7 +23,7 @@ import {
   useGetAllUsers,
 } from '@src/modules/User/hooks/useGetAllUser';
 import { useUpdateUser } from '@src/modules/User/hooks/useUpdateUser';
-import { RoleFactory, User } from '@src/modules/User/models';
+import { User } from '@src/modules/User/models';
 import { Pie } from '@ant-design/plots';
 
 const { Title } = Typography;

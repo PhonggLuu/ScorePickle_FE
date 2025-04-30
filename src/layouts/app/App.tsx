@@ -19,8 +19,6 @@ import {
   MenuFoldOutlined,
   MenuUnfoldOutlined,
   MessageOutlined,
-  QuestionOutlined,
-  SettingOutlined,
   UserOutlined,
   MoonOutlined,
   SunOutlined,

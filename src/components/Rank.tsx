@@ -242,7 +242,7 @@ const Rank: React.FC<RankProps> = ({ tournamentId }) => {
             const order = [1, 0, 2];
             return order[indexA] - order[indexB];
           })
-          .map((player: ExtendedRankPlayer, index: number) => {
+          .map((player: ExtendedRankPlayer) => {
             const actualIndex = topThreePlayers.indexOf(player);
             const rank = actualIndex + 1;
             const isChampion = rank === 1;
@@ -250,7 +250,6 @@ const Rank: React.FC<RankProps> = ({ tournamentId }) => {
 
             const showPrize = hasPrizeData(player);
             const showPercent = hasPercentData(player);
-            const shouldAdjustLayout = showPrize || showPercent;
 
             return (
               <Col
@@ -511,7 +510,7 @@ const Rank: React.FC<RankProps> = ({ tournamentId }) => {
           rowKey="userId"
           pagination={false}
           style={{ marginTop: 16 }}
-          rowClassName={(record: RankPlayer, index) => {
+          rowClassName={(_, index) => {
             if (index < 3) {
               return `rank-${index + 1}-row`;
             }

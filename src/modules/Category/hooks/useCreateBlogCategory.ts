@@ -1,6 +1,5 @@
 import { useMutation } from '@tanstack/react-query';
 import api from '@src/api/api';
-import { message } from 'antd';
 import { BlogCategory } from '../models';
 
 interface CreateBlogCategoryPayload {

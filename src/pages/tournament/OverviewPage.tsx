@@ -373,7 +373,7 @@ export const OverviewPage = () => {
       title: 'Status / Prize',
       key: 'statusPrize',
       render: (_, record) => {
-        const { color, statusColor } = getStatusBadge(record.status);
+        const { statusColor } = getStatusBadge(record.status);
         return (
           <div
             style={{
@@ -468,8 +468,6 @@ export const OverviewPage = () => {
     data?.filter((t) => t.status === 'Ongoing').length || 0;
   const completedTournaments =
     data?.filter((t) => t.status === 'Completed').length || 0;
-  const disabledTournaments =
-    data?.filter((t) => t.status === 'Disable').length || 0;
 
   const singlesMaleTournaments =
     data?.filter(
@@ -516,34 +514,6 @@ export const OverviewPage = () => {
     doublesMaleTournaments + doubleFemaleTournaments + doublesMixTournaments;
 
   // Updated pie chart configuration with smaller size
-  const pieConfig = (data: any[], angleField: string, colorField: string) => ({
-    appendPadding: 5,
-    data,
-    angleField,
-    colorField,
-    radius: 0.85,
-    innerRadius: 0.6,
-    width: 360,
-    height: 360,
-    label: {
-      type: 'inner',
-      offset: '-30%',
-      content: (datum: any) => `${(datum.percent * 100).toFixed(0)}%`,
-      style: {
-        fontSize: 12,
-        textAlign: 'center',
-        fontWeight: 'bold',
-      },
-    },
-    legend: {
-      visible: false,
-    },
-    interactions: [{ type: 'element-active' }],
-    color:
-      colorField === 'type'
-        ? ['#1890ff', '#eb2f96', '#722ed1', '#a0d911', '#13c2c2']
-        : undefined,
-  });
 
   const handleCreateTournament = (tournamentData: TournamentRequest) => {
     createTournament(tournamentData, {

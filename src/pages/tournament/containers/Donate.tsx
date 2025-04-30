@@ -1,47 +1,40 @@
 import React from 'react';
-import { Table, Card, Typography, Spin, Empty, Statistic, Row, Col, Avatar } from 'antd';
+import {
+  Table,
+  Card,
+  Typography,
+  Spin,
+  Empty,
+  Statistic,
+  Row,
+  Col,
+  Avatar,
+} from 'antd';
 import { useGetSponsorsByTournamentId } from '@src/modules/Tournament/hooks/useGetSponsorsByTournamentId';
 import { motion } from 'framer-motion';
 import {
   DollarCircleOutlined,
   TrophyOutlined,
   TeamOutlined,
-  GlobalOutlined
+  GlobalOutlined,
 } from '@ant-design/icons';
 
-const { Title, Text } = Typography;
-
-// Simplified animation variants - reduced intensity
-const fadeIn = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: { duration: 0.3 } // Reduced duration
-  }
-};
-
-const slideUp = {
-  hidden: { y: 10, opacity: 0 }, // Reduced movement
-  visible: {
-    y: 0,
-    opacity: 1,
-    transition: {
-      type: 'spring',
-      stiffness: 100, // Lower stiffness
-      damping: 20
-    }
-  }
-};
+const { Text } = Typography;
 
 interface DonateProps {
   tournamentId: number;
 }
 
 const Donate: React.FC<DonateProps> = ({ tournamentId }) => {
-  const { data: sponsors, isLoading, error } = useGetSponsorsByTournamentId(tournamentId);
+  const {
+    data: sponsors,
+    isLoading,
+    error,
+  } = useGetSponsorsByTournamentId(tournamentId);
 
   // Calculate total donation amount
-  const totalDonations = sponsors?.reduce((sum, sponsor) => sum + sponsor.donate, 0) || 0;
+  const totalDonations =
+    sponsors?.reduce((sum, sponsor) => sum + sponsor.donate, 0) || 0;
 
   const columns = [
     {
@@ -50,9 +43,9 @@ const Donate: React.FC<DonateProps> = ({ tournamentId }) => {
       key: 'name',
       render: (name, record) => (
         <div style={{ display: 'flex', alignItems: 'center' }}>
-          <Avatar 
-            src={record.logo} 
-            size={48} 
+          <Avatar
+            src={record.logo}
+            size={48}
             style={{ marginRight: 12 }}
             shape="square"
           />
@@ -60,7 +53,11 @@ const Donate: React.FC<DonateProps> = ({ tournamentId }) => {
             <Text strong>{name}</Text>
             {record.website && (
               <div>
-                <a href={record.website} target="_blank" rel="noopener noreferrer">
+                <a
+                  href={record.website}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
                   <GlobalOutlined /> Website
                 </a>
               </div>
@@ -79,7 +76,7 @@ const Donate: React.FC<DonateProps> = ({ tournamentId }) => {
           ₫{amount.toLocaleString()}
         </Text>
       ),
-    }
+    },
   ];
 
   if (isLoading) {
@@ -117,7 +114,7 @@ const Donate: React.FC<DonateProps> = ({ tournamentId }) => {
   return (
     <div>
       {/* Donation Summary */}
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.3 }}
@@ -129,7 +126,9 @@ const Donate: React.FC<DonateProps> = ({ tournamentId }) => {
               <Statistic
                 title={
                   <Text strong style={{ fontSize: 16 }}>
-                    <DollarCircleOutlined style={{ marginRight: 8, color: '#1890ff' }} />
+                    <DollarCircleOutlined
+                      style={{ marginRight: 8, color: '#1890ff' }}
+                    />
                     Total Donations
                   </Text>
                 }
@@ -144,7 +143,9 @@ const Donate: React.FC<DonateProps> = ({ tournamentId }) => {
               <Statistic
                 title={
                   <Text strong style={{ fontSize: 16 }}>
-                    <TeamOutlined style={{ marginRight: 8, color: '#722ed1' }} />
+                    <TeamOutlined
+                      style={{ marginRight: 8, color: '#722ed1' }}
+                    />
                     Total Sponsors
                   </Text>
                 }
@@ -156,11 +157,13 @@ const Donate: React.FC<DonateProps> = ({ tournamentId }) => {
               <Statistic
                 title={
                   <Text strong style={{ fontSize: 16 }}>
-                    <TrophyOutlined style={{ marginRight: 8, color: '#52c41a' }} />
+                    <TrophyOutlined
+                      style={{ marginRight: 8, color: '#52c41a' }}
+                    />
                     Top Donation
                   </Text>
                 }
-                value={Math.max(...sponsors.map(s => s.donate))}
+                value={Math.max(...sponsors.map((s) => s.donate))}
                 precision={0}
                 valueStyle={{ color: '#52c41a', fontWeight: 'bold' }}
                 prefix="₫"
@@ -176,7 +179,7 @@ const Donate: React.FC<DonateProps> = ({ tournamentId }) => {
         animate={{ opacity: 1 }}
         transition={{ duration: 0.3 }}
       >
-        <Card 
+        <Card
           title={
             <div style={{ display: 'flex', alignItems: 'center' }}>
               <TeamOutlined style={{ marginRight: 12, color: '#1890ff' }} />
@@ -193,9 +196,13 @@ const Donate: React.FC<DonateProps> = ({ tournamentId }) => {
             summary={() => (
               <Table.Summary fixed>
                 <Table.Summary.Row>
-                  <Table.Summary.Cell index={0}><Text strong>Total</Text></Table.Summary.Cell>
+                  <Table.Summary.Cell index={0}>
+                    <Text strong>Total</Text>
+                  </Table.Summary.Cell>
                   <Table.Summary.Cell index={1}>
-                    <Text strong type="danger">₫{totalDonations.toLocaleString()}</Text>
+                    <Text strong type="danger">
+                      ₫{totalDonations.toLocaleString()}
+                    </Text>
                   </Table.Summary.Cell>
                 </Table.Summary.Row>
               </Table.Summary>
@@ -205,14 +212,16 @@ const Donate: React.FC<DonateProps> = ({ tournamentId }) => {
       </motion.div>
 
       {/* Add simpler styles - removed hover effects */}
-      <style dangerouslySetInnerHTML={{
-        __html: `
+      <style
+        dangerouslySetInnerHTML={{
+          __html: `
         .ant-card {
           box-shadow: 0 1px 4px rgba(0,0,0,0.05);
           border-radius: 8px;
         }
-        `
-      }} />
+        `,
+        }}
+      />
     </div>
   );
 };

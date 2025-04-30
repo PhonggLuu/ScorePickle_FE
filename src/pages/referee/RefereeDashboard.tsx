@@ -261,7 +261,7 @@ export const RefereeDashboard = () => {
       title: 'Status / Prize',
       key: 'statusPrize',
       render: (_, record) => {
-        const { color, statusColor } = getStatusBadge(record.status);
+        const { statusColor } = getStatusBadge(record.status);
         return (
           <div
             style={{

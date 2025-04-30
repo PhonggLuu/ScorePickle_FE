@@ -1,17 +1,28 @@
-import React, { useMemo } from 'react';
-import { Table, Tag, Typography, Spin, Card, Button, Empty, Row, Col, Statistic } from 'antd';
+import { useMemo } from 'react';
+import {
+  Table,
+  Tag,
+  Typography,
+  Spin,
+  Card,
+  Button,
+  Empty,
+  Row,
+  Col,
+  Statistic,
+} from 'antd';
 import { useGetAllBillByUser } from '@src/modules/Tournament/hooks/useGetAllBillByUser';
 import { useSelector } from 'react-redux';
 import { RootState } from '@src/redux/store';
-import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  DollarCircleOutlined, 
+import { motion } from 'framer-motion';
+import {
+  DollarCircleOutlined,
   ReloadOutlined,
   FileSearchOutlined,
   WarningOutlined,
   CheckCircleOutlined,
   ClockCircleOutlined,
-  CloseCircleOutlined
+  CloseCircleOutlined,
 } from '@ant-design/icons';
 
 const { Text, Title } = Typography;
@@ -19,23 +30,23 @@ const { Text, Title } = Typography;
 // Animation variants
 const fadeIn = {
   hidden: { opacity: 0 },
-  visible: { 
+  visible: {
     opacity: 1,
-    transition: { duration: 0.6 }
-  }
+    transition: { duration: 0.6 },
+  },
 };
 
 const slideUp = {
   hidden: { y: 20, opacity: 0 },
-  visible: { 
-    y: 0, 
+  visible: {
+    y: 0,
     opacity: 1,
-    transition: { 
+    transition: {
       type: 'spring',
       stiffness: 300,
-      damping: 24
-    }
-  }
+      damping: 24,
+    },
+  },
 };
 
 const getStatusColor = (status) => {
@@ -85,7 +96,12 @@ const getStatusIcon = (status) => {
 
 const Transaction = () => {
   const userId = useSelector((state: RootState) => state.auth.user?.id);
-  const { data: bills, isLoading, error, refetch } = useGetAllBillByUser(userId || 0);
+  const {
+    data: bills,
+    isLoading,
+    error,
+    refetch,
+  } = useGetAllBillByUser(userId || 0);
 
   // Calculate summary statistics
   const summaryStats = useMemo(() => {
@@ -100,31 +116,36 @@ const Transaction = () => {
       };
     }
 
-    return bills.reduce((acc, bill) => {
-      // Count all transactions
-      acc.transactionCount += 1;
-      
-      // Add to total regardless of status
-      acc.totalAmount += bill.amount || 0;
-      
-      // Count by status
-      if (Number(bill.status) === 1) { // Paid
-        acc.paidAmount += bill.amount || 0;
-        acc.paidCount += 1;
-      } else if (Number(bill.status) === 2) { // Pending
-        acc.pendingAmount += bill.amount || 0;
-        acc.pendingCount += 1;
+    return bills.reduce(
+      (acc, bill) => {
+        // Count all transactions
+        acc.transactionCount += 1;
+
+        // Add to total regardless of status
+        acc.totalAmount += bill.amount || 0;
+
+        // Count by status
+        if (Number(bill.status) === 1) {
+          // Paid
+          acc.paidAmount += bill.amount || 0;
+          acc.paidCount += 1;
+        } else if (Number(bill.status) === 2) {
+          // Pending
+          acc.pendingAmount += bill.amount || 0;
+          acc.pendingCount += 1;
+        }
+
+        return acc;
+      },
+      {
+        totalAmount: 0,
+        paidAmount: 0,
+        pendingAmount: 0,
+        transactionCount: 0,
+        paidCount: 0,
+        pendingCount: 0,
       }
-      
-      return acc;
-    }, {
-      totalAmount: 0,
-      paidAmount: 0,
-      pendingAmount: 0,
-      transactionCount: 0,
-      paidCount: 0,
-      pendingCount: 0
-    });
+    );
   }, [bills]);
 
   const columns = [
@@ -145,11 +166,14 @@ const Transaction = () => {
       title: 'Payment Method',
       dataIndex: 'paymentMethod',
       key: 'paymentMethod',
-      filters: bills ? 
-        [...new Set(bills.map(bill => bill.paymentMethod))].map(method => ({
-          text: method,
-          value: method,
-        })) : [],
+      filters: bills
+        ? [...new Set(bills.map((bill) => bill.paymentMethod))].map(
+            (method) => ({
+              text: method,
+              value: method,
+            })
+          )
+        : [],
       onFilter: (value, record) => record.paymentMethod === value,
     },
     {
@@ -157,7 +181,9 @@ const Transaction = () => {
       dataIndex: 'status',
       key: 'status',
       render: (status) => (
-        <Tag color={getStatusColor(status)} icon={getStatusIcon(status)}>{getStatusText(status)}</Tag>
+        <Tag color={getStatusColor(status)} icon={getStatusIcon(status)}>
+          {getStatusText(status)}
+        </Tag>
       ),
       filters: [
         { text: 'Paid', value: 1 },
@@ -175,7 +201,9 @@ const Transaction = () => {
       sorter: (a, b) => {
         if (!a.paymentDate) return -1;
         if (!b.paymentDate) return 1;
-        return new Date(a.paymentDate).getTime() - new Date(b.paymentDate).getTime();
+        return (
+          new Date(a.paymentDate).getTime() - new Date(b.paymentDate).getTime()
+        );
       },
     },
     {
@@ -188,7 +216,7 @@ const Transaction = () => {
 
   if (isLoading) {
     return (
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         style={{ textAlign: 'center', padding: '50px' }}
@@ -207,33 +235,30 @@ const Transaction = () => {
 
   if (error) {
     return (
-      <motion.div
-        initial="hidden"
-        animate="visible"
-        variants={fadeIn}
-      >
+      <motion.div initial="hidden" animate="visible" variants={fadeIn}>
         <Card>
-          <motion.div 
-            style={{ textAlign: 'center' }}
-            variants={slideUp}
-          >
+          <motion.div style={{ textAlign: 'center' }} variants={slideUp}>
             <motion.div
-              animate={{ 
+              animate={{
                 rotate: [0, 5, -5, 0],
-                scale: [1, 1.1, 1]
+                scale: [1, 1.1, 1],
               }}
               transition={{ duration: 0.5, delay: 0.2 }}
             >
-              <WarningOutlined style={{ fontSize: 48, color: '#ff4d4f', marginBottom: 16 }} />
+              <WarningOutlined
+                style={{ fontSize: 48, color: '#ff4d4f', marginBottom: 16 }}
+              />
             </motion.div>
-            <Text type="danger" style={{ fontSize: 18 }}>Error loading transactions</Text>
-            <motion.div 
+            <Text type="danger" style={{ fontSize: 18 }}>
+              Error loading transactions
+            </Text>
+            <motion.div
               style={{ marginTop: 16 }}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
-              <Button 
-                icon={<ReloadOutlined />} 
+              <Button
+                icon={<ReloadOutlined />}
                 onClick={() => refetch()}
                 type="primary"
               >
@@ -249,7 +274,7 @@ const Transaction = () => {
   const hasTransactions = bills && bills.length > 0;
 
   return (
-    <motion.div 
+    <motion.div
       style={{
         maxWidth: '1400px',
         margin: '40px auto',
@@ -261,11 +286,7 @@ const Transaction = () => {
     >
       {/* Transaction Summary */}
       {hasTransactions && (
-        <motion.div 
-          variants={slideUp}
-          custom={0}
-          style={{ marginBottom: 24 }}
-        >
+        <motion.div variants={slideUp} custom={0} style={{ marginBottom: 24 }}>
           <Card bordered={false}>
             <Row gutter={[24, 24]}>
               <Col xs={24} md={8}>
@@ -276,7 +297,9 @@ const Transaction = () => {
                   <Statistic
                     title={
                       <Text strong style={{ fontSize: 16 }}>
-                        <DollarCircleOutlined style={{ marginRight: 8, color: '#1890ff' }} /> 
+                        <DollarCircleOutlined
+                          style={{ marginRight: 8, color: '#1890ff' }}
+                        />
                         Total Amount
                       </Text>
                     }
@@ -285,12 +308,14 @@ const Transaction = () => {
                     valueStyle={{ color: '#1890ff', fontWeight: 'bold' }}
                     prefix="₫"
                     suffix={
-                      <motion.span 
+                      <motion.span
                         initial={{ opacity: 0, scale: 0 }}
                         animate={{ opacity: 1, scale: 1 }}
                         transition={{ delay: 0.5 }}
                       >
-                        <Tag color="blue">{summaryStats.transactionCount} transactions</Tag>
+                        <Tag color="blue">
+                          {summaryStats.transactionCount} transactions
+                        </Tag>
                       </motion.span>
                     }
                   />
@@ -304,7 +329,9 @@ const Transaction = () => {
                   <Statistic
                     title={
                       <Text strong style={{ fontSize: 16 }}>
-                        <CheckCircleOutlined style={{ marginRight: 8, color: '#52c41a' }} /> 
+                        <CheckCircleOutlined
+                          style={{ marginRight: 8, color: '#52c41a' }}
+                        />
                         Paid Amount
                       </Text>
                     }
@@ -313,7 +340,7 @@ const Transaction = () => {
                     valueStyle={{ color: '#52c41a' }}
                     prefix="₫"
                     suffix={
-                      <motion.span 
+                      <motion.span
                         initial={{ opacity: 0, scale: 0 }}
                         animate={{ opacity: 1, scale: 1 }}
                         transition={{ delay: 0.6 }}
@@ -332,7 +359,9 @@ const Transaction = () => {
                   <Statistic
                     title={
                       <Text strong style={{ fontSize: 16 }}>
-                        <ClockCircleOutlined style={{ marginRight: 8, color: '#fa8c16' }} /> 
+                        <ClockCircleOutlined
+                          style={{ marginRight: 8, color: '#fa8c16' }}
+                        />
                         Pending Amount
                       </Text>
                     }
@@ -341,12 +370,14 @@ const Transaction = () => {
                     valueStyle={{ color: '#fa8c16' }}
                     prefix="₫"
                     suffix={
-                      <motion.span 
+                      <motion.span
                         initial={{ opacity: 0, scale: 0 }}
                         animate={{ opacity: 1, scale: 1 }}
                         transition={{ delay: 0.7 }}
                       >
-                        <Tag color="orange">{summaryStats.pendingCount} pending</Tag>
+                        <Tag color="orange">
+                          {summaryStats.pendingCount} pending
+                        </Tag>
                       </motion.span>
                     }
                   />
@@ -359,28 +390,24 @@ const Transaction = () => {
 
       {/* Transaction History */}
       <motion.div variants={slideUp} custom={1}>
-        <Card 
+        <Card
           title={
-            <motion.div 
+            <motion.div
               initial={{ x: -20, opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
               transition={{ type: 'spring', stiffness: 100 }}
               style={{ display: 'flex', alignItems: 'center' }}
             >
-              <DollarCircleOutlined style={{ marginRight: 12, color: '#1890ff' }} /> 
+              <DollarCircleOutlined
+                style={{ marginRight: 12, color: '#1890ff' }}
+              />
               Transaction History
             </motion.div>
-          } 
+          }
           bordered={false}
           extra={
-            <motion.div
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <Button 
-                icon={<ReloadOutlined />}
-                onClick={() => refetch()}
-              >
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+              <Button icon={<ReloadOutlined />} onClick={() => refetch()}>
                 Refresh
               </Button>
             </motion.div>
@@ -399,14 +426,18 @@ const Transaction = () => {
                 pagination={{
                   pageSize: 10,
                   showSizeChanger: true,
-                  pageSizeOptions: ['10', '20', '50']
+                  pageSizeOptions: ['10', '20', '50'],
                 }}
                 summary={() => (
                   <Table.Summary fixed>
                     <Table.Summary.Row>
-                      <Table.Summary.Cell index={0} colSpan={1}><strong>Total</strong></Table.Summary.Cell>
+                      <Table.Summary.Cell index={0} colSpan={1}>
+                        <strong>Total</strong>
+                      </Table.Summary.Cell>
                       <Table.Summary.Cell index={1} colSpan={1}>
-                        <Text type="danger" strong>₫{summaryStats.totalAmount.toLocaleString()}</Text>
+                        <Text type="danger" strong>
+                          ₫{summaryStats.totalAmount.toLocaleString()}
+                        </Text>
                       </Table.Summary.Cell>
                       <Table.Summary.Cell index={2} colSpan={4} />
                     </Table.Summary.Row>
@@ -415,7 +446,7 @@ const Transaction = () => {
                 bordered
                 scroll={{ x: 'max-content' }}
                 locale={{ emptyText: 'No transactions found' }}
-                rowClassName={(record, index) => `table-row-motion row-${index}`}
+                rowClassName={(_, index) => `table-row-motion row-${index}`}
                 className="transaction-table"
               />
             </motion.div>
@@ -423,14 +454,14 @@ const Transaction = () => {
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
-              transition={{ 
+              transition={{
                 type: 'spring',
                 stiffness: 100,
-                delay: 0.2 
+                delay: 0.2,
               }}
-              style={{ 
+              style={{
                 padding: '40px 20px',
-                textAlign: 'center' 
+                textAlign: 'center',
               }}
             >
               <Empty
@@ -442,9 +473,12 @@ const Transaction = () => {
                     animate={{ opacity: 1 }}
                     transition={{ delay: 0.4 }}
                   >
-                    <Title level={4} style={{ marginBottom: 16 }}>No Transaction History</Title>
+                    <Title level={4} style={{ marginBottom: 16 }}>
+                      No Transaction History
+                    </Title>
                     <Text type="secondary" style={{ fontSize: 16 }}>
-                      You don't have any transactions yet. Your payment history will appear here once you make a purchase.
+                      You don't have any transactions yet. Your payment history
+                      will appear here once you make a purchase.
                     </Text>
                   </motion.div>
                 }
@@ -464,7 +498,9 @@ const Transaction = () => {
         </Card>
       </motion.div>
 
-      <style dangerouslySetInnerHTML={{ __html: `
+      <style
+        dangerouslySetInnerHTML={{
+          __html: `
         .transaction-table .ant-table-row {
           transition: background-color 0.3s ease, transform 0.2s ease;
         }
@@ -522,7 +558,9 @@ const Transaction = () => {
         .ant-card {
           box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
-      `}} />
+      `,
+        }}
+      />
     </motion.div>
   );
 };
