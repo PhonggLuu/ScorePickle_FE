@@ -27,6 +27,8 @@ import {
   EnvironmentOutlined,
   CheckCircleOutlined,
   ClockCircleOutlined,
+  LineChartOutlined,
+  RiseOutlined,
 } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
 import { useGetTournamentsBySponsorId } from '@src/modules/Tournament/hooks/useGetTournamentsBySponsorId';
@@ -34,6 +36,7 @@ import { useGetVenueBySponserId } from '@src/modules/Venues/hooks/useGetVenueByS
 import { useGetRefereeBySponsorId } from '@src/modules/Referee/hooks/useGetRefereeBySponsorId';
 import { useGetAllBillBySponnerId } from '@src/modules/Payment/hooks/useGetAllBillBySponnerId';
 import { User } from '@src/modules/User/models';
+import RuleOfAwardTable from '@src/components/RuleOfAwardTable';
 
 const { TabPane } = Tabs;
 const { Title, Text } = Typography;
@@ -43,7 +46,7 @@ interface SponsorDashboardProps {
 }
 
 const SponsorDashboard: React.FC<SponsorDashboardProps> = ({ user }) => {
-  const [activeTab, setActiveTab] = useState('ongoing');
+  const [activeTab, setActiveTab] = useState('all');
   const { data: sponsorTournaments = [], isLoading: isLoadingTournaments } =
     useGetTournamentsBySponsorId(user?.id || 0);
   const { data: sponsorVenues = [], isLoading: isLoadingVenues } =
@@ -59,24 +62,36 @@ const SponsorDashboard: React.FC<SponsorDashboardProps> = ({ user }) => {
         upcoming: 0,
         ongoing: 0,
         completed: 0,
+        scheduled: 0,
+        pending: 0,
+        disabled: 0,
         totalPlayers: 0,
         totalPrizeMoney: 0,
       };
     }
 
     const currentDate = new Date();
-    const upcoming = sponsorTournaments.filter(
-      (tournament) =>
-        new Date(tournament.startDate) > currentDate &&
-        tournament.status !== 'Completed' &&
-        tournament.status !== 'Disable'
-    ).length;
     const ongoing = sponsorTournaments.filter(
       (tournament) => tournament.status === 'Ongoing'
     ).length;
     const completed = sponsorTournaments.filter(
       (tournament) => tournament.status === 'Completed'
     ).length;
+    const scheduled = sponsorTournaments.filter(
+      (tournament) => tournament.status === 'Scheduled'
+    ).length;
+    const pending = sponsorTournaments.filter(
+      (tournament) => tournament.status === 'Pending'
+    ).length;
+    const disabled = sponsorTournaments.filter(
+      (tournament) => tournament.status === 'Disable'
+    ).length;
+    const upcoming = sponsorTournaments.filter(
+      (tournament) =>
+        ['Scheduled', 'Pending'].includes(tournament.status) &&
+        new Date(tournament.startDate) > currentDate
+    ).length;
+
     const totalPlayers = sponsorTournaments.reduce(
       (sum, tournament) => sum + (tournament.registrationDetails?.length || 0),
       0
@@ -92,6 +107,9 @@ const SponsorDashboard: React.FC<SponsorDashboardProps> = ({ user }) => {
       upcoming,
       ongoing,
       completed,
+      scheduled,
+      pending,
+      disabled,
       totalPlayers,
       totalPrizeMoney,
     };
@@ -261,7 +279,7 @@ const SponsorDashboard: React.FC<SponsorDashboardProps> = ({ user }) => {
                   New Tournament
                 </Button>
               </Link>
-              <Link to="/payment">
+              <Link to="/sponsor/payment">
                 <Button type="default" ghost>
                   Financial Report
                 </Button>
@@ -489,7 +507,7 @@ const SponsorDashboard: React.FC<SponsorDashboardProps> = ({ user }) => {
                   justifyContent: 'space-between',
                 }}
               >
-                <Link to="/tournament/vennues">
+                <Link to="/tournament/venues">
                   <Button
                     type="primary"
                     icon={<PlusOutlined />}
@@ -531,6 +549,7 @@ const SponsorDashboard: React.FC<SponsorDashboardProps> = ({ user }) => {
               style={{ marginBottom: 16 }}
               type="card"
             >
+              <TabPane tab="All" key="all" />
               <TabPane
                 tab={
                   <span>
@@ -555,7 +574,30 @@ const SponsorDashboard: React.FC<SponsorDashboardProps> = ({ user }) => {
                 }
                 key="completed"
               />
-              <TabPane tab="All" key="all" />
+              <TabPane
+                tab={
+                  <span>
+                    <RiseOutlined /> Scheduled ({statistics.scheduled})
+                  </span>
+                }
+                key="scheduled"
+              />
+              <TabPane
+                tab={
+                  <span>
+                    <LineChartOutlined /> Pending ({statistics.pending})
+                  </span>
+                }
+                key="pending"
+              />
+              <TabPane
+                tab={
+                  <span>
+                    <LineChartOutlined /> Disabled ({statistics.disabled})
+                  </span>
+                }
+                key="disabled"
+              />
             </Tabs>
 
             {isLoadingTournaments ? (
@@ -581,6 +623,13 @@ const SponsorDashboard: React.FC<SponsorDashboardProps> = ({ user }) => {
           </Card>
         </Col>
       </Row>
+      <div
+        style={{
+          margin: '20px',
+        }}
+      >
+        <RuleOfAwardTable />
+      </div>
     </div>
   );
 };

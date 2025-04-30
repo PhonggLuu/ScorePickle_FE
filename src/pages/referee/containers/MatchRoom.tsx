@@ -4,7 +4,6 @@ import {
   FilterOutlined,
   LockFilled,
   MailFilled,
-  PlusOutlined,
   ReloadOutlined,
   SearchOutlined,
   TeamOutlined,
@@ -19,32 +18,30 @@ import {
   Col,
   Empty,
   Input,
+  Progress,
   Row,
   Select,
   Space,
   Statistic,
   Table,
+  Tabs,
   Tag,
   Tooltip,
   Typography,
-  Tabs,
-  Progress,
 } from 'antd';
 import type { ColumnsType, ColumnType } from 'antd/es/table';
+import Title from 'antd/es/typography/Title';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { IMatch, MatchStatus } from '@src/modules/Match/models';
-import { useGetMatchByTournamentId } from '@src/modules/Match/hooks/useGetMatchByTournamentId';
+import { IMatch } from '@src/modules/Match/models';
+import { useGetMatchByRefereeId } from '@src/modules/Referee/hooks/useGetMatchByRefereeId';
 import { Match, Member } from '@src/modules/Tournament/models';
+import { useGetAllReferees } from '@src/modules/User/hooks/useGetAllReferee';
 import { fetchUserById } from '@src/modules/User/hooks/useGetUserById';
 import { User } from '@src/modules/User/models';
-import { useGetAllReferees } from '@src/modules/User/hooks/useGetAllReferee';
-import { useGetVenueBySponserId } from '@src/modules/Venues/hooks/useGetVenueBySponserId';
+import { useGetVenueAll } from '@src/modules/Venues/hooks/useGetAllVenue';
 import { RootState } from '@src/redux/store';
-import AddMatchModal from './AddMatchModal';
-import UpdateMatchModal from './UpdateMatchModal';
-import MatchScoreModal from './MatchScoreModal';
-import Title from 'antd/es/typography/Title';
+import MatchScoreModal from '../../tournament/containers/MatchScoreModal';
 
 const { Text } = Typography;
 const { Option } = Select;
@@ -64,18 +61,18 @@ const MatchRoom = ({ id }: MatchRoomProps) => {
     isLoading: isLoadingMatches,
     error: errorMatches,
     refetch,
-  } = useGetMatchByTournamentId(Number(id));
-  const { data: venues } = useGetVenueBySponserId(user?.id || 0);
+  } = useGetMatchByRefereeId(user?.id ?? 0);
+
   const { data: referees } = useGetAllReferees();
+  const { data: venues } = useGetVenueAll();
   const [userDetails, setUserDetails] = useState<any[]>([]);
   const [filteredDetails, setFilteredDetails] = useState<Match[]>([]);
   const [filterStatus, setFilterStatus] = useState<string>('All');
   const [, setSearchText] = useState<string>('');
   const [searchedColumn, setSearchedColumn] = useState<string>('');
   const searchInput = useRef<InputRef>(null);
-  const [isModalVisible, setIsModalVisible] = useState(false);
-  const [isUpdateModalVisible, setIsUpdateModalVisible] = useState(false);
-  const [selectedMatch, setSelectedMatch] = useState<IMatch | null>(null);
+  const [, setIsUpdateModalVisible] = useState(false);
+  const [, setSelectedMatch] = useState<IMatch | null>(null);
   const [isScoreModalVisible, setIsScoreModalVisible] =
     useState<boolean>(false);
   const [selectedMatchForScores, setSelectedMatchForScores] =
@@ -94,14 +91,9 @@ const MatchRoom = ({ id }: MatchRoomProps) => {
 
     return {
       totalMatches: matchData.length,
-      scheduled: matchData.filter(
-        (match) => match.status === MatchStatus.Scheduled
-      ).length,
-      ongoing: matchData.filter((match) => match.status === MatchStatus.Ongoing)
-        .length,
-      completed: matchData.filter(
-        (match) => match.status === MatchStatus.Completed
-      ).length,
+      scheduled: matchData.filter((match) => match.status === 1).length,
+      ongoing: matchData.filter((match) => match.status === 2).length,
+      completed: matchData.filter((match) => match.status === 3).length,
     };
   }, [matchData]);
 
@@ -166,9 +158,9 @@ const MatchRoom = ({ id }: MatchRoomProps) => {
       case 1:
         return 'blue';
       case 2:
-        return 'green';
-      case 3:
         return 'orange';
+      case 3:
+        return 'green';
       default:
         return 'red';
     }
@@ -183,7 +175,7 @@ const MatchRoom = ({ id }: MatchRoomProps) => {
       case 3:
         return 'Completed';
       default:
-        return 'Disabled';
+        return 'Cancelled';
     }
   };
 
@@ -192,9 +184,9 @@ const MatchRoom = ({ id }: MatchRoomProps) => {
       case 1:
         return <CalendarOutlined />;
       case 2:
-        return <TrophyOutlined />;
-      case 3:
         return <TeamOutlined />;
+      case 3:
+        return <TrophyOutlined />;
       default:
         return null;
     }
@@ -318,6 +310,16 @@ const MatchRoom = ({ id }: MatchRoomProps) => {
         new Date(a.matchDate).getTime() - new Date(b.matchDate).getTime(),
       sortDirections: ['ascend', 'descend'],
       defaultSortOrder: 'ascend',
+      onHeaderCell: () => ({
+        style: {
+          backgroundColor: '#fff',
+        },
+      }),
+      onCell: () => ({
+        style: {
+          backgroundColor: '#fff',
+        },
+      }),
     },
     {
       title: 'Status',
@@ -327,7 +329,6 @@ const MatchRoom = ({ id }: MatchRoomProps) => {
         const color = getResultTagColor(status);
         const text = getStatusText(status);
         const icon = getStatusIcon(status);
-
         return (
           <Tag color={color} icon={icon}>
             {text}
@@ -336,8 +337,8 @@ const MatchRoom = ({ id }: MatchRoomProps) => {
       },
       filters: [
         { text: 'Scheduled', value: 1 },
-        { text: 'Completed', value: 2 },
-        { text: 'Ongoing', value: 3 },
+        { text: 'Completed', value: 3 },
+        { text: 'Ongoing', value: 2 },
       ],
       onFilter: (value, record) => record.status === value,
     },
@@ -348,6 +349,7 @@ const MatchRoom = ({ id }: MatchRoomProps) => {
       render: (venueId: number, record: Match) => {
         const venue = getVenueById(venueId);
         const referee = getRefereeById(record?.refereeId || 0);
+
         return venue ? (
           <Card
             hoverable
@@ -401,7 +403,7 @@ const MatchRoom = ({ id }: MatchRoomProps) => {
     {
       title: 'Teams',
       key: 'team',
-      render: (record: Match) => {
+      render: (text: any, record: Match) => {
         const team1 = record.teamResponse?.[0];
         const team2 = record?.teamResponse?.[1];
 
@@ -548,7 +550,7 @@ const MatchRoom = ({ id }: MatchRoomProps) => {
     {
       title: 'Actions',
       key: 'actions',
-      render: (record: any) => (
+      render: (text: any, record: any) => (
         <Space>
           <Button
             type="primary"
@@ -590,7 +592,9 @@ const MatchRoom = ({ id }: MatchRoomProps) => {
       <div style={{ textAlign: 'center', padding: '50px 0' }}>
         <Space direction="vertical" size="large" align="center">
           <Progress type="circle" status="exception" percent={100} />
-          <Text type="danger">{(errorMatches as Error).message}</Text>
+          <Text type="danger">
+            Error loading matches: {(errorMatches as Error).message}
+          </Text>
           <Button type="primary" onClick={() => refetch()}>
             Try Again
           </Button>
@@ -600,322 +604,271 @@ const MatchRoom = ({ id }: MatchRoomProps) => {
   }
 
   return (
-    <>
-      <style>
-        {`
-            .ant-table-thead > tr > th,
-            .ant-table-tbody > tr > td {
-            background-color: transparent !important;
-            }
-        `}
-      </style>
-      <div className="match-room-container">
-        {/* Statistics Cards */}
-        <Row gutter={16} style={{ marginBottom: 24 }}>
-          <Col span={6}>
-            <Card
-              bordered={false}
-              style={{
-                boxShadow: '0 2px 8px rgba(0,0,0,0.09)',
-                borderRadius: 8,
-              }}
-            >
-              <Statistic
-                title={<Text strong>Total Matches</Text>}
-                value={statistics.totalMatches}
-                valueStyle={{ color: '#1890ff' }}
-                prefix={<TeamOutlined />}
+    <div className="match-room-container">
+      {/* Statistics Cards */}
+      <Row gutter={16} style={{ marginBottom: 24 }}>
+        <Col span={6}>
+          <Card
+            bordered={false}
+            style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.09)', borderRadius: 8 }}
+          >
+            <Statistic
+              title={<Text strong>Total Matches</Text>}
+              value={statistics.totalMatches}
+              valueStyle={{ color: '#1890ff' }}
+              prefix={<TeamOutlined />}
+            />
+          </Card>
+        </Col>
+        <Col span={6}>
+          <Card
+            bordered={false}
+            style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.09)', borderRadius: 8 }}
+          >
+            <Statistic
+              title={<Text strong>Scheduled</Text>}
+              value={statistics.scheduled}
+              valueStyle={{ color: '#52c41a' }}
+              prefix={<CalendarOutlined />}
+              suffix={
+                <Text
+                  type="secondary"
+                  style={{ fontSize: '14px' }}
+                >{`(${Math.round(
+                  (statistics.scheduled / statistics.totalMatches || 0) * 100
+                )}%)`}</Text>
+              }
+            />
+          </Card>
+        </Col>
+        <Col span={6}>
+          <Card
+            bordered={false}
+            style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.09)', borderRadius: 8 }}
+          >
+            <Statistic
+              title={<Text strong>Ongoing</Text>}
+              value={statistics.ongoing}
+              valueStyle={{ color: '#faad14' }}
+              prefix={<TeamOutlined />}
+              suffix={
+                <Text
+                  type="secondary"
+                  style={{ fontSize: '14px' }}
+                >{`(${Math.round(
+                  (statistics.ongoing / statistics.totalMatches || 0) * 100
+                )}%)`}</Text>
+              }
+            />
+          </Card>
+        </Col>
+        <Col span={6}>
+          <Card
+            bordered={false}
+            style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.09)', borderRadius: 8 }}
+          >
+            <Statistic
+              title={<Text strong>Completed</Text>}
+              value={statistics.completed}
+              valueStyle={{ color: '#eb2f96' }}
+              prefix={<TrophyOutlined />}
+              suffix={
+                <Text
+                  type="secondary"
+                  style={{ fontSize: '14px' }}
+                >{`(${Math.round(
+                  (statistics.completed / statistics.totalMatches || 0) * 100
+                )}%)`}</Text>
+              }
+            />
+          </Card>
+        </Col>
+      </Row>
+
+      {/* Match Management Header */}
+      <Card
+        title={
+          <Title level={4} style={{ margin: 0 }}>
+            Match Management
+          </Title>
+        }
+        style={{ marginBottom: 24, boxShadow: '0 2px 8px rgba(0,0,0,0.09)' }}
+      >
+        <Row gutter={[16, 16]} align="middle">
+          <Col xs={24} md={8}>
+            <Input.Group compact>
+              <Select
+                defaultValue="All"
+                style={{ width: '40%' }}
+                onChange={(value) => setFilterStatus(value)}
+              >
+                <Option value="All">All Matches</Option>
+                <Option value="1">
+                  <CalendarOutlined /> Scheduled
+                </Option>
+                <Option value="2">
+                  <TeamOutlined /> Ongoing
+                </Option>
+                <Option value="3">
+                  <TrophyOutlined /> Completed
+                </Option>
+              </Select>
+              <Input.Search
+                placeholder="Search match title"
+                style={{ width: '60%' }}
+                onSearch={handleSearchByTitle}
+                allowClear
               />
-            </Card>
+            </Input.Group>
           </Col>
-          <Col span={6}>
-            <Card
-              bordered={false}
-              style={{
-                boxShadow: '0 2px 8px rgba(0,0,0,0.09)',
-                borderRadius: 8,
-              }}
-            >
-              <Statistic
-                title={<Text strong>Scheduled</Text>}
-                value={statistics.scheduled}
-                valueStyle={{ color: '#52c41a' }}
-                prefix={<CalendarOutlined />}
-                suffix={
-                  <Text
-                    type="secondary"
-                    style={{ fontSize: '14px' }}
-                  >{`(${Math.round(
-                    (statistics.scheduled / statistics.totalMatches || 0) * 100
-                  )}%)`}</Text>
-                }
-              />
-            </Card>
+          <Col xs={24} md={8}>
+            <div style={{ textAlign: 'center' }}>
+              <Badge
+                count={filteredDetails.length}
+                style={{ backgroundColor: '#52c41a' }}
+              >
+                <Text strong style={{ fontSize: 16 }}>
+                  {filterStatus === 'All'
+                    ? 'All Matches'
+                    : filterStatus === '1'
+                      ? 'Scheduled Matches'
+                      : filterStatus === '2'
+                        ? 'Completed Matches'
+                        : 'Ongoing Matches'}
+                </Text>
+              </Badge>
+            </div>
           </Col>
-          <Col span={6}>
-            <Card
-              bordered={false}
-              style={{
-                boxShadow: '0 2px 8px rgba(0,0,0,0.09)',
-                borderRadius: 8,
-              }}
-            >
-              <Statistic
-                title={<Text strong>Ongoing</Text>}
-                value={statistics.ongoing}
-                valueStyle={{ color: '#faad14' }}
-                prefix={<TeamOutlined />}
-                suffix={
-                  <Text
-                    type="secondary"
-                    style={{ fontSize: '14px' }}
-                  >{`(${Math.round(
-                    (statistics.ongoing / statistics.totalMatches || 0) * 100
-                  )}%)`}</Text>
-                }
-              />
-            </Card>
-          </Col>
-          <Col span={6}>
-            <Card
-              bordered={false}
-              style={{
-                boxShadow: '0 2px 8px rgba(0,0,0,0.09)',
-                borderRadius: 8,
-              }}
-            >
-              <Statistic
-                title={<Text strong>Completed</Text>}
-                value={statistics.completed}
-                valueStyle={{ color: '#eb2f96' }}
-                prefix={<TrophyOutlined />}
-                suffix={
-                  <Text
-                    type="secondary"
-                    style={{ fontSize: '14px' }}
-                  >{`(${Math.round(
-                    (statistics.completed / statistics.totalMatches || 0) * 100
-                  )}%)`}</Text>
-                }
-              />
-            </Card>
+          <Col xs={24} md={8}>
+            <div style={{ textAlign: 'right' }}>
+              <Button
+                type="default"
+                icon={<ReloadOutlined />}
+                onClick={() => refetch()}
+              >
+                Refresh Data
+              </Button>
+            </div>
           </Col>
         </Row>
+      </Card>
 
-        {/* Match Management Header */}
-        <Card
-          title={
-            <Title level={4} style={{ margin: 0 }}>
-              Match Management
-            </Title>
+      {/* Tab View for Different Status */}
+      <Tabs
+        defaultActiveKey="all"
+        onChange={(key) => setFilterStatus(key === 'all' ? 'All' : key)}
+        type="card"
+        style={{ marginBottom: 16 }}
+      >
+        <TabPane
+          tab={
+            <span>
+              <FilterOutlined /> All Matches
+            </span>
           }
-          extra={
-            <Button
-              type="primary"
-              icon={<PlusOutlined />}
-              onClick={() => setIsModalVisible(true)}
-              size="large"
-            >
-              Add Match
-            </Button>
-          }
-          style={{ marginBottom: 24, boxShadow: '0 2px 8px rgba(0,0,0,0.09)' }}
-        >
-          <Row gutter={[16, 16]} align="middle">
-            <Col xs={24} md={8}>
-              <Input.Group compact>
-                <Select
-                  defaultValue="All"
-                  style={{ width: '40%' }}
-                  onChange={(value) => setFilterStatus(value)}
-                >
-                  <Option value="All">All Matches</Option>
-                  <Option value="1">
-                    <CalendarOutlined /> Scheduled
-                  </Option>
-                  <Option value="2">
-                    <TeamOutlined /> Ongoing
-                  </Option>
-                  <Option value="3">
-                    <TrophyOutlined /> Completed
-                  </Option>
-                </Select>
-                <Input.Search
-                  placeholder="Search match title"
-                  style={{ width: '60%' }}
-                  onSearch={handleSearchByTitle}
-                  allowClear
-                />
-              </Input.Group>
-            </Col>
-            <Col xs={24} md={8}>
-              <div style={{ textAlign: 'center' }}>
-                <Badge
-                  count={filteredDetails.length}
-                  style={{ backgroundColor: '#52c41a' }}
-                >
-                  <Text strong style={{ fontSize: 16 }}>
-                    {filterStatus === 'All'
-                      ? 'All Matches'
-                      : filterStatus === '1'
-                        ? 'Scheduled Matches'
-                        : filterStatus === '2'
-                          ? 'Ongoing Matches'
-                          : 'Completed Matches'}
-                  </Text>
-                </Badge>
-              </div>
-            </Col>
-            <Col xs={24} md={8}>
-              <div style={{ textAlign: 'right' }}>
-                <Button
-                  type="default"
-                  icon={<ReloadOutlined />}
-                  onClick={() => refetch()}
-                >
-                  Refresh Data
-                </Button>
-              </div>
-            </Col>
-          </Row>
-        </Card>
-
-        {/* Tab View for Different Status */}
-        <Tabs
-          defaultActiveKey="all"
-          onChange={(key) => setFilterStatus(key === 'all' ? 'All' : key)}
-          type="card"
-          style={{ marginBottom: 16 }}
-        >
-          <TabPane
-            tab={
-              <span>
-                <FilterOutlined /> All Matches
-              </span>
-            }
-            key="all"
-          />
-          <TabPane
-            tab={
-              <span>
-                <CalendarOutlined /> Scheduled ({statistics.scheduled})
-              </span>
-            }
-            key="1"
-          />
-          <TabPane
-            tab={
-              <span>
-                <TeamOutlined /> Ongoing ({statistics.ongoing})
-              </span>
-            }
-            key="2"
-          />
-          <TabPane
-            tab={
-              <span>
-                <TrophyOutlined /> Completed ({statistics.completed})
-              </span>
-            }
-            key="3"
-          />
-        </Tabs>
-
-        {/* Matches Table */}
-        <Table
-          columns={columns}
-          dataSource={filteredDetails || []}
-          rowKey="id"
-          bordered
-          pagination={{
-            showTotal: (total) => `Total ${total} matches`,
-            showQuickJumper: true,
-            showSizeChanger: true,
-          }}
-          style={{
-            backgroundColor: '#ffffff',
-            borderRadius: 8,
-            overflow: 'hidden',
-            boxShadow: '0 2px 8px rgba(0,0,0,0.09)',
-          }}
-          expandable={{
-            expandedRowRender: (record) => (
-              <div style={{ padding: '20px' }}>
-                <Row gutter={24}>
-                  <Col span={12}>
-                    <Card title="Match Details" bordered={false}>
-                      <p>
-                        <strong>Match ID:</strong> {record.id}
-                      </p>
-                      <p>
-                        <strong>Title:</strong> {record.title}
-                      </p>
-                      <p>
-                        <strong>Date:</strong>{' '}
-                        {new Date(record.matchDate).toLocaleString()}
-                      </p>
-                      <p>
-                        <strong>Status:</strong> {getStatusText(record.status)}
-                      </p>
-                    </Card>
-                  </Col>
-                  <Col span={12}>
-                    <Card title="Additional Information" bordered={false}>
-                      <p>
-                        <strong>Created:</strong>{' '}
-                        {record.createdDate
-                          ? new Date(record.createdDate).toLocaleString()
-                          : 'N/A'}
-                      </p>
-                      <p>
-                        <strong>Last Updated:</strong>{' '}
-                        {record.updatedDate
-                          ? new Date(record.updatedDate).toLocaleString()
-                          : 'N/A'}
-                      </p>
-                      <p>
-                        <strong>Notes:</strong>{' '}
-                        {record.note || 'No notes available'}
-                      </p>
-                    </Card>
-                  </Col>
-                </Row>
-              </div>
-            ),
-          }}
+          key="all"
         />
+        <TabPane
+          tab={
+            <span>
+              <CalendarOutlined /> Scheduled ({statistics.scheduled})
+            </span>
+          }
+          key="1"
+        />
+        <TabPane
+          tab={
+            <span>
+              <TeamOutlined /> Ongoing ({statistics.ongoing})
+            </span>
+          }
+          key="2"
+        />
+        <TabPane
+          tab={
+            <span>
+              <TrophyOutlined /> Completed ({statistics.completed})
+            </span>
+          }
+          key="3"
+        />
+      </Tabs>
 
-        {/* Add/Update Match Modals */}
-        <AddMatchModal
-          tournamentId={id}
-          visible={isModalVisible}
-          onClose={() => setIsModalVisible(false)}
+      {/* Matches Table */}
+      <Table
+        columns={columns}
+        dataSource={filteredDetails || []}
+        rowKey="id"
+        bordered
+        pagination={{
+          showTotal: (total) => `Total ${total} matches`,
+          showQuickJumper: true,
+          showSizeChanger: true,
+        }}
+        style={{
+          backgroundColor: '#ffffff',
+          borderRadius: 8,
+          overflow: 'hidden',
+          boxShadow: '0 2px 8px rgba(0,0,0,0.09)',
+        }}
+        expandable={{
+          expandedRowRender: (record) => (
+            <div style={{ padding: '20px' }}>
+              <Row gutter={24}>
+                <Col span={12}>
+                  <Card title="Match Details" bordered={false}>
+                    <p>
+                      <strong>Match ID:</strong> {record.id}
+                    </p>
+                    <p>
+                      <strong>Title:</strong> {record.title}
+                    </p>
+                    <p>
+                      <strong>Date:</strong>{' '}
+                      {new Date(record.matchDate).toLocaleString()}
+                    </p>
+                    <p>
+                      <strong>Status:</strong> {getStatusText(record.status)}
+                    </p>
+                  </Card>
+                </Col>
+                <Col span={12}>
+                  <Card title="Additional Information" bordered={false}>
+                    <p>
+                      <strong>Created:</strong>{' '}
+                      {record.createdDate
+                        ? new Date(record.createdDate).toLocaleString()
+                        : 'N/A'}
+                    </p>
+                    <p>
+                      <strong>Last Updated:</strong>{' '}
+                      {record.updatedDate
+                        ? new Date(record.updatedDate).toLocaleString()
+                        : 'N/A'}
+                    </p>
+                    <p>
+                      <strong>Notes:</strong>{' '}
+                      {record.note || 'No notes available'}
+                    </p>
+                  </Card>
+                </Col>
+              </Row>
+            </div>
+          ),
+        }}
+      />
+      {selectedMatchForScores && (
+        <MatchScoreModal
+          visible={isScoreModalVisible}
+          onClose={() => {
+            setIsScoreModalVisible(false);
+            setSelectedMatchForScores(null);
+          }}
+          match={selectedMatchForScores}
           refetch={refetch}
         />
-        {selectedMatch && (
-          <UpdateMatchModal
-            visible={isUpdateModalVisible}
-            onClose={() => {
-              setIsUpdateModalVisible(false);
-              setSelectedMatch(null);
-            }}
-            match={selectedMatch}
-            refetch={refetch}
-          />
-        )}
-        {selectedMatchForScores && (
-          <MatchScoreModal
-            visible={isScoreModalVisible}
-            onClose={() => {
-              setIsScoreModalVisible(false);
-              setSelectedMatchForScores(null);
-            }}
-            match={selectedMatchForScores}
-            refetch={refetch}
-          />
-        )}
-      </div>
-    </>
+      )}
+    </div>
   );
 };
 

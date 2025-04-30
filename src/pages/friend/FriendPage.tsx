@@ -16,11 +16,11 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import {
   LoadingOutlined,
   SearchOutlined,
-  UserAddOutlined,
   TeamOutlined,
   TrophyOutlined,
   ManOutlined,
   WomanOutlined,
+  UserDeleteOutlined,
 } from '@ant-design/icons';
 import '../../pages/playerPage/player-page.css';
 import { useSelector } from 'react-redux';
@@ -117,7 +117,7 @@ const PlayerCard = ({
                   <Button
                     className="add-friend-btn-white"
                     onClick={onAddFriendClick}
-                    icon={<UserAddOutlined />}
+                    icon={<UserDeleteOutlined />}
                     shape="circle"
                     title="Add Friend"
                   />

@@ -15,7 +15,6 @@ import {
   Divider,
   Form,
   Input,
-  InputRef,
   message,
   Modal,
   Row,
@@ -25,115 +24,33 @@ import {
   Tag,
   Typography,
 } from 'antd';
-import type { ColumnsType, ColumnType } from 'antd/es/table';
-import React, { useRef, useState } from 'react';
+import type { ColumnsType } from 'antd/es/table';
+import React, { useState } from 'react';
 
 import { useQueryClient } from '@tanstack/react-query';
+import { useRegisterReferees } from '@src/modules/User/hooks/useRegisterReferee';
 import { RegisterUserRequest } from '@src/modules/User/models';
 
 import { useSelector } from 'react-redux';
 import { useUpdateReferee } from '@src/modules/Referee/hooks/useUpdateRefee';
 import { RootState } from '@src/redux/store';
-import { useGetAllReferees } from '@src/modules/User/hooks/useGetAllReferee';
-import { useRegisterReferees } from '@src/modules/User/hooks/useRegisterReferee';
+import { useGetRefereeBySponsorId } from '@src/modules/User/hooks/useGetAllReferee';
 
 const { Text, Title } = Typography;
 const { Option } = Select;
-type DataIndex = string;
 
-export const RefereesAdminPage: React.FC = () => {
+const RefereesPage: React.FC = () => {
   const queryClient = useQueryClient();
   const user = useSelector((state: RootState) => state.auth.user);
-  const { data: referees, isLoading, error } = useGetAllReferees();
-  const [, setSearchText] = useState<string>('');
-  const [searchedColumn, setSearchedColumn] = useState<string>('');
-  const searchInput = useRef<InputRef>(null);
+  const {
+    data: referees,
+    isLoading,
+    error,
+  } = useGetRefereeBySponsorId(user?.id.toString() || '');
   const { mutate: registerUser } = useRegisterReferees();
   const { mutate: updateReferee } = useUpdateReferee();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [form] = Form.useForm();
-
-  const handleSearch = (
-    selectedKeys: string[],
-    confirm: () => void,
-    dataIndex: DataIndex
-  ) => {
-    confirm();
-    setSearchText(selectedKeys[0]);
-    setSearchedColumn(dataIndex);
-  };
-
-  const handleReset = (clearFilters?: () => void) => {
-    if (clearFilters) {
-      clearFilters();
-    }
-    setSearchText('');
-  };
-
-  const getColumnSearchProps = (dataIndex: DataIndex): ColumnType<any> => ({
-    filterDropdown: ({
-      setSelectedKeys,
-      selectedKeys,
-      confirm,
-      clearFilters,
-    }) => (
-      <div style={{ padding: 8 }}>
-        <Input
-          ref={searchInput}
-          placeholder={`Search ${dataIndex}`}
-          value={selectedKeys[0]}
-          onChange={(e) =>
-            setSelectedKeys(e.target.value ? [e.target.value] : [])
-          }
-          onPressEnter={() =>
-            handleSearch(selectedKeys as string[], confirm, dataIndex)
-          }
-          style={{ marginBottom: 8, display: 'block' }}
-        />
-        <Space>
-          <Button
-            type="primary"
-            onClick={() =>
-              handleSearch(selectedKeys as string[], confirm, dataIndex)
-            }
-            icon={<SearchOutlined />}
-            size="small"
-            style={{ width: 90 }}
-          >
-            Search
-          </Button>
-          <Button
-            onClick={() => handleReset(clearFilters)}
-            size="small"
-            style={{ width: 90 }}
-          >
-            Reset
-          </Button>
-        </Space>
-      </div>
-    ),
-    filterIcon: (filtered: boolean) => (
-      <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />
-    ),
-    onFilter: (value, record) =>
-      record[dataIndex]
-        ? record[dataIndex]
-            .toString()
-            .toLowerCase()
-            .includes((value as string).toLowerCase())
-        : '',
-    onFilterDropdownVisibleChange: (visible) => {
-      if (visible) {
-        setTimeout(() => searchInput.current?.select(), 100);
-      }
-    },
-    render: (text) =>
-      searchedColumn === dataIndex ? (
-        <span style={{ backgroundColor: '#ffc069', padding: 0 }}>{text}</span>
-      ) : (
-        text
-      ),
-  });
 
   const columns: ColumnsType<any> = [
     {
@@ -622,4 +539,4 @@ export const RefereesAdminPage: React.FC = () => {
   );
 };
 
-export default RefereesAdminPage;
+export default RefereesPage;

@@ -308,6 +308,7 @@ export const PATH_PLAYER_PAGE = {
 
 export const PATH_REFEREE = {
   root: ROOTS_REFEREE,
+  dashboard: path(ROOTS_REFEREE, '/dashboard'),
 };
 
 export const PATH_MATCH_PAGE = {

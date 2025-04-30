@@ -30,11 +30,5 @@ export function useCreateBlogCategory() {
     CreateBlogCategoryPayload
   >({
     mutationFn: createBlogCategory,
-    onSuccess: (data) => {
-      message.success(data.message);
-    },
-    onError: () => {
-      message.error('Failed to create blog category');
-    },
   });
 }

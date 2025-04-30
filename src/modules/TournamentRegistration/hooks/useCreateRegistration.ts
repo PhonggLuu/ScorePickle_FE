@@ -13,6 +13,7 @@ export const createRegistration = async (
     '/PlayerRegistration/CreateRegistration',
     registration
   );
+  message.info(response.message);
   return response.data as CreateTournamentRegistrationResponse;
 };
 
@@ -28,10 +29,9 @@ export function useCreateRegistration() {
       const registeredAt = new Date(data.registeredAt);
       if (registeredAt.getMinutes() < new Date().getMinutes() - 3)
         message.success('You have already registered for this tournament');
-      else message.success('Registration created successfully');
     },
     onError: () => {
-      message.error('Failed to create registration');
+      message.info('Tournament is fullly registered');
     },
   });
 }

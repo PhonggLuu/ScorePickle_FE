@@ -1,7 +1,7 @@
 import { useMutation } from '@tanstack/react-query';
 import { useDispatch } from 'react-redux';
 import Api from '../../../api/api';
-import { LoginRequest, LoginResponse, User } from '../models';
+import { LoginRequest, LoginResponse, RoleFactory, User } from '../models';
 import { isAuth, setUser } from '../../../redux/authentication/authSlide';
 import {
   getLocalStorageItem,
@@ -9,7 +9,7 @@ import {
 } from '@src/utils/localStorageUtils';
 import { useNavigate } from 'react-router-dom';
 import { PATH_LANDING } from '@src/constants';
-import { PATH_DASHBOARD, PATH_SPONSOR_PAYMENT } from '@src/constants/routes';
+import { PATH_DASHBOARD } from '@src/constants/routes';
 
 // integration with redux for login user
 const login = async (request: LoginRequest): Promise<LoginResponse> => {
@@ -30,9 +30,14 @@ export function useLogin() {
       getUser().then((user) => {
         dispatch(setUser(user));
         dispatch(isAuth());
-        if (user.roleId === 1) navigate(PATH_LANDING.root);
-        else if (user.roleId === 2) navigate(PATH_DASHBOARD.default);
-        else navigate(PATH_SPONSOR_PAYMENT.root);
+        if (user.roleId === RoleFactory.Player) navigate(PATH_LANDING.root);
+        else if (user.roleId === RoleFactory.Admin)
+          navigate(PATH_DASHBOARD.default);
+        else if (user.roleId === RoleFactory.Refree)
+          navigate(PATH_DASHBOARD.default);
+        else if (user.roleId === RoleFactory.Sponsor)
+          navigate(PATH_DASHBOARD.default);
+        else navigate(PATH_LANDING.root);
       });
     },
     onError: (error) => {

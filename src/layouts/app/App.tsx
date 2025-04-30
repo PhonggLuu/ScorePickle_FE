@@ -67,16 +67,6 @@ export const AppLayout = ({ children }: AppLayoutProps) => {
       icon: <UserOutlined />,
     },
     {
-      key: 'user-settings-link',
-      label: 'settings',
-      icon: <SettingOutlined />,
-    },
-    {
-      key: 'user-help-link',
-      label: 'help center',
-      icon: <QuestionOutlined />,
-    },
-    {
       type: 'divider',
     },
     {

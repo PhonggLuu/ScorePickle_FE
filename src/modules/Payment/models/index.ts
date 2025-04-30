@@ -6,7 +6,7 @@ export interface Bill {
   id: number;
   tournamentId: number;
   amount: number;
-  status: string;
+  status: PaymentStatus;
   createdDate: string;
   paymentDate?: string;
   transactionId?: string;
@@ -30,4 +30,28 @@ export interface VnPayResponse {
   amount: number;
   bankCode: string;
   note: string;
+}
+
+export interface TournamentPayment {
+  id: number;
+  userId: number;
+  tournamentId: number;
+  amount: number;
+  note: string;
+  paymentMethod: string;
+  status: PaymentStatus;
+  type: TypePayment;
+  paymentDate: string; // ISO 8601 date string, ví dụ "2025-04-30T01:39:32.9083351"
+}
+
+export enum TypePayment {
+  Donate = 1,
+  Fee = 2,
+  Award = 3,
+}
+
+export enum PaymentStatus {
+  Pending,
+  Completed,
+  Failed,
 }

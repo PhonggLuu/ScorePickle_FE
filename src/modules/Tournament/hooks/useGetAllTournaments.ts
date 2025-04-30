@@ -4,38 +4,38 @@ import { Tournament } from '../models';
 import api from '@src//api/api';
 import { Pagination } from '@src/modules/Pagination/models';
 
-const fetchTournaments = async (
-  PageNumber?: number,
-  PageSize?: number
-): Promise<Pagination<Tournament>> => {
-  try {
-    const response = await api.getByQueryParams('/Tourament/GetAllTournament', {
-      PageNumber,
-      PageSize,
-    });
-    const pagination: Pagination<Tournament> = {
-      data: response.data as Tournament[],
-      currentPage: PageNumber ?? 1,
-      pageSize: PageSize ?? 10,
-      totalItems: response.totalItems ?? 0,
-      totalPages: response.totalPages ?? 0,
-    };
-    return pagination as Pagination<Tournament>;
-  } catch (error) {
-    throw new Error('Error fetching tournaments');
-  }
-};
+// const fetchTournaments = async (
+//   PageNumber?: number,
+//   PageSize?: number
+// ): Promise<Pagination<Tournament>> => {
+//   try {
+//     const response = await api.getByQueryParams('/Tourament/GetAllTournament', {
+//       PageNumber,
+//       PageSize,
+//     });
+//     const pagination: Pagination<Tournament> = {
+//       data: response.data as Tournament[],
+//       currentPage: PageNumber ?? 1,
+//       pageSize: PageSize ?? 10,
+//       totalItems: response.totalItems ?? 0,
+//       totalPages: response.totalPages ?? 0,
+//     };
+//     return pagination as Pagination<Tournament>;
+//   } catch (error) {
+//     throw new Error('Error fetching tournaments');
+//   }
+// };
 
-export function useGetAllTournaments(
-  PageNumber: number = 1,
-  PageSize: number = 10
-) {
-  return useQuery<Pagination<Tournament>>({
-    queryKey: [GET_ALL_TOURNAMENTS, PageNumber, PageSize],
-    queryFn: () => fetchTournaments(PageNumber, PageSize),
-    refetchInterval: 3000,
-  });
-}
+// export function useGetAllTournaments(
+//   PageNumber: number = 1,
+//   PageSize: number = 10
+// ) {
+//   return useQuery<Pagination<Tournament>>({
+//     queryKey: [GET_ALL_TOURNAMENTS, PageNumber, PageSize],
+//     queryFn: () => fetchTournaments(PageNumber, PageSize),
+//     refetchInterval: 3000,
+//   });
+// }
 
 const fetchTournamentsByCreateAt = async (
   PageNumber?: number,
@@ -136,6 +136,23 @@ export function useGetTournaments() {
   return useQuery<Tournament[]>({
     queryKey: [GET_ALL_TOURNAMENTS],
     queryFn: fetchAllTournament,
+    refetchInterval: 3000,
+  });
+}
+
+const fetchTournaments = async (): Promise<Tournament[]> => {
+  try {
+    const response = await api.get('/Tourament/GetAllTournament');
+    return response.data as Tournament[];
+  } catch (error) {
+    throw new Error('Error fetching tournaments');
+  }
+};
+
+export function useGetAllTournaments() {
+  return useQuery<Tournament[]>({
+    queryKey: [GET_ALL_TOURNAMENTS],
+    queryFn: fetchTournaments,
     refetchInterval: 3000,
   });
 }

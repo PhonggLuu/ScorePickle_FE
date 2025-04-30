@@ -6,7 +6,7 @@ import PlayersTable from './containers/PlayerRegistration';
 import TournamentInfoForm from './containers/TournamentInfoForm';
 import Policy from './containers/Policy';
 import BillTab from './containers/BillTab';
-import Donate from './containers/Donate';
+import Rank from '@src/components/Rank';
 
 const { TabPane } = Tabs;
 
@@ -16,6 +16,11 @@ export const TournamentDetail = () => {
     Number(id || 0)
   );
   const navigate = useNavigate();
+
+  const handleSave = (values: any) => {
+    console.log('Saved values:', values);
+    // Implement save logic here, e.g., send a request to the server
+  };
 
   if (isLoading) {
     return <Spin size="large" />;
@@ -29,10 +34,6 @@ export const TournamentDetail = () => {
     return <div>No tournament data found</div>;
   }
 
-  const handleSave = (values: any) => {
-    console.log('Saved values:', values);
-  };
-
   return (
     <div>
       <Button
@@ -43,7 +44,7 @@ export const TournamentDetail = () => {
         Back
       </Button>
       <Tabs defaultActiveKey="1">
-        <TabPane tab="Matches" key="1">
+        <TabPane tab="Room" key="1">
           <MatchRoom id={data.id} />
         </TabPane>
         <TabPane tab="Players" key="2">
@@ -64,6 +65,9 @@ export const TournamentDetail = () => {
         </TabPane>
         <TabPane tab="Bill" key="6">
           <BillTab id={data.id} />
+        </TabPane>
+        <TabPane tab="Rank" key="7">
+          <Rank tournamentId={data.id} />
         </TabPane>
       </Tabs>
     </div>

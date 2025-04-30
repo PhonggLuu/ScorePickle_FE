@@ -7,9 +7,9 @@ export interface IMatch {
   description: string;
   matchDate: string;
   venueId: number;
-  status: number;
-  matchCategory: number;
-  matchFormat: number;
+  status: MatchStatus;
+  matchCategory: MatchCategory;
+  matchFormat: MatchFormat;
   winScore: number;
   isPublic: boolean;
   refereeId: number;
@@ -24,9 +24,9 @@ export interface Match {
   description: string;
   matchDate: string;
   venueId: number | null;
-  status: number;
-  matchCategory: number;
-  matchFormat: number;
+  status: MatchStatus;
+  matchCategory: MatchCategory;
+  matchFormat: MatchFormat;
   winScore: number;
   isPublic: boolean;
   refereeId: number | null;
@@ -54,9 +54,9 @@ export interface MatchRequest {
   description: string;
   matchDate: string;
   venueId?: number | null;
-  status: number;
-  matchCategory: number;
-  matchFormat: number | null;
+  status: MatchStatus;
+  matchCategory: MatchCategory;
+  matchFormat: MatchFormat | null;
   winScore: number;
   isPublic: boolean;
   roomOnwer: number;

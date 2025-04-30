@@ -71,27 +71,27 @@ const PaymentReturn: React.FC = () =>
     function getErrorMessage(responseCode) {
       switch (responseCode) {
         case '09':
-          return 'Thẻ/Tài khoản của khách hàng chưa đăng ký dịch vụ InternetBanking tại ngân hàng.';
+          return "The customer's card/account is not registered for Internet Banking service at the bank.";
         case '10':
-          return 'Khách hàng xác thực thông tin thẻ/tài khoản không đúng quá 3 lần';
+          return 'The customer has failed to authenticate the card/account information more than 3 times.';
         case '11':
-          return 'Đã hết hạn chờ thanh toán. Xin quý khách vui lòng thực hiện lại giao dịch.';
+          return 'The payment waiting period has expired. Please perform the transaction again.';
         case '12':
-          return 'Thẻ/Tài khoản của khách hàng bị khóa.';
+          return "The customer's card/account is locked.";
         case '13':
-          return 'Quý khách nhập sai mật khẩu xác thực giao dịch (OTP). Xin quý khách vui lòng thực hiện lại giao dịch.';
+          return 'You have entered the transaction authentication password (OTP) incorrectly. Please perform the transaction again.';
         case '24':
-          return 'Khách hàng hủy giao dịch';
+          return 'The customer canceled the transaction.';
         case '51':
-          return 'Tài khoản của quý khách không đủ số dư để thực hiện giao dịch.';
+          return 'Your account does not have sufficient balance to perform the transaction.';
         case '52':
-          return 'Tài khoản của Quý khách đã vượt quá hạn mức giao dịch trong ngày.';
+          return 'Your account has exceeded the daily transaction limit.';
         case '75':
-          return 'Ngân hàng thanh toán đang bảo trì.';
+          return 'The payment bank is under maintenance.';
         case '79':
-          return 'KH nhập sai mật khẩu thanh toán quá số lần quy định. Xin quý khách vui lòng thực hiện lại giao dịch';
+          return 'The customer has entered the payment password incorrectly more times than allowed. Please perform the transaction again.';
         default:
-          return 'Mã lỗi không xác định.';
+          return 'Unknown error code.';
       }
     }
     return (
@@ -114,7 +114,7 @@ const PaymentReturn: React.FC = () =>
                           style={{ fontSize: '48px', color: '#52c41a' }}
                         />
                         <br />
-                        Thanh toán thành công!
+                        Payment successful!
                       </>
                     );
                   case '07':
@@ -124,7 +124,7 @@ const PaymentReturn: React.FC = () =>
                           style={{ fontSize: '48px', color: 'yellow' }}
                         />
                         <br />
-                        Trừ tiền thành công. Giao dịch bị nghi ngờ.
+                        Deduction successful. Transaction is suspicious.
                       </>
                     );
                   default:
@@ -134,7 +134,7 @@ const PaymentReturn: React.FC = () =>
                           style={{ fontSize: '48px', color: 'red' }}
                         />
                         <br />
-                        Thanh toán không thành công!
+                        Payment failed!
                       </>
                     );
                 }
@@ -150,11 +150,11 @@ const PaymentReturn: React.FC = () =>
             )}
             <div className="text-center mb-4 mt-5">
               <div className="mb-2">
-                <span className="fw-semibold">Số tiền:</span>{' '}
+                <span className="fw-semibold">Amount:</span>{' '}
                 {(vnp_Amount / 100).toLocaleString('vi-VN')}
               </div>
               <div className="mb-2">
-                <span className="fw-semibold">Kênh thanh toán:</span>{' '}
+                <span className="fw-semibold">Payment Card Type:</span>{' '}
                 {vnp_CardType}
               </div>
             </div>
@@ -168,7 +168,7 @@ const PaymentReturn: React.FC = () =>
                 window.location.href = '/my-tournament';
               }}
             >
-              Quay về trang chủ
+              Back to registered tournament
             </Button>
           </div>
         </Card>
