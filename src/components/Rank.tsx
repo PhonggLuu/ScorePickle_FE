@@ -1,7 +1,6 @@
 import {
   CrownOutlined,
   DollarOutlined,
-  PercentageOutlined,
   RiseOutlined,
   StarOutlined,
   TrophyOutlined,
@@ -181,7 +180,7 @@ const Rank: React.FC<RankProps> = ({ tournamentId }) => {
           return (
             <Tooltip title="Percentage of total prize pool">
               <Tag color="cyan" style={{ fontSize: '14px' }}>
-                <PercentageOutlined /> {percent}%
+                {percent}%
               </Tag>
             </Tooltip>
           );

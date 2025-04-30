@@ -142,3 +142,14 @@ export interface CheckPasswordRequest {
   userId: number;
   oldPassword: string;
 }
+
+export interface RefereeResponse {
+  refreeId: number;
+  user: User;
+  refreeCode?: string | null;
+  refreeLevel?: string | null;
+  refreeNote?: string | null;
+  createdAt: Date;
+  lastUpdatedAt: Date;
+  isAccept: boolean;
+}

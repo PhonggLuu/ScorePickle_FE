@@ -25,6 +25,7 @@ interface MatchCollapseProps {
 
 export function MatchScore({ matchId }: MatchCollapseProps) {
   const { logs, isLoading, error } = useGetMatchRealTime(matchId);
+  // const { data: endMatchScore } = useGetMatchEndScore(matchId);
 
   // Loading state
   if (isLoading) {
