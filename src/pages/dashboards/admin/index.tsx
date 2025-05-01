@@ -46,6 +46,12 @@ const { Option } = Select;
 
 type DataIndex = string;
 
+const typeColors: Record<number, string> = {
+  [TypePayment.Fee]: '#1890ff', // Registration
+  [TypePayment.Donate]: '#fa8c16', // Sponsorship
+  [TypePayment.Award]: '#722ed1', // Award
+};
+
 // Move these functions outside the component to avoid the "Cannot access before initialization" error
 const getStatusTagColor = (status: number) => {
   switch (status) {
@@ -80,9 +86,11 @@ const getStatusText = (status: number) => {
 const getTypeText = (type: number) => {
   switch (type) {
     case 1:
-      return 'Registration';
-    case 2:
       return 'Sponsorship';
+    case 2:
+      return 'Registration';
+    case 3:
+      return 'Award';
     default:
       return 'Unknown';
   }
@@ -227,7 +235,12 @@ export const PaymentAdmin = () => {
 
     const typeAmounts = bills.reduce(
       (acc, bill) => {
-        const type = Number(bill.type) === 1 ? 'Registration' : 'Sponsorship';
+        const type =
+          Number(bill.type) === 1
+            ? 'Sponsorship'
+            : Number(bill.type) === 2
+              ? 'Registration'
+              : 'Award';
         acc[type] = (acc[type] || 0) + bill.amount;
         return acc;
       },
@@ -253,7 +266,7 @@ export const PaymentAdmin = () => {
         monthIndex: i,
         Registration: 0,
         Sponsorship: 0,
-        Total: 0,
+        Award: 0,
       };
     });
 
@@ -262,13 +275,27 @@ export const PaymentAdmin = () => {
       const paymentDate = bill.paymentDate ? new Date(bill.paymentDate) : null;
       if (paymentDate && paymentDate.getFullYear() === yearFilter) {
         const monthIndex = paymentDate.getMonth();
-        const type = Number(bill.type) === 1 ? 'Registration' : 'Sponsorship';
+        //Number(bill.type) === 1 ? 'Sponsorship' : 'Sponsorship';
+        let type = '';
+        switch (Number(bill.type)) {
+          case 1:
+            type = 'Sponsorship';
+            break;
+          case 2:
+            type = 'Registration';
+            break;
+          case 3:
+            type = 'Award';
+            break;
+          default:
+            type = 'Unknown';
+        }
 
         // Add to the specific type
         months[monthIndex][type] += bill.amount;
 
         // Add to total
-        months[monthIndex].Total += bill.amount;
+        // months[monthIndex].Total += bill.amount;
       }
     });
 
@@ -287,8 +314,8 @@ export const PaymentAdmin = () => {
       });
       chartData.push({
         month: month.month,
-        type: 'Total',
-        amount: month.Total,
+        type: 'Award',
+        amount: month.Award,
       });
     });
 
@@ -535,22 +562,9 @@ export const PaymentAdmin = () => {
       title: 'Type',
       dataIndex: 'type',
       key: 'type',
-      render: (type: number | string) => {
-        const typeNum = Number(type);
-        const typeText = getTypeText(typeNum);
-        return (
-          <Tag
-            color={
-              typeNum === TypePayment.Donate
-                ? 'green'
-                : typeNum === TypePayment.Donate
-                  ? 'purple'
-                  : 'orange'
-            }
-          >
-            {typeText}
-          </Tag>
-        );
+      render: (raw: number | string) => {
+        const t = Number(raw);
+        return <Tag color={typeColors[t] || 'default'}>{getTypeText(t)}</Tag>;
       },
       filters: [
         { text: 'Registration', value: TypePayment.Fee },
@@ -577,7 +591,16 @@ export const PaymentAdmin = () => {
     const config = {
       ...pieConfig,
       data: paymentTypeData,
-      color: ['#52c41a', '#722ed1'],
+      color: (datum: any, defaultColor?: string) => {
+        // map the chart’s “type” string back to your numeric enum
+        const key =
+          datum.type === 'Registration'
+            ? TypePayment.Fee
+            : datum.type === 'Sponsorship'
+              ? TypePayment.Donate
+              : TypePayment.Award;
+        return typeColors[key] || defaultColor || '#000';
+      },
       radius: 0.7,
       innerRadius: 0.6,
       label: {
@@ -655,7 +678,15 @@ export const PaymentAdmin = () => {
       columnStyle: {
         radius: [40, 40, 0, 0],
       },
-      color: ['#52c41a', '#722ed1', '#1890ff'],
+      color: (datum: any, defaultColor?: string) => {
+        const key =
+          datum.type === 'Registration'
+            ? TypePayment.Fee
+            : datum.type === 'Sponsorship'
+              ? TypePayment.Donate
+              : TypePayment.Award;
+        return typeColors[key] || defaultColor || '#000';
+      },
       label: {
         position: 'top' as const,
         style: { fill: 'black', opacity: 0.6 },
@@ -816,7 +847,7 @@ export const PaymentAdmin = () => {
                   Sponsorship
                 </Text>
               }
-              value={statistics.sponsorCount}
+              value={statistics.totalSponsor}
               precision={0}
               valueStyle={{ color: '#faad14', fontSize: '24px' }}
               prefix={<GiftOutlined />}
@@ -984,7 +1015,7 @@ export const PaymentAdmin = () => {
                   <span>Registration Fee</span>
                   <Badge
                     count={statistics.feeCount}
-                    style={{ backgroundColor: '#52c41a' }}
+                    style={{ backgroundColor: typeColors[TypePayment.Fee] }}
                   />
                 </Space>
               </Tooltip>
@@ -998,7 +1029,7 @@ export const PaymentAdmin = () => {
                   <span>Sponsorships</span>
                   <Badge
                     count={statistics.sponsorCount}
-                    style={{ backgroundColor: '#faad14' }}
+                    style={{ backgroundColor: typeColors[TypePayment.Donate] }}
                   />
                 </Space>
               </Tooltip>
@@ -1012,7 +1043,7 @@ export const PaymentAdmin = () => {
                   <span>Awards</span>
                   <Badge
                     count={statistics.awardCount}
-                    style={{ backgroundColor: '#52c41a' }}
+                    style={{ backgroundColor: typeColors[TypePayment.Award] }}
                   />
                 </Space>
               </Tooltip>
