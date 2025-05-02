@@ -19,7 +19,6 @@ import {
 } from 'antd';
 import {
   CalendarOutlined,
-  TeamOutlined,
   TrophyOutlined,
   DollarOutlined,
   InfoCircleOutlined,

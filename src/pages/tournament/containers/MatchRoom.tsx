@@ -4,7 +4,6 @@ import {
   FilterOutlined,
   LockFilled,
   MailFilled,
-  PlusOutlined,
   ReloadOutlined,
   SearchOutlined,
   TeamOutlined,
@@ -13,7 +12,6 @@ import {
 import type { InputRef } from 'antd';
 import {
   Avatar,
-  Badge,
   Button,
   Card,
   Col,
@@ -545,6 +543,33 @@ const MatchRoom = ({ id }: MatchRoomProps) => {
           </div>
         );
       },
+    },
+    {
+      title: 'Actions',
+      key: 'actions',
+      render: (record: any) => (
+        <Space>
+          <Button
+            type="primary"
+            icon={<EditOutlined />}
+            onClick={() => {
+              setSelectedMatch(record);
+              setIsUpdateModalVisible(true);
+            }}
+          >
+            Update
+          </Button>
+          <Button
+            icon={<ReloadOutlined />}
+            onClick={() => {
+              setSelectedMatchForScores(record);
+              setIsScoreModalVisible(true);
+            }}
+          >
+            Scores
+          </Button>
+        </Space>
+      ),
     },
   ];
 
