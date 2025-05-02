@@ -18,7 +18,6 @@ import {
   Empty,
   Input,
   Row,
-  Select,
   Space,
   Statistic,
   Table,
@@ -30,7 +29,6 @@ import {
 } from 'antd';
 import type { ColumnsType, ColumnType } from 'antd/es/table';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { useSelector } from 'react-redux';
 import { IMatch, MatchStatus } from '@src/modules/Match/models';
 import { useGetMatchByTournamentId } from '@src/modules/Match/hooks/useGetMatchByTournamentId';
 import { Match, Member } from '@src/modules/Tournament/models';
@@ -38,14 +36,12 @@ import { fetchUserById } from '@src/modules/User/hooks/useGetUserById';
 import { User } from '@src/modules/User/models';
 import { useGetAllReferees } from '@src/modules/User/hooks/useGetAllReferee';
 import { useGetVenueAll } from '@src/modules/Venues/hooks/useGetAllVenue';
-import { RootState } from '@src/redux/store';
 import AddMatchModal from './AddMatchModal';
 import UpdateMatchModal from './UpdateMatchModal';
 import MatchScoreModal from './MatchScoreModal';
 import Title from 'antd/es/typography/Title';
 
 const { Text } = Typography;
-const { Option } = Select;
 const { Meta } = Card;
 const { TabPane } = Tabs;
 
@@ -56,7 +52,6 @@ type MatchRoomProps = {
 };
 
 const MatchRoom = ({ id }: MatchRoomProps) => {
-  const user = useSelector((state: RootState) => state.auth.user);
   const {
     data: matchData,
     isLoading: isLoadingMatches,
@@ -213,20 +208,6 @@ const MatchRoom = ({ id }: MatchRoomProps) => {
       clearFilters();
     }
     setSearchText('');
-  };
-
-  const handleSearchByTitle = (value: string) => {
-    if (!value) {
-      setFilteredDetails(matchData || []);
-      return;
-    }
-
-    const filteredMatches =
-      matchData?.filter((match) =>
-        match.title.toLowerCase().includes(value.toLowerCase())
-      ) || [];
-
-    setFilteredDetails(filteredMatches);
   };
 
   const getColumnSearchProps = (dataIndex: DataIndex): ColumnType<any> => ({
