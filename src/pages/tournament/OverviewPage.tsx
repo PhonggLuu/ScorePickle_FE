@@ -44,9 +44,15 @@ enum TournamentType {
 
 export const OverviewPage = () => {
   const user = useSelector((state: RootState) => state.auth.user);
-  const { data, isLoading, refetch } = useGetTournamentsBySponsorId(
-    user?.id ?? 0
-  );
+  const {
+    data: sponsorTournament,
+    isLoading,
+    refetch,
+  } = useGetTournamentsBySponsorId(user?.id ?? 0);
+  const data =
+    sponsorTournament?.filter(
+      (tournament) => tournament.organizerId === user?.id
+    ) ?? [];
   const [, setSearchText] = useState<string>('');
   const [searchedColumn, setSearchedColumn] = useState<string>('');
   const searchInput = useRef<InputRef>(null);

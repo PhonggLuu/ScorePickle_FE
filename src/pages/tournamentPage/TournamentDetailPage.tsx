@@ -635,22 +635,7 @@ export const TournamentDetailPage: React.FC = () => {
                 )}
               </AnimatePresence>
             </TabPane> */}
-            <TabPane tab="Rank" key="rank">
-              <AnimatePresence mode="wait">
-                {activeKey === 'rank' && (
-                  <motion.div
-                    key="rank"
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -20 }}
-                    transition={{ duration: 0.3 }}
-                  >
-                    <Rank tournamentId={tournament.id} />
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </TabPane>
-            <TabPane tab="Donate" key="donate">
+            <TabPane tab="Sponsor" key="donate">
               <AnimatePresence mode="wait">
                 {activeKey === 'donate' && (
                   <motion.div
@@ -665,6 +650,23 @@ export const TournamentDetailPage: React.FC = () => {
                 )}
               </AnimatePresence>
             </TabPane>
+            {tournamentData?.status === 'Completed' && (
+              <TabPane tab="Rank" key="rank">
+                <AnimatePresence mode="wait">
+                  {activeKey === 'rank' && (
+                    <motion.div
+                      key="rank"
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -20 }}
+                      transition={{ duration: 0.3 }}
+                    >
+                      <Rank tournamentId={tournament.id} />
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </TabPane>
+            )}
           </Tabs>
         </motion.div>
       </div>

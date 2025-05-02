@@ -19,7 +19,6 @@ import {
 } from 'antd';
 import {
   CalendarOutlined,
-  TeamOutlined,
   TrophyOutlined,
   DollarOutlined,
   InfoCircleOutlined,
@@ -33,7 +32,7 @@ import {
 import { Link } from 'react-router-dom';
 import { useGetTournamentsBySponsorId } from '@src/modules/Tournament/hooks/useGetTournamentsBySponsorId';
 import { useGetVenueBySponserId } from '@src/modules/Venues/hooks/useGetVenueBySponserId';
-import { useGetRefereeBySponsorId } from '@src/modules/Referee/hooks/useGetRefereeBySponsorId';
+import { useGetRefereeBySponsorId } from '@src/modules/User/hooks/useGetAllReferee';
 import { useGetAllBillBySponnerId } from '@src/modules/Payment/hooks/useGetAllBillBySponnerId';
 import { User } from '@src/modules/User/models';
 import RuleOfAwardTable from '@src/components/RuleOfAwardTable';
@@ -47,8 +46,11 @@ interface SponsorDashboardProps {
 
 const SponsorDashboard: React.FC<SponsorDashboardProps> = ({ user }) => {
   const [activeTab, setActiveTab] = useState('all');
-  const { data: sponsorTournaments = [], isLoading: isLoadingTournaments } =
+  const { data: allSponsorTournaments = [], isLoading: isLoadingTournaments } =
     useGetTournamentsBySponsorId(user?.id || 0);
+  const sponsorTournaments = allSponsorTournaments.filter(
+    (tournament) => tournament.organizerId === user?.id
+  );
   const { data: sponsorVenues = [], isLoading: isLoadingVenues } =
     useGetVenueBySponserId(user?.id || 0);
   const { data: sponsorReferees = [], isLoading: isLoadingReferees } =
@@ -189,11 +191,6 @@ const SponsorDashboard: React.FC<SponsorDashboardProps> = ({ user }) => {
       render: (type: string) => (
         <Tag color={type === 'Singles' ? 'green' : 'blue'}>{type}</Tag>
       ),
-    },
-    {
-      title: 'Players',
-      dataIndex: 'players',
-      key: 'players',
     },
     {
       title: 'Prize',
@@ -354,9 +351,6 @@ const SponsorDashboard: React.FC<SponsorDashboardProps> = ({ user }) => {
                   status="success"
                   text={<Text strong>{statistics.completed} Completed</Text>}
                 />
-                <Text>
-                  <TeamOutlined /> {statistics.totalPlayers} Players
-                </Text>
               </div>
               <Progress
                 percent={Math.min(100, statistics.total * 10)}

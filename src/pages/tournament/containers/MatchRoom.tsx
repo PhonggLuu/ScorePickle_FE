@@ -4,7 +4,6 @@ import {
   FilterOutlined,
   LockFilled,
   MailFilled,
-  PlusOutlined,
   ReloadOutlined,
   SearchOutlined,
   TeamOutlined,
@@ -13,14 +12,12 @@ import {
 import type { InputRef } from 'antd';
 import {
   Avatar,
-  Badge,
   Button,
   Card,
   Col,
   Empty,
   Input,
   Row,
-  Select,
   Space,
   Statistic,
   Table,
@@ -32,22 +29,19 @@ import {
 } from 'antd';
 import type { ColumnsType, ColumnType } from 'antd/es/table';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { useSelector } from 'react-redux';
 import { IMatch, MatchStatus } from '@src/modules/Match/models';
 import { useGetMatchByTournamentId } from '@src/modules/Match/hooks/useGetMatchByTournamentId';
 import { Match, Member } from '@src/modules/Tournament/models';
 import { fetchUserById } from '@src/modules/User/hooks/useGetUserById';
 import { User } from '@src/modules/User/models';
 import { useGetAllReferees } from '@src/modules/User/hooks/useGetAllReferee';
-import { useGetVenueBySponserId } from '@src/modules/Venues/hooks/useGetVenueBySponserId';
-import { RootState } from '@src/redux/store';
+import { useGetVenueAll } from '@src/modules/Venues/hooks/useGetAllVenue';
 import AddMatchModal from './AddMatchModal';
 import UpdateMatchModal from './UpdateMatchModal';
 import MatchScoreModal from './MatchScoreModal';
 import Title from 'antd/es/typography/Title';
 
 const { Text } = Typography;
-const { Option } = Select;
 const { Meta } = Card;
 const { TabPane } = Tabs;
 
@@ -58,15 +52,14 @@ type MatchRoomProps = {
 };
 
 const MatchRoom = ({ id }: MatchRoomProps) => {
-  const user = useSelector((state: RootState) => state.auth.user);
   const {
     data: matchData,
     isLoading: isLoadingMatches,
     error: errorMatches,
     refetch,
   } = useGetMatchByTournamentId(Number(id));
-  const { data: venues } = useGetVenueBySponserId(user?.id || 0);
   const { data: referees } = useGetAllReferees();
+  const { data: venues } = useGetVenueAll();
   const [userDetails, setUserDetails] = useState<any[]>([]);
   const [filteredDetails, setFilteredDetails] = useState<Match[]>([]);
   const [filterStatus, setFilterStatus] = useState<string>('All');
@@ -217,20 +210,6 @@ const MatchRoom = ({ id }: MatchRoomProps) => {
     setSearchText('');
   };
 
-  const handleSearchByTitle = (value: string) => {
-    if (!value) {
-      setFilteredDetails(matchData || []);
-      return;
-    }
-
-    const filteredMatches =
-      matchData?.filter((match) =>
-        match.title.toLowerCase().includes(value.toLowerCase())
-      ) || [];
-
-    setFilteredDetails(filteredMatches);
-  };
-
   const getColumnSearchProps = (dataIndex: DataIndex): ColumnType<any> => ({
     filterDropdown: ({
       setSelectedKeys,
@@ -348,6 +327,7 @@ const MatchRoom = ({ id }: MatchRoomProps) => {
       render: (venueId: number, record: Match) => {
         const venue = getVenueById(venueId);
         const referee = getRefereeById(record?.refereeId || 0);
+
         return venue ? (
           <Card
             hoverable
@@ -702,7 +682,7 @@ const MatchRoom = ({ id }: MatchRoomProps) => {
           </Col>
         </Row>
 
-        {/* Match Management Header */}
+        {/* Match Management Header
         <Card
           title={
             <Title level={4} style={{ margin: 0 }}>
@@ -778,7 +758,7 @@ const MatchRoom = ({ id }: MatchRoomProps) => {
               </div>
             </Col>
           </Row>
-        </Card>
+        </Card> */}
 
         {/* Tab View for Different Status */}
         <Tabs

@@ -31,8 +31,8 @@ import { useGetAllUser } from '@src/modules/User/hooks/useGetAllUser';
 import { useGetAllSponsors } from '@src/modules/Sponsor/hooks/useGetAllSponsor';
 import { useGetAllReferees } from '@src/modules/User/hooks/useGetAllReferee';
 import { useGetAllBill } from '@src/modules/Payment/hooks/useGetAllBill';
-import { useGetAllBlogCategories } from '@src/modules/Category/hooks/useGetBlogCategories';
-import { useGetAllRules } from '@src/modules/Category/hooks/useGetAllRules';
+import { useGetAllBlogCategoriesWithoutPagination } from '@src/modules/Category/hooks/useGetBlogCategories';
+import { useGetAllRulesWithoutPagination } from '@src/modules/Category/hooks/useGetAllRules';
 import { PaymentStatus } from '@src/modules/Payment/models';
 
 const { Title, Text } = Typography;
@@ -51,8 +51,9 @@ const AdminDashboard: React.FC<AdminDashboardProps> = () => {
   const { data: refereesData = [], isLoading: isLoadingReferees } =
     useGetAllReferees();
   const { data: billsData = [] } = useGetAllBill();
-  const { data: blogCategoriesData = [] } = useGetAllBlogCategories();
-  const { data: rulesData = [] } = useGetAllRules();
+  const { data: blogCategoriesData = [] } =
+    useGetAllBlogCategoriesWithoutPagination();
+  const { data: rulesData = [] } = useGetAllRulesWithoutPagination();
 
   // Calculate statistics
   const statistics = useMemo(() => {

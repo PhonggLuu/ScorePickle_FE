@@ -47,6 +47,8 @@ const statusColors = {
   [TouramentregistrationStatus.Rejected]: 'red',
   [TouramentregistrationStatus.Waiting]: 'blue',
   [TouramentregistrationStatus.Eliminated]: 'black',
+  [TouramentregistrationStatus.Request]: '#ffc069',
+  [TouramentregistrationStatus.Winner]: '#52c41a',
 };
 
 const statusLabels = {
@@ -55,6 +57,8 @@ const statusLabels = {
   [TouramentregistrationStatus.Rejected]: 'Rejected',
   [TouramentregistrationStatus.Waiting]: 'Waiting',
   [TouramentregistrationStatus.Eliminated]: 'Eliminated',
+  [TouramentregistrationStatus.Request]: 'Request',
+  [TouramentregistrationStatus.Winner]: 'Winner',
 };
 
 // Vietnamese descriptions for tooltips
@@ -64,6 +68,8 @@ const statusDescriptions = {
   [TouramentregistrationStatus.Rejected]: 'Không đồng ý cho tham gia giải đấu',
   [TouramentregistrationStatus.Waiting]: 'Chờ accept từ partner',
   [TouramentregistrationStatus.Eliminated]: 'Bị loại',
+  [TouramentregistrationStatus.Request]: 'Nhận được lời mời tham gia',
+  [TouramentregistrationStatus.Winner]: 'Người thắng giải đấu',
 };
 
 const PlayersTable = ({
@@ -327,11 +333,12 @@ const PlayersTable = ({
       [TouramentregistrationStatus.Rejected]: 0,
       [TouramentregistrationStatus.Waiting]: 0,
       [TouramentregistrationStatus.Eliminated]: 0,
+      [TouramentregistrationStatus.Request]: 0,
+      [TouramentregistrationStatus.Winner]: 0,
     };
 
     filteredRegistrations.forEach((registration) => {
-      const status: TouramentregistrationStatus =
-        registration.status || TouramentregistrationStatus.Pending;
+      const status: TouramentregistrationStatus = registration.isApproved;
       counts[status] = (counts[status] || 0) + 1;
     });
 
@@ -388,7 +395,7 @@ const PlayersTable = ({
         </Col>
         <Col span={14}>
           <Row gutter={[16, 16]}>
-            <Col span={8}>
+            <Col span={6}>
               <Card
                 title="Total Players"
                 bordered={false}
@@ -400,7 +407,7 @@ const PlayersTable = ({
                 </Text>
               </Card>
             </Col>
-            <Col span={8}>
+            <Col span={6}>
               <Card
                 title="Approved Players"
                 bordered={false}
@@ -417,7 +424,7 @@ const PlayersTable = ({
                 </Text>
               </Card>
             </Col>
-            <Col span={8}>
+            <Col span={6}>
               <Card
                 title="Pending Players"
                 bordered={false}
@@ -434,7 +441,7 @@ const PlayersTable = ({
                 </Text>
               </Card>
             </Col>
-            <Col span={8}>
+            <Col span={6}>
               <Card
                 title="Waiting Players"
                 bordered={false}
@@ -451,7 +458,7 @@ const PlayersTable = ({
                 </Text>
               </Card>
             </Col>
-            <Col span={8}>
+            <Col span={6}>
               <Card
                 title="Rejected Players"
                 bordered={false}
@@ -468,7 +475,7 @@ const PlayersTable = ({
                 </Text>
               </Card>
             </Col>
-            <Col span={8}>
+            <Col span={6}>
               <Card
                 title="Eliminated Players"
                 bordered={false}
@@ -482,6 +489,46 @@ const PlayersTable = ({
                 />
                 <Text style={{ fontSize: 24, marginLeft: 8 }}>
                   {statusCounts[TouramentregistrationStatus.Eliminated]}
+                </Text>
+              </Card>
+            </Col>
+            <Col span={6}>
+              <Card
+                title="Requested Players"
+                bordered={false}
+                headStyle={{
+                  backgroundColor:
+                    statusColors[TouramentregistrationStatus.Request],
+                }}
+              >
+                <StopOutlined
+                  style={{
+                    fontSize: 24,
+                    color: statusColors[TouramentregistrationStatus.Request],
+                  }}
+                />
+                <Text style={{ fontSize: 24, marginLeft: 8 }}>
+                  {statusCounts[TouramentregistrationStatus.Request]}
+                </Text>
+              </Card>
+            </Col>
+            <Col span={6}>
+              <Card
+                title="Winner Players"
+                bordered={false}
+                headStyle={{
+                  backgroundColor:
+                    statusColors[TouramentregistrationStatus.Winner],
+                }}
+              >
+                <StopOutlined
+                  style={{
+                    fontSize: 24,
+                    color: statusColors[TouramentregistrationStatus.Winner],
+                  }}
+                />
+                <Text style={{ fontSize: 24, marginLeft: 8 }}>
+                  {statusCounts[TouramentregistrationStatus.Winner]}
                 </Text>
               </Card>
             </Col>

@@ -416,7 +416,7 @@ export const VenueAdminPage = () => {
                     color="blue"
                     style={{ fontSize: 14, padding: '4px 8px' }}
                   >
-                    <TeamOutlined /> {capacity} players
+                    {capacity} court(s)
                   </Tag>
                 ),
               },

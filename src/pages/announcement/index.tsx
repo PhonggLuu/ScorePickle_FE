@@ -146,7 +146,7 @@ const Announcement: React.FC = () => {
           bordered={false}
         >
           <Title level={2} style={{ color: 'white', margin: 0 }}>
-            <InfoCircleOutlined /> Announcements & Rules
+            <InfoCircleOutlined /> Announcements
           </Title>
           <Text style={{ color: 'rgba(255,255,255,0.85)' }}>
             Important information and updates for players
