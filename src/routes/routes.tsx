@@ -102,6 +102,9 @@ import SponsorProfile from '@src/pages/sponsor/SponsorProfile.tsx';
 import SponsorPassword from '@src/pages/sponsor/SponsorPassword.tsx';
 import TournamentList from '@src/pages/tournament/TournamentList.tsx';
 import SponsorshipReturn from '@src/pages/tournament/SponsorshipReturn.tsx';
+import { useSelector } from 'react-redux';
+import CompetitiveLayout from '@src/layouts/competitive/index.tsx';
+import { RootState } from '@src/redux/store.ts';
 
 // Custom scroll restoration function
 export const ScrollToTop: React.FC = () => {
@@ -124,10 +127,24 @@ type PageProps = {
 
 // Create an HOC to wrap your route components with ScrollToTop
 const PageWrapper = ({ children }: PageProps) => {
+  const user = useSelector((state: RootState) => state.auth?.user);
+
+  // Only show the competitive matchmaking component if user is logged in and is a player (roleId === 1)
+  const showCompetitive = !!user?.id && user?.roleId === 1;
+
   return (
     <>
       <ScrollToTop />
       {children}
+
+      {showCompetitive && (
+        <CompetitiveLayout
+          userId={user.id}
+          gender={user.gender || 'unknown'}
+          city={user.userDetails?.city || 'unknown'}
+          ranking={user.userDetails?.experienceLevel || 1}
+        />
+      )}
     </>
   );
 };

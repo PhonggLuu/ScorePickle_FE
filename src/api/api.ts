@@ -18,7 +18,9 @@ import {
 } from '../utils/urlUtils';
 
 const apiRequestConfig: CreateAxiosDefaults<unknown> = {
-  baseURL: `http://localhost:5098/api`,
+  // baseURL: `http://localhost:5098/api`,
+  baseURL: `https://pickleballcapton-hvgvf6h4eqbudcbw.eastasia-01.azurewebsites.net/api`,
+  // baseURL: `https://pickbleballcapston-a4eagpasc9fbeeb8.eastasia-01.azurewebsites.net/api`,
   timeout: REQUEST_TIMEOUT_MS,
   headers: { 'Content-Type': 'application/json' },
   withCredentials: false,
