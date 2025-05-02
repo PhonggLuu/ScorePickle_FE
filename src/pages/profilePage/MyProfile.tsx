@@ -50,6 +50,14 @@ const MyProfile: React.FC = () => {
     [MatchCategory.Competitive]: 'orange',
   };
 
+  if (!id) {
+    return (
+      <div className="d-flex justify-content-center align-items-center vh-100">
+        <Spin size="large" />
+      </div>
+    );
+  }
+
   if (isLoading) {
     return (
       <div className="d-flex justify-content-center align-items-center vh-100">

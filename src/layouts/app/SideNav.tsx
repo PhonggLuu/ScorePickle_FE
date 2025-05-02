@@ -134,6 +134,10 @@ const SideNav = ({ ...others }: SiderProps) => {
               ]),
               getItem('Tournament', 'tournament', <TrophyOutlined />, [
                 getItem(
+                  <Link to={PATH_TOURNAMENT.list}>Tournaments List</Link>,
+                  'all'
+                ),
+                getItem(
                   <Link to={PATH_TOURNAMENT.overview}>
                     Tournament Management
                   </Link>,

@@ -250,6 +250,7 @@ export const PATH_TOURNAMENT = {
   venues: path(ROOTS_TOURNAMENT, '/venues'),
   standings: path(ROOTS_TOURNAMENT, '/standings'),
   referees: path(ROOTS_TOURNAMENT, '/referees'),
+  list: path(ROOTS_TOURNAMENT, '/list'),
 };
 
 export const PATH_USER = {

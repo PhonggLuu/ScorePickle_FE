@@ -22,6 +22,7 @@ import {
   UserOutlined,
   MoonOutlined,
   SunOutlined,
+  LockOutlined,
 } from '@ant-design/icons';
 import {
   CSSTransition,
@@ -37,6 +38,8 @@ import { useSelector, useDispatch } from 'react-redux';
 import { toggleTheme } from '../../redux/theme/themeSlice.ts';
 import { RootState } from '../../redux/store.ts';
 import useLogout from '@src/modules/User/hooks/useLogout.ts';
+import { RoleFactory } from '@src/modules/User/models/index.ts';
+import { Link } from 'react-router-dom';
 const { Content } = Layout;
 
 type AppLayoutProps = {
@@ -58,11 +61,45 @@ export const AppLayout = ({ children }: AppLayoutProps) => {
   const floatBtnRef = useRef(null);
   const dispatch = useDispatch();
   const { mytheme } = useSelector((state: RootState) => state.theme);
+  const user = useSelector((state: RootState) => state.auth.user);
   const items: MenuProps['items'] = [
     {
+      label: (
+        <Flex align="center" className="p-2">
+          <div style={{ whiteSpace: 'nowrap' }}>
+            <div className="user-name">
+              {user?.roleId !== undefined
+                ? RoleFactory[user.roleId]
+                : 'Unknown Role'}
+              : {user?.firstName + ' ' + user?.lastName}
+            </div>
+          </div>
+        </Flex>
+      ),
+      key: 'profile',
+      style: { padding: '0', marginBottom: '10px' },
+    },
+    {
       key: 'user-profile-link',
-      label: 'profile',
+      label: (
+        <Link to="/sponsor/profile">
+          <Flex align="center" gap="small">
+            <span>Profile</span>
+          </Flex>
+        </Link>
+      ),
       icon: <UserOutlined />,
+    },
+    {
+      key: 'update-password-link',
+      label: (
+        <Link to="/sponsor/update-password">
+          <Flex align="center" gap="small">
+            <span>Password</span>
+          </Flex>
+        </Link>
+      ),
+      icon: <LockOutlined />,
     },
     {
       type: 'divider',

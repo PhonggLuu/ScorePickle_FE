@@ -98,6 +98,10 @@ import RefereesPage from '@src/pages/tournament/RefereesPage.tsx';
 import { RefereeLayout } from '@src/layouts/referee/index.tsx';
 import RefereeDashboard from '@src/pages/referee/RefereeDashboard.tsx';
 import RefereeDetail from '@src/pages/referee/RefereeDetail.tsx';
+import SponsorProfile from '@src/pages/sponsor/SponsorProfile.tsx';
+import SponsorPassword from '@src/pages/sponsor/SponsorPassword.tsx';
+import TournamentList from '@src/pages/tournament/TournamentList.tsx';
+import SponsorshipReturn from '@src/pages/tournament/SponsorshipReturn.tsx';
 
 // Custom scroll restoration function
 export const ScrollToTop: React.FC = () => {
@@ -243,14 +247,29 @@ const router = createBrowserRouter([
     ],
   },
   {
-    path: '/sponsor/payment',
+    path: '/sponsor',
     element: <PageWrapper children={<PaymentLayout />} />,
     errorElement: <ErrorPage />,
     children: [
       {
         index: true,
-        path: '',
+        path: 'payment',
         element: <PaymentSponsor />,
+      },
+      {
+        index: true,
+        path: 'profile',
+        element: <SponsorProfile />,
+      },
+      {
+        index: true,
+        path: 'update-password',
+        element: <SponsorPassword />,
+      },
+      {
+        index: true,
+        path: 'sponsorship-return',
+        element: <SponsorshipReturn />,
       },
     ],
   },
@@ -352,6 +371,11 @@ const router = createBrowserRouter([
     element: <PageWrapper children={<TournamentLayout />} />,
     errorElement: <ErrorPage />,
     children: [
+      {
+        index: true,
+        path: 'list',
+        element: <TournamentList />,
+      },
       {
         index: true,
         path: 'overview',

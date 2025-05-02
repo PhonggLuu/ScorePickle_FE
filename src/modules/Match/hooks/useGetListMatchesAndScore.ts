@@ -70,15 +70,12 @@
 //     queryFn: () => fetchMatchByUserId(id),
 //   });
 // }
-import { useEffect, useMemo } from 'react';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { GET_LIST_MATCH_AND_SCORE } from '../constants';
+import { useEffect, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { FullMatchInfo, MatchAndScore, Matches } from '../models';
 import Api from '@src/api/api';
 import { fetchVenueById } from '@src/modules/Venues/hooks/useGetVenueById';
 import { fetchUserById } from '@src/modules/User/hooks/useGetUserById';
-import { User } from '@src/modules/User/models';
-import { Venue } from '@src/modules/Venues/models';
 import { QueryClient } from '@tanstack/react-query';
 
 const fetchMatchDetail = async (id: number): Promise<MatchAndScore> => {
@@ -86,83 +83,43 @@ const fetchMatchDetail = async (id: number): Promise<MatchAndScore> => {
   return data;
 };
 
+// Hàm hook mới không prefetch và không cache
 export function useGetListMatchAndScore(userId: number) {
-  const queryClient = useQueryClient();
-
   // 1. Fetch danh sách matches cơ bản
   const matchesQuery = useQuery<Matches[]>({
-    queryKey: [GET_LIST_MATCH_AND_SCORE, userId],
+    queryKey: ['GET_LIST_MATCH_AND_SCORE', userId],
     queryFn: () =>
       Api.get<Matches[]>(`/Match/user/room/${userId}`).then((res) => res.data),
-    staleTime: 30 * 60 * 1000, // 30 phút
+    staleTime: 0, // Tắt cache (không sử dụng staleTime)
   });
 
-  // 2. Prefetch các resource phụ: venues, players, matchDetails
+  // 2. Build FullMatchInfo từ data trả về mà không sử dụng cache
+  const [data, setData] = useState<FullMatchInfo[]>([]);
+
   useEffect(() => {
-    if (!matchesQuery.data) return;
+    if (!matchesQuery.data) {
+      setData([]);
+      return;
+    }
 
-    const prefetchAll = async () => {
-      await Promise.all(
-        matchesQuery.data.map(async (match) => {
-          // prefetch venue
-          if (match.venueId) {
-            await queryClient.prefetchQuery({
-              queryKey: ['venue', match.venueId],
-              queryFn: () => fetchVenueById(match.venueId!),
-              staleTime: 10 * 60 * 1000, // cache 10 phút
-            });
-          }
-          // prefetch từng player
-          match.teams.forEach((team) =>
-            team.members.forEach((member) => {
-              const pid = member.playerId;
-              if (pid) {
-                queryClient.prefetchQuery({
-                  queryKey: ['player', pid],
-                  queryFn: () => fetchUserById(pid),
-                  staleTime: 10 * 60 * 1000, // cache player 10 phút
-                });
-              }
-            })
-          );
-          // prefetch match detail (score)
-          if (match.id) {
-            await queryClient.prefetchQuery({
-              queryKey: ['matchDetail', match.id],
-              queryFn: () => fetchMatchDetail(match.id),
-              staleTime: 5 * 60 * 1000, // cache detail 5 phút
-            });
-          }
-        })
-      );
-    };
-
-    prefetchAll();
-  }, [matchesQuery.data, queryClient]);
-
-  // 3. Build FullMatchInfo từ cache
-  const data: FullMatchInfo[] = useMemo(() => {
-    if (!matchesQuery.data) return [];
-
-    return matchesQuery.data.map((match) => {
-      // Lấy venue từ cache, kiểu là Venue | undefined
+    const buildFullMatchInfo = async (
+      match: Matches
+    ): Promise<FullMatchInfo> => {
+      // Resolve venue
       const venue = match.venueId
-        ? queryClient.getQueryData<Venue>(['venue', match.venueId])
+        ? await fetchVenueById(match.venueId)
         : undefined;
 
-      // Lấy player từ cache, giả sử kiểu User
-      const getPlayerFromCache = (id?: number) =>
-        id ? queryClient.getQueryData<User>(['player', id]) : undefined;
+      // Resolve players
+      const getPlayerFromApi = async (id?: number) =>
+        id ? await fetchUserById(id) : undefined;
+      const p1 = await getPlayerFromApi(match.teams[0].members[0]?.playerId);
+      const p2 = await getPlayerFromApi(match.teams[0].members[1]?.playerId);
+      const p3 = await getPlayerFromApi(match.teams[1].members[0]?.playerId);
+      const p4 = await getPlayerFromApi(match.teams[1].members[1]?.playerId);
 
-      const p1 = getPlayerFromCache(match.teams[0].members[0]?.playerId);
-      const p2 = getPlayerFromCache(match.teams[0].members[1]?.playerId);
-      const p3 = getPlayerFromCache(match.teams[1].members[0]?.playerId);
-      const p4 = getPlayerFromCache(match.teams[1].members[1]?.playerId);
-
-      // Lấy score từ cache, kiểu là MatchAndScore | undefined
-      const score = match.id
-        ? queryClient.getQueryData<MatchAndScore>(['matchDetail', match.id])
-        : undefined;
+      // Resolve score
+      const score = match.id ? await fetchMatchDetail(match.id) : null;
 
       return {
         info: {
@@ -177,10 +134,12 @@ export function useGetListMatchAndScore(userId: number) {
         },
         score,
       };
-    });
-  }, [matchesQuery.data, queryClient]);
+    };
 
-  // 4. Trả về cả trạng thái và data đã enrich
+    Promise.all(matchesQuery.data.map(buildFullMatchInfo)).then(setData);
+  }, [matchesQuery.data]);
+
+  // 3. Trả về cả trạng thái và data đã enrich
   return {
     ...matchesQuery,
     data,
