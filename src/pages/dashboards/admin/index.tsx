@@ -816,7 +816,10 @@ export const PaymentAdmin = () => {
               }
               value={statistics.totalFee}
               precision={0}
-              valueStyle={{ color: '#52c41a', fontSize: '24px' }}
+              valueStyle={{
+                color: typeColors[TypePayment.Fee],
+                fontSize: '24px',
+              }}
               prefix={<FileDoneOutlined />}
               suffix="₫"
               formatter={(value) => value?.toLocaleString()}
@@ -849,7 +852,10 @@ export const PaymentAdmin = () => {
               }
               value={statistics.totalSponsor}
               precision={0}
-              valueStyle={{ color: '#faad14', fontSize: '24px' }}
+              valueStyle={{
+                color: typeColors[TypePayment.Donate],
+                fontSize: '24px',
+              }}
               prefix={<GiftOutlined />}
               suffix="₫"
               formatter={(value) => value?.toLocaleString()}
@@ -884,7 +890,10 @@ export const PaymentAdmin = () => {
               }
               value={statistics.totalAward}
               precision={0}
-              valueStyle={{ color: 'rgb(69, 115, 231)', fontSize: '24px' }}
+              valueStyle={{
+                color: typeColors[TypePayment.Award],
+                fontSize: '24px',
+              }}
               prefix={<ApartmentOutlined />}
               suffix="₫"
               formatter={(value) => value?.toLocaleString()}

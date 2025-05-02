@@ -39,7 +39,7 @@ import { Match, Member } from '@src/modules/Tournament/models';
 import { fetchUserById } from '@src/modules/User/hooks/useGetUserById';
 import { User } from '@src/modules/User/models';
 import { useGetAllReferees } from '@src/modules/User/hooks/useGetAllReferee';
-import { useGetVenueBySponserId } from '@src/modules/Venues/hooks/useGetVenueBySponserId';
+import { useGetVenueAll } from '@src/modules/Venues/hooks/useGetAllVenue';
 import { RootState } from '@src/redux/store';
 import AddMatchModal from './AddMatchModal';
 import UpdateMatchModal from './UpdateMatchModal';
@@ -65,8 +65,8 @@ const MatchRoom = ({ id }: MatchRoomProps) => {
     error: errorMatches,
     refetch,
   } = useGetMatchByTournamentId(Number(id));
-  const { data: venues } = useGetVenueBySponserId(user?.id || 0);
   const { data: referees } = useGetAllReferees();
+  const { data: venues } = useGetVenueAll();
   const [userDetails, setUserDetails] = useState<any[]>([]);
   const [filteredDetails, setFilteredDetails] = useState<Match[]>([]);
   const [filterStatus, setFilterStatus] = useState<string>('All');
@@ -348,6 +348,7 @@ const MatchRoom = ({ id }: MatchRoomProps) => {
       render: (venueId: number, record: Match) => {
         const venue = getVenueById(venueId);
         const referee = getRefereeById(record?.refereeId || 0);
+
         return venue ? (
           <Card
             hoverable
@@ -545,33 +546,6 @@ const MatchRoom = ({ id }: MatchRoomProps) => {
         );
       },
     },
-    {
-      title: 'Actions',
-      key: 'actions',
-      render: (record: any) => (
-        <Space>
-          <Button
-            type="primary"
-            icon={<EditOutlined />}
-            onClick={() => {
-              setSelectedMatch(record);
-              setIsUpdateModalVisible(true);
-            }}
-          >
-            Update
-          </Button>
-          <Button
-            icon={<ReloadOutlined />}
-            onClick={() => {
-              setSelectedMatchForScores(record);
-              setIsScoreModalVisible(true);
-            }}
-          >
-            Scores
-          </Button>
-        </Space>
-      ),
-    },
   ];
 
   if (isLoadingMatches) {
@@ -702,7 +676,7 @@ const MatchRoom = ({ id }: MatchRoomProps) => {
           </Col>
         </Row>
 
-        {/* Match Management Header */}
+        {/* Match Management Header
         <Card
           title={
             <Title level={4} style={{ margin: 0 }}>
@@ -778,7 +752,7 @@ const MatchRoom = ({ id }: MatchRoomProps) => {
               </div>
             </Col>
           </Row>
-        </Card>
+        </Card> */}
 
         {/* Tab View for Different Status */}
         <Tabs

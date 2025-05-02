@@ -38,7 +38,7 @@ const Donate: React.FC<DonateProps> = ({ tournamentId }) => {
 
   const columns = [
     {
-      title: 'Sponsor',
+      title: 'Sponsors',
       dataIndex: 'name',
       key: 'name',
       render: (name, record) => (
@@ -67,7 +67,7 @@ const Donate: React.FC<DonateProps> = ({ tournamentId }) => {
       ),
     },
     {
-      title: 'Donation Amount',
+      title: 'Sponsorship Amount',
       dataIndex: 'donate',
       key: 'donate',
       sorter: (a, b) => a.donate - b.donate,
@@ -129,7 +129,7 @@ const Donate: React.FC<DonateProps> = ({ tournamentId }) => {
                     <DollarCircleOutlined
                       style={{ marginRight: 8, color: '#1890ff' }}
                     />
-                    Total Donations
+                    Total Sponsorships
                   </Text>
                 }
                 value={totalDonations}
@@ -160,7 +160,7 @@ const Donate: React.FC<DonateProps> = ({ tournamentId }) => {
                     <TrophyOutlined
                       style={{ marginRight: 8, color: '#52c41a' }}
                     />
-                    Top Donation
+                    Top Sponsorships
                   </Text>
                 }
                 value={Math.max(...sponsors.map((s) => s.donate))}

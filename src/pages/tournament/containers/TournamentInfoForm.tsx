@@ -321,7 +321,7 @@ const TournamentInfoForm = ({ data, onSave }: TournamentInfoFormProps) => {
               name="isFree"
               label={
                 <span>
-                  Free Tournament{' '}
+                  Fee Tournament{' '}
                   <Tooltip title="Toggle between free and paid tournament">
                     <InfoCircleOutlined style={{ color: '#1890ff' }} />
                   </Tooltip>
@@ -330,8 +330,8 @@ const TournamentInfoForm = ({ data, onSave }: TournamentInfoFormProps) => {
               valuePropName="checked"
             >
               <Switch
-                checkedChildren="Free"
-                unCheckedChildren="Paid"
+                checkedChildren="Paid"
+                unCheckedChildren="Free"
                 disabled={isFieldDisabled || isDisabled}
                 onChange={(checked) => {
                   setIsFree(checked);

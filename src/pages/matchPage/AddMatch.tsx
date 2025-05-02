@@ -282,12 +282,16 @@ const AddMatches: React.FC = () => {
       refereeId: null,
       tournamentId: null,
     };
-    const data = await createMatch(payload);
-    if (data) {
-      message.success('Create match successfully');
-      resetFields();
-      navigate(`/match-detail/${data.id}`);
-    } else message.info('Create match failed');
+    try {
+      const created = await createMatch(payload);
+      if (created) {
+        message.success('Friendly match created');
+        resetFields();
+        navigate(`/match-detail/${created.id}`);
+      }
+    } catch {
+      message.error('Create friendly match failed');
+    }
   };
 
   // Initial player selection: only the current user
