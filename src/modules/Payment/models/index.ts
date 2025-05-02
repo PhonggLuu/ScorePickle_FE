@@ -55,3 +55,10 @@ export enum PaymentStatus {
   Completed,
   Failed,
 }
+
+export interface SponsorRequest {
+  sponnerId: number;
+  touramentId: number;
+  returnUrl: number;
+  amount: number;
+}

@@ -2,7 +2,8 @@ import {
   ApartmentOutlined,
   BellOutlined,
   CalendarOutlined,
-  DeleteColumnOutlined,
+  ContainerOutlined,
+  DollarCircleOutlined,
   EditOutlined,
   LockOutlined,
   LoginOutlined,
@@ -112,20 +113,12 @@ export const GuestLayout = () => {
     {
       path: 'announcement',
       label: 'Announcement',
-      icon: <BellOutlined />,
+      icon: <ContainerOutlined />,
     },
   ];
 
   // User menu items
-  const userMenuItems: NavItem[] = user
-    ? [
-        {
-          path: 'add-match',
-          label: 'New Match',
-          icon: <DeleteColumnOutlined />,
-        },
-      ]
-    : [];
+  const userMenuItems: NavItem[] = [];
 
   // Check if the current path is active
   const isActive = (path: string, exact = false) => {
@@ -275,8 +268,8 @@ export const GuestLayout = () => {
       key: 'transaction',
       label: (
         <Link to={`transaction`} className="menu-item">
-          <CalendarOutlined className="me-2" />
-           Transaction
+          <DollarCircleOutlined className="me-2" />
+          Transaction
         </Link>
       ),
       style: {
@@ -715,6 +708,17 @@ export const GuestLayout = () => {
                 >
                   <CalendarOutlined />
                   <span>Matches Calendar</span>
+                </Link>
+
+                <Link
+                  to="transaction"
+                  onClick={onClose}
+                  className={`drawer-item ${
+                    isActive('match-calendar') ? 'active' : ''
+                  }`}
+                >
+                  <CalendarOutlined />
+                  <span>Transaction</span>
                 </Link>
 
                 <div

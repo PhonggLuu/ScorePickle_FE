@@ -6214,6 +6214,15 @@ axios@^1.7.9:
     form-data "^4.0.0"
     proxy-from-env "^1.1.0"
 
+axios@^1.8.3:
+  version "1.9.0"
+  resolved "https://registry.yarnpkg.com/axios/-/axios-1.9.0.tgz#25534e3b72b54540077d33046f77e3b8d7081901"
+  integrity sha512-re4CqKTJaURpzbLHtIi6XpDv20/CnpXOtjRY5/CU32L8gU8ek9UIivcfvSWvmKEngmVbrUtPpdDwWDWL7DNHvg==
+  dependencies:
+    follow-redirects "^1.15.6"
+    form-data "^4.0.0"
+    proxy-from-env "^1.1.0"
+
 babel-core@^7.0.0-bridge.0:
   version "7.0.0-bridge.0"
   resolved "https://registry.yarnpkg.com/babel-core/-/babel-core-7.0.0-bridge.0.tgz#95a492ddd90f9b4e9a4a1da14eb335b87b634ece"
@@ -6879,6 +6888,11 @@ concat-stream@^1.6.2:
     readable-stream "^2.2.2"
     typedarray "^0.0.6"
 
+connect-history-api-fallback@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/connect-history-api-fallback/-/connect-history-api-fallback-2.0.0.tgz#647264845251a0daf25b97ce87834cace0f5f1c8"
+  integrity sha512-U73+6lQFmfiNPrYbXqr6kZ1i1wiRqXnp2nhMsINseWXO8lDau0LGEffJ8kQi4EjLZympVgRdvqjAgiZ1tgzDDA==
+
 content-disposition@0.5.4:
   version "0.5.4"
   resolved "https://registry.yarnpkg.com/content-disposition/-/content-disposition-0.5.4.tgz#8b82b4efac82512a02bb0b1dcec9d2c5e8eb5bfe"
@@ -7235,7 +7249,7 @@ debug@4, debug@4.3.4, debug@^4.1.0, debug@^4.1.1, debug@^4.3.2, debug@^4.3.4:
   dependencies:
     ms "2.1.2"
 
-debug@^4.3.1:
+debug@^4.3.1, debug@^4.4.0:
   version "4.4.0"
   resolved "https://registry.yarnpkg.com/debug/-/debug-4.4.0.tgz#2b3f2aea2ffeb776477460267377dc8710faba8a"
   integrity sha512-6WTZ/IxCY/T6BALoZHaE4ctp9xm+Z5kY/pzYaCHRFeyVhojxlrm+46y68HA6hr0TcwEssoxNiDEUJQjfPZ/RYA==
@@ -14098,6 +14112,15 @@ viewport-mercator-project@^6.2.1:
   dependencies:
     "@babel/runtime" "^7.0.0"
     gl-matrix "^3.0.0"
+
+vite-plugin-mkcert@^1.17.8:
+  version "1.17.8"
+  resolved "https://registry.yarnpkg.com/vite-plugin-mkcert/-/vite-plugin-mkcert-1.17.8.tgz#7ddbd62a7b7941a57dfdf73cb19d6c39c3967e96"
+  integrity sha512-S+4tNEyGqdZQ3RLAG54ETeO2qyURHWrVjUWKYikLAbmhh/iJ+36gDEja4OWwFyXNuvyXcZwNt5TZZR9itPeG5Q==
+  dependencies:
+    axios "^1.8.3"
+    debug "^4.4.0"
+    picocolors "^1.1.1"
 
 vite@^4.5.3:
   version "4.5.3"
