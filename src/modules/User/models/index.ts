@@ -34,7 +34,8 @@ export enum RoleFactory {
   Player = 1,
   Admin = 2,
   Sponsor = 3,
-  Refree = 4,
+  Referee = 4,
+  User = 5,
 }
 
 export interface LoginRequest {

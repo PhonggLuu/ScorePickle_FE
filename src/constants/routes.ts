@@ -138,6 +138,8 @@ export const PATH_AUTH = {
   welcome: path(ROOTS_AUTH, '/welcome'),
   verifyEmail: path(ROOTS_AUTH, '/verify-email'),
   accountDelete: path(ROOTS_AUTH, '/account-delete'),
+  registerEmail: path(ROOTS_AUTH, '/register-account'),
+  selectRole: path(ROOTS_AUTH, '/select-role'),
 };
 
 export const PATH_ERROR = {

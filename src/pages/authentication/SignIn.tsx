@@ -104,7 +104,7 @@ export const SignInPage = () => {
           <Title className="m-0">Login</Title>
           <Flex gap={4}>
             <Text>Don't have an account?</Text>
-            <Link href={PATH_AUTH.signup}>Create an account here</Link>
+            <Link href={PATH_AUTH.registerEmail}>Create an account here</Link>
           </Flex>
           <Form
             name="sign-up-form"
