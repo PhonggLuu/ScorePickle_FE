@@ -32,6 +32,7 @@ import { useGetUserById } from '@src/modules/User/hooks/useGetUserById';
 import { useAddFriend } from '@src/modules/Friend/hooks/useAddFriend';
 import { AddFriendRequest } from '@src/modules/Friend/models';
 import { useJoinMatch } from '@src/modules/Match/hooks/useJoinMatch';
+import { Link } from 'react-router-dom';
 
 const { Option } = Select;
 const { Search } = Input;
@@ -211,8 +212,9 @@ const MyProfile: React.FC = () => {
                   <Col xs={12} md={6}>
                     <Select defaultValue="any" style={{ width: '100%' }}>
                       <Option value="any">Any</Option>
-                      <Option value="single">Single</Option>
-                      <Option value="double">Doubles</Option>
+                      <Option value="tounament">Tournament</Option>
+                      <Option value="custom">Friendly</Option>
+                      <Option value="competitive">Competitive</Option>
                     </Select>
                   </Col>
                   <Col xs={12} md={6}>
@@ -222,331 +224,337 @@ const MyProfile: React.FC = () => {
               </div>
 
               {(matches ?? []).map((match) => (
-                <Card key={match.info.id} className="match-card mb-3">
-                  <div className="match-header mb-2">
-                    <Tag
-                      color={MatchCategoryColors[match.info.matchCategory]}
-                      className="match-type"
-                    >
-                      {MatchCategory[match.info.matchCategory]}
-                    </Tag>
-                  </div>
-                  <div className="match-body">
-                    <h5 className="match-opponent mb-1">{match.info.title}</h5>
-                    <p className="match-date">
-                      {formattedDate(match.info.matchDate)}
-                      {match.info.venueAddress &&
-                        ` • ${match.info.venueAddress}`}
-                    </p>
+                <Link
+                  to={`/match-detail/${match.info.id}`}
+                  style={{ textDecoration: 'none' }}
+                >
+                  <Card key={match.info.id} className="match-card mb-3">
+                    <div className="match-header mb-2">
+                      <Tag
+                        color={MatchCategoryColors[match.info.matchCategory]}
+                        className="match-type"
+                      >
+                        {MatchCategory[match.info.matchCategory]}
+                      </Tag>
+                    </div>
+                    <div className="match-body">
+                      <h5 className="match-opponent mb-1">
+                        {match.info.title}
+                      </h5>
+                      <p className="match-date">
+                        {formattedDate(match.info.matchDate)}
+                        {match.info.venueAddress &&
+                          ` • ${match.info.venueAddress}`}
+                      </p>
 
-                    <Row gutter={[24, 24]}>
-                      <Col xs={24} md={11}>
-                        {/* Players */}
-                        <label className="form-label mt-1">
-                          {MatchFormat[match.info.matchFormat]
-                            .toLowerCase()
-                            .includes('single')
-                            ? 'Player 1'
-                            : 'Team 1'}
-                        </label>
-                        <div className="player d-flex align-items-center mb-2">
-                          <Avatar
-                            size={30}
-                            src="/placeholder.svg?height=24&width=24"
-                          />
-                          <span className="player-name ms-2">
-                            {/* {match.info.teams[0].members[0].playerId} */}
-                            {(match.info.player1?.firstName ?? '') +
-                              ' ' +
-                              ' ' +
-                              (match.info.player1?.secondName ?? '') +
-                              ' ' +
-                              ' ' +
-                              (match.info.player1?.lastName ?? '')}
-                          </span>
-                          {/* <span className="player-rating ms-auto bg-success rounded-pill p-1 px-2">
+                      <Row gutter={[24, 24]}>
+                        <Col xs={24} md={11}>
+                          {/* Players */}
+                          <label className="form-label mt-1">
+                            {MatchFormat[match.info.matchFormat]
+                              .toLowerCase()
+                              .includes('single')
+                              ? 'Player 1'
+                              : 'Team 1'}
+                          </label>
+                          <div className="player d-flex align-items-center mb-2">
+                            <Avatar
+                              size={30}
+                              src="/placeholder.svg?height=24&width=24"
+                            />
+                            <span className="player-name ms-2">
+                              {/* {match.info.teams[0].members[0].playerId} */}
+                              {(match.info.player1?.firstName ?? '') +
+                                ' ' +
+                                ' ' +
+                                (match.info.player1?.secondName ?? '') +
+                                ' ' +
+                                ' ' +
+                                (match.info.player1?.lastName ?? '')}
+                            </span>
+                            {/* <span className="player-rating ms-auto bg-success rounded-pill p-1 px-2">
                             3.745
                           </span> */}
-                        </div>
-                        {match.info.teams[0].members[1] ? (
-                          <div className="player mt-2">
-                            <Avatar
-                              size={30}
-                              src="/placeholder.svg?height=24&width=24"
-                            />
-                            <span className="player-name">
-                              {/* {match.info.teams[0].members[1]?.playerId ?? ''} */}
-                              {match.info.player2 &&
-                                (match.info.player2?.firstName ?? '') +
-                                  ' ' +
-                                  ' ' +
-                                  (match.info.player2?.secondName ?? '') +
-                                  ' ' +
-                                  ' ' +
-                                  (match.info.player2?.lastName ?? '')}
-                            </span>
-                            {/* <span className="player-rating bg-success rounded-pill p-1 px-2">
+                          </div>
+                          {match.info.teams[0].members[1] ? (
+                            <div className="player mt-2">
+                              <Avatar
+                                size={30}
+                                src="/placeholder.svg?height=24&width=24"
+                              />
+                              <span className="player-name">
+                                {/* {match.info.teams[0].members[1]?.playerId ?? ''} */}
+                                {match.info.player2 &&
+                                  (match.info.player2?.firstName ?? '') +
+                                    ' ' +
+                                    ' ' +
+                                    (match.info.player2?.secondName ?? '') +
+                                    ' ' +
+                                    ' ' +
+                                    (match.info.player2?.lastName ?? '')}
+                              </span>
+                              {/* <span className="player-rating bg-success rounded-pill p-1 px-2">
                               3.255
                             </span> */}
-                          </div>
-                        ) : (
-                          <div className="player mt-2">
-                            {MatchFormat[match.info.matchFormat]
-                              .toLowerCase()
-                              .includes('double') && (
-                              <>
-                                <PlusCircleOutlined
-                                  style={{
-                                    fontSize: '30px',
-                                    cursor: 'pointer',
-                                  }}
-                                  onClick={handleMouseEnter}
-                                />
-
-                                <Modal
-                                  title="Join Match"
-                                  visible={isModalVisible}
-                                  onCancel={handleCancel}
-                                  footer={[
-                                    <Button key="no" onClick={handleCancel}>
-                                      No
-                                    </Button>,
-                                    <Button
-                                      key="yes"
-                                      type="primary"
-                                      onClick={() =>
-                                        handleJoinMatch(match.info.id)
-                                      }
-                                    >
-                                      Yes
-                                    </Button>,
-                                  ]}
-                                >
-                                  <p>Do you wanna join this match?</p>
-                                </Modal>
-                              </>
-                            )}
-                          </div>
-                        )}
-                        <label className="form-label mt-4">
-                          {MatchFormat[match.info.matchFormat]
-                            .toLowerCase()
-                            .includes('single')
-                            ? 'Player 2'
-                            : 'Team 2'}
-                        </label>
-                        {match.info.teams[1].members[0] ? (
-                          <div className="player mt-2">
-                            <Avatar
-                              size={30}
-                              src="/placeholder.svg?height=24&width=24"
-                            />
-                            <span className="player-name">
-                              {/* {match.info.teams[1].members[0]?.playerId ?? ''} */}
-                              {match.info.player3 &&
-                                (match.info.player3?.firstName ?? '') +
-                                  ' ' +
-                                  ' ' +
-                                  (match.info.player3?.secondName ?? '') +
-                                  ' ' +
-                                  ' ' +
-                                  (match.info.player3?.lastName ?? '')}
-                            </span>
-                            {/* <span className="player-rating bg-success rounded-pill p-1 px-2">
-                              3.255
-                            </span> */}
-                          </div>
-                        ) : (
-                          <div className="player mt-2">
-                            {currentUser?.id !== match.info.player1?.id &&
-                              currentUser?.id !== match.info.player2?.id &&
-                              currentUser?.id !== match.info.player3?.id &&
-                              currentUser?.id !== match.info.player4?.id && (
-                                <>
-                                  <PlusCircleOutlined
-                                    style={{
-                                      fontSize: '30px',
-                                      cursor: 'pointer',
-                                    }}
-                                    onClick={handleMouseEnter}
-                                  />
-
-                                  <Modal
-                                    title="Join Match"
-                                    visible={isModalVisible}
-                                    onCancel={handleCancel}
-                                    footer={[
-                                      <Button key="no" onClick={handleCancel}>
-                                        No
-                                      </Button>,
-                                      <Button
-                                        key="yes"
-                                        type="primary"
-                                        onClick={() =>
-                                          handleJoinMatch(match.info.id)
-                                        }
-                                      >
-                                        Yes
-                                      </Button>,
-                                    ]}
-                                  >
-                                    <p>Do you wanna join this match?</p>
-                                  </Modal>
-                                </>
-                              )}
-                          </div>
-                        )}
-                        {match.info.teams[1].members[1] ? (
-                          <div className="player mt-2">
-                            <Avatar
-                              size={30}
-                              src="/placeholder.svg?height=24&width=24"
-                            />
-                            <span className="player-name">
-                              {/* {match.info.teams[1].members[1]?.playerId ?? ''} */}
-                              {match.info.player4 &&
-                                (match.info.player4?.firstName ?? '') +
-                                  ' ' +
-                                  ' ' +
-                                  (match.info.player4?.secondName ?? '') +
-                                  ' ' +
-                                  ' ' +
-                                  (match.info.player4?.lastName ?? '')}
-                            </span>
-                            {/* <span className="player-rating bg-success rounded-pill p-1 px-2">
-                              3.255
-                            </span> */}
-                          </div>
-                        ) : (
-                          <div className="player mt-2">
-                            {MatchFormat[match.info.matchFormat]
-                              .toLowerCase()
-                              .includes('double') &&
-                              currentUser?.id !== match.info.player1?.id &&
-                              currentUser?.id !== match.info.player2?.id &&
-                              currentUser?.id !== match.info.player3?.id &&
-                              currentUser?.id !== match.info.player4?.id && (
-                                <>
-                                  <PlusCircleOutlined
-                                    style={{
-                                      fontSize: '30px',
-                                      cursor: 'pointer',
-                                    }}
-                                    onClick={handleMouseEnter}
-                                  />
-
-                                  <Modal
-                                    title="Join Match"
-                                    visible={isModalVisible}
-                                    onCancel={handleCancel}
-                                    footer={[
-                                      <Button key="no" onClick={handleCancel}>
-                                        No
-                                      </Button>,
-                                      <Button
-                                        key="yes"
-                                        type="primary"
-                                        onClick={() =>
-                                          handleJoinMatch(match.info.id)
-                                        }
-                                      >
-                                        Yes
-                                      </Button>,
-                                    ]}
-                                  >
-                                    <p>Do you wanna join this match?</p>
-                                  </Modal>
-                                </>
-                              )}
-                          </div>
-                        )}
-                      </Col>
-                      <Divider
-                        type="vertical"
-                        style={{
-                          height: 'auto',
-                          backgroundColor: '#ccc',
-                          width: 1,
-                        }}
-                      />
-                      <Col xs={24} md={11}>
-                        {match.score && (
-                          <div className="match-score">
-                            <div className="table-responsive">
-                              <table className="table score-table mt-3">
-                                <thead>
-                                  <tr>
-                                    <th></th>
-                                    <th>Half 1</th>
-                                    <th>Half 2</th>
-                                    <th>Half 3</th>
-                                  </tr>
-                                </thead>
-                                <tbody>
-                                  <tr>
-                                    <td>
-                                      {MatchFormat[match.info.matchFormat]
-                                        .toLowerCase()
-                                        .includes('single')
-                                        ? 'Player 1'
-                                        : 'Team 1'}
-                                    </td>
-                                    <td>
-                                      {
-                                        match.score.matchScoreDetails?.[0]
-                                          ?.team1Score
-                                      }
-                                    </td>
-                                    <td>
-                                      {
-                                        match.score.matchScoreDetails?.[1]
-                                          ?.team1Score
-                                      }
-                                    </td>
-                                    <td>
-                                      {
-                                        match.score.matchScoreDetails?.[2]
-                                          ?.team1Score
-                                      }
-                                    </td>
-                                  </tr>
-                                  <tr>
-                                    <td>
-                                      {MatchFormat[match.info.matchFormat]
-                                        .toLowerCase()
-                                        .includes('single')
-                                        ? 'Player 2'
-                                        : 'Team 2'}
-                                    </td>
-                                    <td>
-                                      {
-                                        match.score.matchScoreDetails?.[0]
-                                          ?.team2Score
-                                      }
-                                    </td>
-                                    <td>
-                                      {
-                                        match.score.matchScoreDetails?.[1]
-                                          ?.team2Score
-                                      }
-                                    </td>
-                                    <td>
-                                      {
-                                        match.score.matchScoreDetails?.[2]
-                                          ?.team2Score
-                                      }
-                                    </td>
-                                  </tr>
-                                </tbody>
-                              </table>
                             </div>
-                          </div>
-                        )}
-                      </Col>
-                    </Row>
+                          ) : (
+                            <div className="player mt-2">
+                              {MatchFormat[match.info.matchFormat]
+                                .toLowerCase()
+                                .includes('double') && (
+                                <>
+                                  <PlusCircleOutlined
+                                    style={{
+                                      fontSize: '30px',
+                                      cursor: 'pointer',
+                                    }}
+                                    onClick={handleMouseEnter}
+                                  />
 
-                    {/* Join logic for doubles */}
-                    {/* {MatchFormat[match.info.matchFormat]
+                                  <Modal
+                                    title="Join Match"
+                                    visible={isModalVisible}
+                                    onCancel={handleCancel}
+                                    footer={[
+                                      <Button key="no" onClick={handleCancel}>
+                                        No
+                                      </Button>,
+                                      <Button
+                                        key="yes"
+                                        type="primary"
+                                        onClick={() =>
+                                          handleJoinMatch(match.info.id)
+                                        }
+                                      >
+                                        Yes
+                                      </Button>,
+                                    ]}
+                                  >
+                                    <p>Do you wanna join this match?</p>
+                                  </Modal>
+                                </>
+                              )}
+                            </div>
+                          )}
+                          <label className="form-label mt-4">
+                            {MatchFormat[match.info.matchFormat]
+                              .toLowerCase()
+                              .includes('single')
+                              ? 'Player 2'
+                              : 'Team 2'}
+                          </label>
+                          {match.info.teams[1].members[0] ? (
+                            <div className="player mt-2">
+                              <Avatar
+                                size={30}
+                                src="/placeholder.svg?height=24&width=24"
+                              />
+                              <span className="player-name">
+                                {/* {match.info.teams[1].members[0]?.playerId ?? ''} */}
+                                {match.info.player3 &&
+                                  (match.info.player3?.firstName ?? '') +
+                                    ' ' +
+                                    ' ' +
+                                    (match.info.player3?.secondName ?? '') +
+                                    ' ' +
+                                    ' ' +
+                                    (match.info.player3?.lastName ?? '')}
+                              </span>
+                              {/* <span className="player-rating bg-success rounded-pill p-1 px-2">
+                              3.255
+                            </span> */}
+                            </div>
+                          ) : (
+                            <div className="player mt-2">
+                              {currentUser?.id !== match.info.player1?.id &&
+                                currentUser?.id !== match.info.player2?.id &&
+                                currentUser?.id !== match.info.player3?.id &&
+                                currentUser?.id !== match.info.player4?.id && (
+                                  <>
+                                    <PlusCircleOutlined
+                                      style={{
+                                        fontSize: '30px',
+                                        cursor: 'pointer',
+                                      }}
+                                      onClick={handleMouseEnter}
+                                    />
+
+                                    <Modal
+                                      title="Join Match"
+                                      visible={isModalVisible}
+                                      onCancel={handleCancel}
+                                      footer={[
+                                        <Button key="no" onClick={handleCancel}>
+                                          No
+                                        </Button>,
+                                        <Button
+                                          key="yes"
+                                          type="primary"
+                                          onClick={() =>
+                                            handleJoinMatch(match.info.id)
+                                          }
+                                        >
+                                          Yes
+                                        </Button>,
+                                      ]}
+                                    >
+                                      <p>Do you wanna join this match?</p>
+                                    </Modal>
+                                  </>
+                                )}
+                            </div>
+                          )}
+                          {match.info.teams[1].members[1] ? (
+                            <div className="player mt-2">
+                              <Avatar
+                                size={30}
+                                src="/placeholder.svg?height=24&width=24"
+                              />
+                              <span className="player-name">
+                                {/* {match.info.teams[1].members[1]?.playerId ?? ''} */}
+                                {match.info.player4 &&
+                                  (match.info.player4?.firstName ?? '') +
+                                    ' ' +
+                                    ' ' +
+                                    (match.info.player4?.secondName ?? '') +
+                                    ' ' +
+                                    ' ' +
+                                    (match.info.player4?.lastName ?? '')}
+                              </span>
+                              {/* <span className="player-rating bg-success rounded-pill p-1 px-2">
+                              3.255
+                            </span> */}
+                            </div>
+                          ) : (
+                            <div className="player mt-2">
+                              {MatchFormat[match.info.matchFormat]
+                                .toLowerCase()
+                                .includes('double') &&
+                                currentUser?.id !== match.info.player1?.id &&
+                                currentUser?.id !== match.info.player2?.id &&
+                                currentUser?.id !== match.info.player3?.id &&
+                                currentUser?.id !== match.info.player4?.id && (
+                                  <>
+                                    <PlusCircleOutlined
+                                      style={{
+                                        fontSize: '30px',
+                                        cursor: 'pointer',
+                                      }}
+                                      onClick={handleMouseEnter}
+                                    />
+
+                                    <Modal
+                                      title="Join Match"
+                                      visible={isModalVisible}
+                                      onCancel={handleCancel}
+                                      footer={[
+                                        <Button key="no" onClick={handleCancel}>
+                                          No
+                                        </Button>,
+                                        <Button
+                                          key="yes"
+                                          type="primary"
+                                          onClick={() =>
+                                            handleJoinMatch(match.info.id)
+                                          }
+                                        >
+                                          Yes
+                                        </Button>,
+                                      ]}
+                                    >
+                                      <p>Do you wanna join this match?</p>
+                                    </Modal>
+                                  </>
+                                )}
+                            </div>
+                          )}
+                        </Col>
+                        <Divider
+                          type="vertical"
+                          style={{
+                            height: 'auto',
+                            backgroundColor: '#ccc',
+                            width: 1,
+                          }}
+                        />
+                        <Col xs={24} md={11}>
+                          {match.score && (
+                            <div className="match-score">
+                              <div className="table-responsive">
+                                <table className="table score-table mt-3">
+                                  <thead>
+                                    <tr>
+                                      <th></th>
+                                      <th>Half 1</th>
+                                      <th>Half 2</th>
+                                      <th>Half 3</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    <tr>
+                                      <td>
+                                        {MatchFormat[match.info.matchFormat]
+                                          .toLowerCase()
+                                          .includes('single')
+                                          ? 'Player 1'
+                                          : 'Team 1'}
+                                      </td>
+                                      <td>
+                                        {
+                                          match.score.matchScoreDetails?.[0]
+                                            ?.team1Score
+                                        }
+                                      </td>
+                                      <td>
+                                        {
+                                          match.score.matchScoreDetails?.[1]
+                                            ?.team1Score
+                                        }
+                                      </td>
+                                      <td>
+                                        {
+                                          match.score.matchScoreDetails?.[2]
+                                            ?.team1Score
+                                        }
+                                      </td>
+                                    </tr>
+                                    <tr>
+                                      <td>
+                                        {MatchFormat[match.info.matchFormat]
+                                          .toLowerCase()
+                                          .includes('single')
+                                          ? 'Player 2'
+                                          : 'Team 2'}
+                                      </td>
+                                      <td>
+                                        {
+                                          match.score.matchScoreDetails?.[0]
+                                            ?.team2Score
+                                        }
+                                      </td>
+                                      <td>
+                                        {
+                                          match.score.matchScoreDetails?.[1]
+                                            ?.team2Score
+                                        }
+                                      </td>
+                                      <td>
+                                        {
+                                          match.score.matchScoreDetails?.[2]
+                                            ?.team2Score
+                                        }
+                                      </td>
+                                    </tr>
+                                  </tbody>
+                                </table>
+                              </div>
+                            </div>
+                          )}
+                        </Col>
+                      </Row>
+
+                      {/* Join logic for doubles */}
+                      {/* {MatchFormat[match.info.matchFormat]
                       .toLowerCase()
                       .includes('double') && (
                       <div className="mt-3 text-end">
@@ -565,8 +573,9 @@ const MyProfile: React.FC = () => {
                         </Modal>
                       </div>
                     )} */}
-                  </div>
-                </Card>
+                    </div>
+                  </Card>
+                </Link>
               ))}
             </Card>
           </Col>
