@@ -9,7 +9,7 @@ import {
 } from '@src/utils/localStorageUtils';
 import { useNavigate } from 'react-router-dom';
 import { PATH_LANDING } from '@src/constants';
-import { PATH_DASHBOARD } from '@src/constants/routes';
+import { PATH_AUTH, PATH_DASHBOARD } from '@src/constants/routes';
 
 // integration with redux for login user
 const login = async (request: LoginRequest): Promise<LoginResponse> => {
@@ -33,10 +33,12 @@ export function useLogin() {
         if (user.roleId === RoleFactory.Player) navigate(PATH_LANDING.root);
         else if (user.roleId === RoleFactory.Admin)
           navigate(PATH_DASHBOARD.default);
-        else if (user.roleId === RoleFactory.Refree)
+        else if (user.roleId === RoleFactory.Referee)
           navigate(PATH_DASHBOARD.default);
         else if (user.roleId === RoleFactory.Sponsor)
           navigate(PATH_DASHBOARD.default);
+        else if (user.roleId === RoleFactory.User)
+          navigate(PATH_AUTH.selectRole);
         else navigate(PATH_LANDING.root);
       });
     },

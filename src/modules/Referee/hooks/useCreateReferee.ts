@@ -7,7 +7,7 @@ const registerRefereesUser = async (
 ): Promise<void> => {
   const payload: RegisterUserRequest = {
     ...user,
-    RoleId: RoleFactory.Refree,
+    RoleId: RoleFactory.Referee,
   };
   await Api.post('/User/create-referee', payload);
 };

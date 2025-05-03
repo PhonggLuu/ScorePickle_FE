@@ -21,10 +21,12 @@ import {
 import { useMediaQuery } from 'react-responsive';
 import { PATH_AUTH } from '../../constants';
 import { useNavigate } from 'react-router-dom';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRegisterPlayer } from '@src/modules/User/hooks/useRegisterUser';
 import { RoleFactory } from '@src/modules/User/models';
 import dayjs from 'dayjs';
+import { useSelector } from 'react-redux';
+import { RootState } from '@src/redux/store';
 
 const { Title, Text, Link } = Typography;
 
@@ -32,7 +34,6 @@ type FieldType = {
   firstName: string;
   secondName?: string;
   lastName: string;
-  email: string;
   passwordHash: string;
   cPassword: string;
   dateOfBirth: Date;
@@ -48,6 +49,14 @@ export const SignUpPage = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const { mutate: registerUser } = useRegisterPlayer();
+  const email = useSelector((state: RootState) => state.user.email);
+  const isVerified = useSelector((state: RootState) => state.user.isVerified);
+
+  useEffect(() => {
+    if (!isVerified) {
+      navigate(PATH_AUTH.registerEmail);
+    }
+  }, [isVerified, navigate]);
 
   const onFinish = (values: FieldType) => {
     registerUser(
@@ -55,12 +64,12 @@ export const SignUpPage = () => {
         FirstName: values.firstName,
         LastName: values.lastName,
         SecondName: values.secondName || '',
-        Email: values.email,
+        Email: email,
         PasswordHash: values.passwordHash,
         DateOfBirth: values.dateOfBirth.toISOString(),
         Gender: values.gender,
         PhoneNumber: values.phoneNumber,
-        RoleId: RoleFactory.Player,
+        RoleId: RoleFactory.User,
       },
       {
         onSuccess: () => {
@@ -217,12 +226,11 @@ export const SignUpPage = () => {
               <Col xs={24}>
                 <Form.Item<FieldType>
                   label="Email"
-                  name="email"
                   rules={[
                     { required: true, message: 'Please input your email' },
                   ]}
                 >
-                  <Input />
+                  <Input value={email} />
                 </Form.Item>
               </Col>
               <Col xs={24}>

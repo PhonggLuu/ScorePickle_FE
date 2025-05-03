@@ -57,6 +57,7 @@ import {
   OverviewAdminPage,
   VenueAdminPage,
   RefereesAdminPage,
+  RegisterEmail,
 } from '../pages';
 import {
   CorporateLayout,
@@ -105,6 +106,10 @@ import { useSelector } from 'react-redux';
 import CompetitiveLayout from '@src/layouts/competitive/index.tsx';
 import { RootState } from '@src/redux/store.ts';
 import RankingPage from '@src/pages/rankingPage/RankingPage.tsx';
+import { VerifyOtp } from '@src/pages/authentication/VerifyOtp.tsx';
+import { SelectRole } from '@src/pages/authentication/SelectRole.tsx';
+import SponsorForm from '@src/pages/authentication/SponsorForm.tsx';
+import PlayerForm from '@src/pages/authentication/PlayerForm.tsx';
 
 // Custom scroll restoration function
 export const ScrollToTop: React.FC = () => {
@@ -132,7 +137,7 @@ const PageWrapper = ({ children }: PageProps) => {
   // Only show the competitive matchmaking component if user is logged in and is a player (roleId === 1)
   const showCompetitive = !!user?.id && user?.roleId === 1;
   console.log(showCompetitive);
-  
+
   return (
     <>
       <ScrollToTop />
@@ -608,6 +613,26 @@ const router = createBrowserRouter([
       {
         path: 'account-delete',
         element: <AccountDeactivePage />,
+      },
+      {
+        path: 'register-account',
+        element: <RegisterEmail />,
+      },
+      {
+        path: 'verify-otp',
+        element: <VerifyOtp />,
+      },
+      {
+        path: 'select-role',
+        element: <SelectRole />,
+      },
+      {
+        path: 'sponsor-form',
+        element: <SponsorForm />,
+      },
+      {
+        path: 'player-form',
+        element: <PlayerForm />,
       },
     ],
   },

@@ -8,6 +8,9 @@ import {
   RegisterUserResponse,
   RoleFactory,
 } from '../models';
+import { useDispatch } from 'react-redux';
+import { setUserId } from '@src/redux/user/userSlice';
+import { message } from 'antd';
 
 const registerUser = async (
   user: RegisterUserRequest
@@ -31,13 +34,8 @@ export function useRegisterUser() {
 }
 
 export const createPlayer = async (
-  playerId: number
+  request: CreatePlayerRequest
 ): Promise<CreatePlayerResponse> => {
-  const request: CreatePlayerRequest = {
-    PlayerId: playerId,
-    Province: '',
-    City: '',
-  };
   const response = await Api.post('Player/CreatePlayer', request);
   const data = response.data as CreatePlayerResponse;
   return data;
@@ -52,13 +50,29 @@ const registerPlayer = async (
 };
 
 export function useRegisterPlayer() {
+  const dispatch = useDispatch();
+
   return useMutation({
     mutationFn: registerPlayer,
     onSuccess: (data) => {
-      createPlayer(data.id);
+      dispatch(setUserId(data.id));
+      //createPlayer(data.id);
     },
     onError: (error) => {
       console.error('Error registering player:', error);
     },
   });
 }
+
+export const useCreatePlayer = () => {
+  return useMutation<CreatePlayerResponse, Error, CreatePlayerRequest>({
+    mutationFn: (request: CreatePlayerRequest) => createPlayer(request),
+    onSuccess: () => {
+      message.success('Player created successfully!');
+    },
+    onError: (error) => {
+      console.error('❌ Failed to create player:', error.message);
+      message.error('Player creation failed!');
+    },
+  });
+};
