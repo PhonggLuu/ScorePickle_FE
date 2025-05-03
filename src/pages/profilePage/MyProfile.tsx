@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Avatar,
   Tag,
@@ -40,7 +40,9 @@ const { Search } = Input;
 const MyProfile: React.FC = () => {
   const currentUser = useSelector((state: RootState) => state.auth.user);
   const { id } = useParams<{ id: string }>();
-  const { data: matches, isLoading } = useGetListMatchAndScore(Number(id || 0));
+  const { data: matchesData, isLoading } = useGetListMatchAndScore(
+    Number(id || 0)
+  );
   const { data: user } = useGetUserById(Number(id || 0));
   const [isModalVisible, setIsModalVisible] = useState(false);
   const { mutate: addFriend } = useAddFriend();
@@ -50,6 +52,14 @@ const MyProfile: React.FC = () => {
     [MatchCategory.Tournament]: 'blue',
     [MatchCategory.Competitive]: 'orange',
   };
+  const [matches, setMatches] = useState(matchesData || []);
+  const [matchType, setMatchType] = useState('any');
+
+  useEffect(() => {
+    if (Array.isArray(matchesData)) {
+      setMatches(matchesData);
+    }
+  }, [matchesData]);
 
   if (!id) {
     return (
@@ -104,6 +114,35 @@ const MyProfile: React.FC = () => {
     }
     console.log(id);
   }
+
+  // Hàm xử lý filter khi người dùng thay đổi giá trị trong Select
+  const handleFilter = (value) => {
+    setMatchType(value);
+
+    let filteredMatches = matchesData || [];
+
+    switch (value) {
+      case 'tournament':
+        filteredMatches = filteredMatches.filter(
+          (m) => m.info.matchCategory === MatchCategory.Tournament
+        );
+        break;
+      case 'custom':
+        filteredMatches = filteredMatches.filter(
+          (m) => m.info.matchCategory === MatchCategory.Custom
+        );
+        break;
+      case 'competitive':
+        filteredMatches = filteredMatches.filter(
+          (m) => m.info.matchCategory === MatchCategory.Competitive
+        );
+        break;
+      default:
+        break;
+    }
+
+    setMatches(filteredMatches);
+  };
 
   return (
     <div className="container px-3 px-md-5 py-4">
@@ -210,7 +249,11 @@ const MyProfile: React.FC = () => {
               <div className="filter-row mb-3">
                 <Row gutter={[16, 16]}>
                   <Col xs={12} md={6}>
-                    <Select defaultValue="any" style={{ width: '100%' }}>
+                    <Select
+                      value={matchType}
+                      style={{ width: '100%' }}
+                      onChange={(value) => handleFilter(value)}
+                    >
                       <Option value="any">Any</Option>
                       <Option value="tounament">Tournament</Option>
                       <Option value="custom">Friendly</Option>

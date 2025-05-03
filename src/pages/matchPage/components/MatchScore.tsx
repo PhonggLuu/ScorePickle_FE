@@ -16,6 +16,7 @@ import {
   useGetMatchRealTime,
 } from '@src/modules/Match/hooks/useGetMatchRealTime';
 import { ClockCircleOutlined } from '@ant-design/icons';
+import { useGetMatchDetail } from '@src/modules/Match/hooks/useGetMatchScoreDetail';
 
 const { Title, Text } = Typography;
 
@@ -25,6 +26,7 @@ interface MatchCollapseProps {
 
 export function MatchScore({ matchId }: MatchCollapseProps) {
   const { logs, isLoading, error } = useGetMatchRealTime(matchId);
+  const { data: score } = useGetMatchDetail(matchId);
   // const { data: endMatchScore } = useGetMatchEndScore(matchId);
 
   // Loading state
@@ -58,34 +60,26 @@ export function MatchScore({ matchId }: MatchCollapseProps) {
   }
 
   // Xây dựng items cho Collapse
-  const items: CollapseProps['items'] = Object.entries(logs).map(
-    ([roundKey, entries]) => {
-      // Gộp điểm cho từng team
-      const teamScores = entries.reduce<Record<number, number>>(
-        (acc, { team, points }) => {
-          acc[team] = (acc[team] || 0) + points;
-          return acc;
-        },
-        {}
-      );
+  const items: CollapseProps['items'] = score?.matchScoreDetails?.map(
+    (match) => {
+      const { round, team1Score, team2Score } = match;
+      const roundKey = `round_${round}`; // key của logs
+      const scoreSummary = `Đội 1: ${team1Score} - Đội 2: ${team2Score}`;
 
-      // Đảm bảo luôn có team 1 và team 2
-      const score1 = teamScores[1] ?? 0;
-      const score2 = teamScores[2] ?? 0;
-      const scoreSummary = `Đội 1: ${score1} - Đội 2: ${score2}`;
+      const roundLogs = logs[roundKey] || [];
 
-      // (Tuỳ chọn) Muốn timeline theo thứ tự thời gian thì sort trước:
-      const sortedEntries = [...entries].sort(
+      const sortedEntries = [...roundLogs].sort(
         (a, b) =>
           new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
       );
       const team1Entries = sortedEntries.filter((log) => log.team === 1);
       const team2Entries = sortedEntries.filter((log) => log.team === 2);
-      const renderTimeline = (logs: LogEntry[]) => (
+
+      const renderTimeline = (entries: LogEntry[]) => (
         <Timeline
           style={{ maxHeight: '200px', overflowY: 'auto', paddingTop: 20 }}
         >
-          {logs.map((log, idx) => (
+          {entries.map((log, idx) => (
             <Timeline.Item
               key={idx}
               color={log.team === 1 ? 'blue' : 'orange'}
@@ -103,7 +97,7 @@ export function MatchScore({ matchId }: MatchCollapseProps) {
                   {log.points > 0 ? `+${log.points}` : log.points}
                 </Text>
                 <Text type="secondary">
-                  {new Date(log.timestamp).toLocaleTimeString()}
+                  {new Date(log.timestamp).toLocaleString()}
                 </Text>
               </Space>
             </Timeline.Item>
@@ -115,18 +109,14 @@ export function MatchScore({ matchId }: MatchCollapseProps) {
         key: roundKey,
         label: (
           <Title level={4} style={{ margin: 0 }}>
-            {roundKey.replace('_', ' ').toUpperCase()} — {scoreSummary}
+            Round {round} — {scoreSummary}
           </Title>
         ),
         children: (
           <Card bordered className="mt-5">
             <Row gutter={16}>
               <Col span={12} style={{ background: 'rgba(254, 226, 171, 0.3)' }}>
-                <Title
-                  level={5}
-                  style={{ textAlign: 'center' }}
-                  className="rounded-3"
-                >
+                <Title level={5} style={{ textAlign: 'center' }}>
                   Team 1
                 </Title>
                 {renderTimeline(team1Entries)}
@@ -144,5 +134,11 @@ export function MatchScore({ matchId }: MatchCollapseProps) {
     }
   );
 
-  return <Collapse accordion bordered={false} items={items} />;
+  return (
+    <Collapse
+      accordion
+      bordered={false}
+      items={items || []} // Fallback to an empty array if items is undefined
+    />
+  );
 }

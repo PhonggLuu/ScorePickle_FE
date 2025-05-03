@@ -1,16 +1,26 @@
-import { useState, useEffect } from 'react';
-import { Card, Button, Typography, Badge, Avatar, Spin, notification, Tooltip, Divider, Modal } from 'antd';
-import { 
-  SearchOutlined, 
-  CheckOutlined, 
-  CloseOutlined, 
-  TrophyOutlined, 
+import { useState } from 'react';
+import {
+  Card,
+  Button,
+  Typography,
+  Badge,
+  Avatar,
+  Spin,
+  notification,
+  Tooltip,
+  Divider,
+  Modal,
+} from 'antd';
+import {
+  SearchOutlined,
+  CheckOutlined,
+  CloseOutlined,
+  TrophyOutlined,
   LoadingOutlined,
   ReloadOutlined,
-  UserOutlined,
-  TeamOutlined,
   ExclamationCircleOutlined,
-  FireOutlined
+  FireOutlined,
+  TeamOutlined,
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -38,7 +48,7 @@ const CompetitiveLayout = ({
   city,
   ranking,
   matchFormat = 1,
-  userName = "Player",
+  userName = 'Player',
   userAvatar,
 }: CompetitiveProps) => {
   const navigate = useNavigate();
@@ -47,8 +57,8 @@ const CompetitiveLayout = ({
   const [rival, setRival] = useState<any>(null);
   const [roomId, setRoomId] = useState<number | null>(null);
   const [confirmedPlayers, setConfirmedPlayers] = useState<number[]>([]);
-  const [scoreConfirmed, setScoreConfirmed] = useState(false);
-  const [readyForNewMatch, setReadyForNewMatch] = useState(false);
+  const [, setScoreConfirmed] = useState(false);
+  const [, setReadyForNewMatch] = useState(false);
 
   const { isConnected, findMatch, confirmScore } = useMatchHub({
     onMatchFound: (rival) => {
@@ -57,7 +67,9 @@ const CompetitiveLayout = ({
       setReadyForNewMatch(false);
       notification.success({
         message: 'Match Found!',
-        description: `You've been matched with ${rival.fullName || `Player ${rival.userId}`}`,
+        description: `You've been matched with ${
+          rival.fullName || `Player ${rival.userId}`
+        }`,
         placement: 'bottomRight',
       });
     },
@@ -118,7 +130,7 @@ const CompetitiveLayout = ({
       confirmScore(roomId, userId);
     }
   };
-  
+
   const handleGoToMatch = () => {
     if (roomId) {
       navigate(`/match-detail/${roomId}`);
@@ -140,7 +152,8 @@ const CompetitiveLayout = ({
     confirm({
       title: 'Find New Match',
       icon: <ExclamationCircleOutlined />,
-      content: 'Are you sure you want to abandon the current match and find a new one?',
+      content:
+        'Are you sure you want to abandon the current match and find a new one?',
       okText: 'Yes, Find New Match',
       okType: 'primary',
       cancelText: 'No, Stay Here',
@@ -162,24 +175,33 @@ const CompetitiveLayout = ({
       if (!isConnected) {
         return (
           <div className="matchmaking-connecting">
-            <Spin indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />} />
+            <Spin
+              indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />}
+            />
             <Text type="secondary">Connecting to matchmaking server...</Text>
           </div>
         );
       }
 
-      if (status.includes('Waiting') || status === '⏳ Waiting for opponent...') {
+      if (
+        status.includes('Waiting') ||
+        status === '⏳ Waiting for opponent...'
+      ) {
         return (
           <div className="matchmaking-searching">
-            <Spin indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />} />
+            <Spin
+              indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />}
+            />
             <Paragraph>
               <Text strong>Searching for opponents...</Text>
               <br />
-              <Text type="secondary">Looking for players in {city} with similar ranking</Text>
+              <Text type="secondary">
+                Looking for players in {city} with similar ranking
+              </Text>
             </Paragraph>
-            <Button 
-              danger 
-              icon={<CloseOutlined />} 
+            <Button
+              danger
+              icon={<CloseOutlined />}
               onClick={handleCancelSearch}
               size="middle"
               className="action-button"
@@ -205,22 +227,26 @@ const CompetitiveLayout = ({
                 <Text type="secondary">Ranking: {ranking}</Text>
               </div>
               <div className="versus-container">
-                <Text type="secondary" className="versus-text">VS</Text>
+                <Text type="secondary" className="versus-text">
+                  VS
+                </Text>
               </div>
               <div className="player">
                 <Avatar size="large">
                   {(rival?.fullName || 'R').charAt(0)}
                 </Avatar>
-                <Text strong>{rival?.fullName || `Player ${rival?.userId}`}</Text>
+                <Text strong>
+                  {rival?.fullName || `Player ${rival?.userId}`}
+                </Text>
                 <Text type="secondary">Ranking: {rival?.ranking || '?'}</Text>
               </div>
             </div>
             <Text type="secondary" className="status-text">
               <Spin size="small" /> Preparing match room...
             </Text>
-            
+
             {/* New Match button */}
-            <Button 
+            <Button
               onClick={handleFindNewMatch}
               icon={<ReloadOutlined />}
               size="middle"
@@ -232,7 +258,10 @@ const CompetitiveLayout = ({
         );
       }
 
-      if (roomId && (status.includes('Room Created') || status.includes('✅ Room Created'))) {
+      if (
+        roomId &&
+        (status.includes('Room Created') || status.includes('✅ Room Created'))
+      ) {
         return (
           <div className="matchmaking-room">
             <Badge.Ribbon text="Room Ready" color="green">
@@ -245,21 +274,49 @@ const CompetitiveLayout = ({
                   <Text strong>Match Score Confirmation:</Text>
                   <div className="confirmation-status">
                     <div className="player-confirmation">
-                      <Badge 
-                        status={confirmedPlayers.includes(userId) ? "success" : "processing"} 
+                      <Badge
+                        status={
+                          confirmedPlayers.includes(userId)
+                            ? 'success'
+                            : 'processing'
+                        }
                         text={
-                          <Tooltip title={confirmedPlayers.includes(userId) ? "You've confirmed the score" : "Waiting for your confirmation"}>
-                            <Text>{`You ${confirmedPlayers.includes(userId) ? '(Confirmed)' : '(Pending)'}`}</Text>
+                          <Tooltip
+                            title={
+                              confirmedPlayers.includes(userId)
+                                ? "You've confirmed the score"
+                                : 'Waiting for your confirmation'
+                            }
+                          >
+                            <Text>{`You ${
+                              confirmedPlayers.includes(userId)
+                                ? '(Confirmed)'
+                                : '(Pending)'
+                            }`}</Text>
                           </Tooltip>
-                        } 
+                        }
                       />
                     </div>
                     <div className="player-confirmation">
-                      <Badge 
-                        status={rival && confirmedPlayers.includes(rival.userId) ? "success" : "processing"} 
+                      <Badge
+                        status={
+                          rival && confirmedPlayers.includes(rival.userId)
+                            ? 'success'
+                            : 'processing'
+                        }
                         text={
-                          <Tooltip title={rival && confirmedPlayers.includes(rival.userId) ? "Opponent has confirmed" : "Waiting for opponent's confirmation"}>
-                            <Text>{`Opponent ${rival && confirmedPlayers.includes(rival.userId) ? '(Confirmed)' : '(Pending)'}`}</Text>
+                          <Tooltip
+                            title={
+                              rival && confirmedPlayers.includes(rival.userId)
+                                ? 'Opponent has confirmed'
+                                : "Waiting for opponent's confirmation"
+                            }
+                          >
+                            <Text>{`Opponent ${
+                              rival && confirmedPlayers.includes(rival.userId)
+                                ? '(Confirmed)'
+                                : '(Pending)'
+                            }`}</Text>
                           </Tooltip>
                         }
                       />
@@ -268,8 +325,8 @@ const CompetitiveLayout = ({
                 </div>
                 <Divider className="room-divider" />
                 <div className="action-buttons">
-                  <Button 
-                    type="primary" 
+                  <Button
+                    type="primary"
                     onClick={handleGoToMatch}
                     icon={<TrophyOutlined />}
                     block
@@ -277,19 +334,23 @@ const CompetitiveLayout = ({
                   >
                     View Match Details
                   </Button>
-                  <Button 
+                  <Button
                     onClick={handleConfirmScore}
                     icon={<CheckOutlined />}
                     disabled={confirmedPlayers.includes(userId)}
                     block
-                    type={confirmedPlayers.includes(userId) ? "default" : "primary"}
+                    type={
+                      confirmedPlayers.includes(userId) ? 'default' : 'primary'
+                    }
                     className="action-button"
                   >
-                    {confirmedPlayers.includes(userId) ? "Score Confirmed" : "Confirm Match Score"}
+                    {confirmedPlayers.includes(userId)
+                      ? 'Score Confirmed'
+                      : 'Confirm Match Score'}
                   </Button>
-                  
+
                   {/* New Find Match button */}
-                  <Button 
+                  <Button
                     onClick={handleFindNewMatch}
                     icon={<FireOutlined />}
                     type="default"
@@ -305,15 +366,20 @@ const CompetitiveLayout = ({
         );
       }
 
-      if (status.includes('Score confirmed') || status === '🏁 Score confirmed by both players') {
+      if (
+        status.includes('Score confirmed') ||
+        status === '🏁 Score confirmed by both players'
+      ) {
         return (
           <div className="matchmaking-score-confirmed">
             <div className="success-icon">✅</div>
-            <Text strong style={{ color: 'green' }}>Score confirmed by both players!</Text>
-            
+            <Text strong style={{ color: 'green' }}>
+              Score confirmed by both players!
+            </Text>
+
             <div className="action-buttons-stack">
-              <Button 
-                type="primary" 
+              <Button
+                type="primary"
                 onClick={handleGoToMatch}
                 icon={<TrophyOutlined />}
                 block
@@ -321,8 +387,8 @@ const CompetitiveLayout = ({
               >
                 View Match Results
               </Button>
-              
-              <Button 
+
+              <Button
                 onClick={handleFindMatch}
                 icon={<SearchOutlined />}
                 type="default"
@@ -343,9 +409,9 @@ const CompetitiveLayout = ({
             <TrophyOutlined className="large-trophy-icon" />
             <Text>Ready to play a competitive match?</Text>
           </div>
-          <Button 
-            type="primary" 
-            icon={<SearchOutlined />} 
+          <Button
+            type="primary"
+            icon={<SearchOutlined />}
             onClick={handleFindMatch}
             size="large"
             block
@@ -359,7 +425,7 @@ const CompetitiveLayout = ({
 
     return (
       <div className={`matchmaking-widget ${isMinimized ? 'minimized' : ''}`}>
-        <Card 
+        <Card
           className="matchmaking-card"
           title={
             <div className="card-header">
@@ -368,9 +434,9 @@ const CompetitiveLayout = ({
                 <span>Matchmaking</span>
               </div>
               <div className="header-actions">
-                <Button 
-                  type="text" 
-                  size="small" 
+                <Button
+                  type="text"
+                  size="small"
                   onClick={() => setIsMinimized(!isMinimized)}
                   icon={isMinimized ? <SearchOutlined /> : <CloseOutlined />}
                 />
@@ -380,9 +446,7 @@ const CompetitiveLayout = ({
           bordered={true}
         >
           {!isMinimized && (
-            <div className="matchmaking-content">
-              {renderWidgetContent()}
-            </div>
+            <div className="matchmaking-content">{renderWidgetContent()}</div>
           )}
         </Card>
       </div>
@@ -393,7 +457,7 @@ const CompetitiveLayout = ({
     <>
       {/* Main content */}
       {/* {renderMainContent()} */}
-      
+
       {/* Floating matchmaking widget */}
       {renderMatchmakingWidget()}
     </>
