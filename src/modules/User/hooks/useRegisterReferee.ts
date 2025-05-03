@@ -8,7 +8,7 @@ const registerReferees = async (
 ): Promise<RefereeResponse> => {
   const payload: RegisterUserRequest = {
     ...user,
-    RoleId: RoleFactory.Refree,
+    RoleId: RoleFactory.Referee,
   };
   const response = await Api.post('/User/create-referee', payload);
   if (response.statusCode !== 200) {
