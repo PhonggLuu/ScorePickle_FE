@@ -1,567 +1,652 @@
-// import React from 'react';
-// import { useState } from 'react';
-// import {
-//   Input,
-//   DatePicker,
-//   Avatar,
-//   Radio,
-//   Collapse,
-//   Typography,
-//   Tag,
-// } from 'antd';
-// import { UserOutlined } from '@ant-design/icons';
-// import 'bootstrap/dist/css/bootstrap.min.css';
-// import 'antd/dist/reset.css';
-// import type { CollapseProps } from 'antd';
-// import dayjs from 'dayjs';
-// import { MatchCategory, MatchFormat, Member } from '@src/modules/Match/models';
-// import { useParams } from 'react-router-dom';
-// import { useGetMatchDetail } from '@src/modules/Match/hooks/useGetMatchDetail';
-
-// const { Title, Text } = Typography;
-
-// export const MatchDetail: React.FC = () => {
-//   const [activeKey, setActiveKey] = useState<string | string[]>(['1']);
-//   const { id } = useParams<{ id: string }>();
-//   const { data } = useGetMatchDetail(Number(id || 0));
-
-//   // Safely extract members for each team
-//   if (data === undefined) {
-//     return;
-//   }
-//   const team1Members: Member[] = Array.isArray(data.teams[0]?.members)
-//     ? data.teams[0].members
-//     : [];
-//   const team2Members: Member[] = Array.isArray(data.teams[1]?.members)
-//     ? data.teams[1].members
-//     : [];
-
-//   // Helper to render a single member
-//   const renderMember = (member: Member) => {
-//     const pd = member.playerDetails || {};
-//     if (!pd) return null;
-//     const name =
-//       pd.firstName || pd.lastName
-//         ? `${pd.firstName ?? ''} ${pd.lastName ?? ''}`.trim()
-//         : pd.name || `Player ${member.playerId}`;
-//     const avatarUrl = pd.avatarUrl || undefined;
-//     const level = pd.userDetails?.experienceLevel ?? 0;
-
-//     return (
-//       <div
-//         key={member.id}
-//         className="selected-player border p-2 rounded-pill mb-2"
-//         style={{ background: 'rgba(177, 177, 177, 0.5)' }}
-//       >
-//         <Avatar
-//           src={avatarUrl}
-//           icon={!avatarUrl ? <UserOutlined /> : undefined}
-//         />
-//         <span className="ms-2">{name}</span>
-//         <Tag color="blue" className="ms-3">
-//           {level}
-//         </Tag>
-//       </div>
-//     );
-//   };
-
-//   const items: CollapseProps['items'] = [
-//     {
-//       key: '1',
-//       label: (
-//         <Title level={4} style={{ margin: 0 }}>
-//           Match
-//         </Title>
-//       ),
-//       children: (
-//         <div className="match-form">
-//           {/* Match Info Row */}
-//           <div className="row mb-4">
-//             <div className="col-md-4">
-//               <label className="form-label">Title</label>
-//               <Input className="rounded-pill p-3" value={data.title} readOnly />
-//             </div>
-//             <div className="col-md-4">
-//               <label className="form-label">Description</label>
-//               <Input
-//                 className="rounded-pill p-3"
-//                 value={data.description}
-//                 readOnly
-//               />
-//             </div>
-//             <div className="col-md-4">
-//               <label className="form-label">Date</label>
-//               <DatePicker
-//                 className="w-100 rounded-pill p-3"
-//                 value={dayjs(data.matchDate)}
-//                 showTime={{ format: 'HH:mm' }}
-//                 format="YYYY-MM-DD HH:mm"
-//                 disabled
-//               />
-//             </div>
-//           </div>
-
-//           {/* Teams and Players */}
-//           <div className="row mb-4">
-//             <div className="col-md-6">
-//               <label className="form-label">
-//                 {data.matchFormat === MatchFormat.SingleFemale ||
-//                 data.matchFormat === MatchFormat.SingleMale
-//                   ? 'Player 1'
-//                   : 'Team 1'}
-//               </label>
-//               {team1Members.map(renderMember)}
-
-//               <label className="form-label mt-4">
-//                 {data.matchFormat === MatchFormat.SingleFemale ||
-//                 data.matchFormat === MatchFormat.SingleMale
-//                   ? 'Player 2'
-//                   : 'Team 2'}
-//               </label>
-//               {team2Members.map(renderMember)}
-//             </div>
-
-//             {/* Match Settings */}
-//             <div className="col-md-6">
-//               <div className="d-flex justify-content-between align-items-center my-3">
-//                 <label className="form-label">Match Category</label>
-//                 <Radio.Group value={data.matchCategory} disabled>
-//                   <Radio.Button value={MatchCategory.Competitive}>
-//                     Competitive
-//                   </Radio.Button>
-//                   <Radio.Button value={MatchCategory.Custom}>
-//                     Friendly
-//                   </Radio.Button>
-//                 </Radio.Group>
-//               </div>
-
-//               <div className="d-flex justify-content-between align-items-center mb-3">
-//                 <label className="form-label">Match Type</label>
-//                 <Text>{data.matchFormat}</Text>
-//               </div>
-
-//               <div className="d-flex justify-content-between align-items-center mb-3">
-//                 <label className="form-label">Score to Win</label>
-//                 <Text>{data.winScore}</Text>
-//               </div>
-
-//               {/* <div className="d-flex justify-content-between align-items-center mb-3">
-//                 <label className="form-label">Venue</label>
-//                 <Card>
-//                         <Image src={data.venue.urlImage} />
-//                         <br />
-//                         <Text>{venue.name}</Text>
-//                       </Card>
-//               </div> */}
-
-//               <div className="d-flex justify-content-between align-items-center mb-3">
-//                 <label className="form-label">Referee</label>
-//                 <Text>{data.refereeId ? `ID: ${data.refereeId}` : 'TBD'}</Text>
-//               </div>
-//             </div>
-//           </div>
-//         </div>
-//       ),
-//     },
-//   ];
-
-//   return (
-//     <div className="container p-5">
-//       <div className="d-flex justify-content-between align-items-center">
-//         <h1 className="display-4 fw-bold mb-4 text-white">Match Detail</h1>
-//       </div>
-//       <div className="p-3 bg-light">
-//         <Collapse
-//           items={items}
-//           activeKey={activeKey}
-//           onChange={setActiveKey as (key: string | string[]) => void}
-//           bordered={false}
-//         />
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default MatchDetail;
-
-import { Button, DatePicker, Image, Modal } from 'antd';
-import { MapPin, Calendar, Trophy, Users } from 'lucide-react';
+import {
+  CalendarOutlined,
+  CheckCircleOutlined,
+  CloseCircleOutlined,
+  EditOutlined,
+  EnvironmentOutlined,
+  InfoCircleOutlined,
+  PlusCircleOutlined,
+  SaveOutlined,
+  TeamOutlined,
+  TrophyOutlined,
+  UserOutlined,
+} from '@ant-design/icons';
 import { useGetMatchDetail } from '@src/modules/Match/hooks/useGetMatchDetail';
-import { useParams } from 'react-router-dom';
+import { useJoinMatch } from '@src/modules/Match/hooks/useJoinMatch';
 import {
   MatchCategory,
   MatchFormat,
   MatchStatus,
 } from '@src/modules/Match/models';
-import dayjs from 'dayjs';
-import { PlusCircleOutlined } from '@ant-design/icons';
-import { useJoinMatch } from '@src/modules/Match/hooks/useJoinMatch';
-import { useState } from 'react';
-import { useSelector } from 'react-redux';
 import { RootState } from '@src/redux/store';
+import {
+  Avatar,
+  Badge,
+  Button,
+  Card,
+  Col,
+  Divider,
+  Empty,
+  Form,
+  Input,
+  Modal,
+  notification,
+  Row,
+  Select,
+  Skeleton,
+  Space,
+  Tag,
+  Typography,
+} from 'antd';
+import dayjs from 'dayjs';
+import { motion } from 'framer-motion';
+import { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
+import { useParams } from 'react-router-dom';
 import { MatchScore } from './components/MatchScore';
+import Paragraph from 'antd/es/typography/Paragraph';
+import { useUpdateMatch } from '@src/modules/Match/hooks/useUpdateMatch';
+import './styles/matchDetail.css';
+
+const { Text, Title } = Typography;
+const { TextArea } = Input;
+const { Option } = Select;
+
+const MotionRow = motion(Row);
+const MotionCard = motion(Card);
+const MotionCol = motion(Col);
 
 export default function MatchDetails() {
   const { id } = useParams<{ id: string }>();
-  const { data, refetch } = useGetMatchDetail(Number(id || 0));
-  const { mutate: joinMatch } = useJoinMatch();
-  const [isModalVisible, setIsModalVisible] = useState(false);
-  const user = useSelector((state: RootState) => state.auth.user);
+  const matchId = Number(id || 0);
+  const { data, isLoading, refetch } = useGetMatchDetail(matchId);
+  const { mutate: joinMatch, isPending: isJoining } = useJoinMatch();
+  const { mutate: updateMatchMutation, isPending: isUpdating } =
+    useUpdateMatch();
 
-  if (data === undefined) {
-    return;
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [joiningPosition, setJoiningPosition] = useState<number>(0);
+  const [isEditing, setIsEditing] = useState(false);
+  const [form] = Form.useForm();
+
+  const user = useSelector((state: RootState) => state.auth.user);
+  const isCurrentUserRoomOwner = user?.id === data?.roomOwner;
+
+  // Initialize form with match data when available
+  useEffect(() => {
+    if (data) {
+      form.setFieldsValue({
+        description: data.description,
+        status: data.status,
+      });
+    }
+  }, [data, form]);
+
+  if (isLoading) {
+    return (
+      <Card className="container mt-4 loading-card">
+        <Skeleton active avatar paragraph={{ rows: 6 }} />
+      </Card>
+    );
   }
 
-  const handleOnClick = () => setIsModalVisible(true);
+  if (!data) {
+    return (
+      <Card className="container mt-4">
+        <Empty
+          description="Match not found"
+          image={Empty.PRESENTED_IMAGE_SIMPLE}
+        />
+      </Card>
+    );
+  }
+
+  const isCompetitive = data.matchCategory === MatchCategory.Competitive;
+  const isSingleMatch = MatchFormat[data.matchFormat]
+    .toLowerCase()
+    .includes('single');
+
+  const statusColorMap: Record<
+    number,
+    'error' | 'processing' | 'success' | 'warning' | 'default'
+  > = {
+    0: 'processing', // Pending
+    1: 'success', // Active
+    2: 'warning', // In Progress
+    3: 'error', // Cancelled
+    4: 'default', // Completed
+  };
+  const statusColor:
+    | 'error'
+    | 'processing'
+    | 'success'
+    | 'warning'
+    | 'default' = statusColorMap[data.status] || 'default';
+
+  const handleOnClick = (position: number) => {
+    setJoiningPosition(position);
+    setIsModalVisible(true);
+  };
+
   const handleCancel = () => setIsModalVisible(false);
+
   const handleJoinMatch = () => {
     const payload = {
-      matchId: Number(id),
+      matchId: matchId,
       userJoinId: user?.id ?? 0,
+      position: joiningPosition,
     };
-    joinMatch({ data: payload });
+
+    joinMatch(
+      { data: payload },
+      {
+        onSuccess: () => {
+          notification.success({
+            message: 'Joined Successfully',
+            description: `You've been added to ${
+              joiningPosition <= 2 ? 'Team 1' : 'Team 2'
+            }, position ${joiningPosition % 2 === 0 ? 2 : 1}.`,
+          });
+          refetch();
+        },
+        onError: (error) => {
+          notification.error({
+            message: 'Failed to join',
+            description:
+              error.message || 'An error occurred while joining the match.',
+          });
+        },
+      }
+    );
+
     setIsModalVisible(false);
-    refetch();
+  };
+
+  const handleEdit = () => {
+    setIsEditing(true);
+  };
+
+  const handleUpdateMatch = (values: any) => {
+    // Only allow specific status transitions
+    let canUpdateStatus = false;
+    const currentStatus = data.status;
+    const newStatus = parseInt(values.status);
+
+    if (
+      currentStatus === MatchStatus.Scheduled &&
+      (newStatus === MatchStatus.Ongoing || newStatus === MatchStatus.Disabled)
+    ) {
+      canUpdateStatus = true;
+    } else if (
+      currentStatus === MatchStatus.Ongoing &&
+      newStatus === MatchStatus.Completed
+    ) {
+      canUpdateStatus = true;
+    }
+
+    // If trying to update to an invalid status, show error
+    if (currentStatus !== newStatus && !canUpdateStatus) {
+      notification.error({
+        message: 'Invalid Status Change',
+        description: `Cannot change status from ${MatchStatus[currentStatus]} to ${MatchStatus[newStatus]}.`,
+      });
+      return;
+    }
+
+    // Prepare update payload
+    const updatedData = {
+      id: matchId,
+      description: values.description,
+      status: newStatus,
+    };
+
+    updateMatchMutation(
+      {
+        data: updatedData,
+        id: data.id,
+      },
+      {
+        onSuccess: () => {
+          notification.success({
+            message: 'Match Updated',
+            description: 'Match details have been updated successfully.',
+          });
+          setIsEditing(false);
+          refetch();
+        },
+        onError: (error) => {
+          notification.error({
+            message: 'Update Failed',
+            description: error.message || 'Failed to update match details.',
+          });
+        },
+      }
+    );
+  };
+
+  const renderPlayer = (player: any, position: number) => {
+    if (player) {
+      return (
+        <motion.div
+          initial={{ scale: 0.9, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ duration: 0.3 }}
+          key={player.id}
+          className="text-center mb-3"
+        >
+          <Badge.Ribbon
+            text={
+              <Space>
+                <UserOutlined />
+                <span>Player {position}</span>
+              </Space>
+            }
+            color={position <= 2 ? '#1890ff' : '#f5222d'}
+          >
+            <Card bordered={false} className="player-card">
+              <Avatar
+                src={player.avatarUrl}
+                size={64}
+                icon={<UserOutlined />}
+              />
+              <div className="mt-3">
+                <Text strong>{`${player.firstName} ${player.lastName}`}</Text>
+                {player.rank && (
+                  <div>
+                    <Tag color="gold">{player.rank}</Tag>
+                  </div>
+                )}
+              </div>
+            </Card>
+          </Badge.Ribbon>
+        </motion.div>
+      );
+    } else {
+      return (
+        <motion.div
+          whileHover={{ scale: 1.05 }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.3 }}
+          className="text-center mb-3"
+        >
+          <Card
+            hoverable
+            bordered={false}
+            className={`empty-player-card ${position <= 2 ? 'team1' : 'team2'}`}
+            onClick={() => handleOnClick(position)}
+          >
+            <PlusCircleOutlined style={{ fontSize: 64 }} />
+            <div className="mt-2">
+              <Text type="secondary">Join as Player</Text>
+              <div className="join-tag">
+                <Tag color={position <= 2 ? 'blue' : 'red'}>
+                  Team {position <= 2 ? '1' : '2'}, Position{' '}
+                  {position % 2 === 0 ? 2 : 1}
+                </Tag>
+              </div>
+            </div>
+          </Card>
+        </motion.div>
+      );
+    }
+  };
+
+  const renderEditableInfo = () => {
+    if (isEditing) {
+      return (
+        <Form
+          form={form}
+          layout="vertical"
+          onFinish={handleUpdateMatch}
+          className="edit-form"
+        >
+          <Form.Item
+            name="description"
+            label="Description"
+            rules={[{ required: true, message: 'Please enter a description' }]}
+          >
+            <TextArea rows={3} placeholder="Enter match description" />
+          </Form.Item>
+
+          <Form.Item
+            name="status"
+            label="Status"
+            rules={[{ required: true, message: 'Please select a status' }]}
+          >
+            <Select placeholder="Select match status">
+              <Option
+                value={MatchStatus.Scheduled}
+                disabled={data.status !== MatchStatus.Scheduled}
+              >
+                {MatchStatus[MatchStatus.Scheduled]}
+              </Option>
+              <Option
+                value={MatchStatus.Ongoing}
+                disabled={data.status !== MatchStatus.Scheduled}
+              >
+                {MatchStatus[MatchStatus.Ongoing]}
+              </Option>
+              <Option
+                value={MatchStatus.Completed}
+                disabled={data.status !== MatchStatus.Ongoing}
+              >
+                {MatchStatus[MatchStatus.Completed]}
+              </Option>
+              <Option
+                value={MatchStatus.Disabled}
+                disabled={data.status !== MatchStatus.Scheduled}
+              >
+                {MatchStatus[MatchStatus.Disabled]}
+              </Option>
+            </Select>
+          </Form.Item>
+
+          <div className="form-actions">
+            <Button
+              onClick={() => setIsEditing(false)}
+              className="mr-2"
+              icon={<CloseCircleOutlined />}
+            >
+              Cancel
+            </Button>
+            <Button
+              type="primary"
+              htmlType="submit"
+              loading={isUpdating}
+              icon={<SaveOutlined />}
+            >
+              Save Changes
+            </Button>
+          </div>
+        </Form>
+      );
+    }
+
+    return (
+      <>
+        <Row gutter={[16, 24]}>
+          <Col xs={24} md={12}>
+            <Space direction="vertical" size="middle" style={{ width: '100%' }}>
+              <div className="info-item">
+                <EnvironmentOutlined className="info-icon" />
+                <Text>{data.description || 'No description'}</Text>
+              </div>
+
+              <div className="info-item">
+                <CalendarOutlined className="info-icon" />
+                <Text>
+                  {dayjs(data.matchDate).format('MMMM D, YYYY [at] h:mm A')}
+                </Text>
+              </div>
+            </Space>
+          </Col>
+
+          <Col xs={24} md={12}>
+            <Space direction="vertical" size="middle" style={{ width: '100%' }}>
+              <div className="info-item">
+                <TeamOutlined className="info-icon" />
+                <Text>Format: {MatchFormat[data.matchFormat]}</Text>
+              </div>
+
+              <div className="info-item">
+                <TrophyOutlined className="info-icon" />
+                <Text>
+                  Type:{' '}
+                  {data.matchCategory === MatchCategory.Custom
+                    ? 'Friendly'
+                    : 'Competitive'}
+                </Text>
+              </div>
+            </Space>
+          </Col>
+        </Row>
+
+        {isCurrentUserRoomOwner && (
+          <div className="edit-action">
+            <Button
+              type="primary"
+              icon={<EditOutlined />}
+              onClick={handleEdit}
+              className="edit-button"
+            >
+              Edit Details
+            </Button>
+          </div>
+        )}
+      </>
+    );
   };
 
   return (
-    <div className="card shadow container mt-4">
-      <div className="card-header text-dark">
-        <div className="d-flex justify-content-between align-items-center">
-          <h1 className="h3 my-3  ">{data.title}</h1>
-          <span className={`badge ${MatchStatus[data.status]}`}>
-            ${MatchStatus[data.status]}
-          </span>
-        </div>
-      </div>
-
-      <div className="card-body mb-3">
-        <div className="row mb-4">
-          <div className="col-md-6">
-            <div className="d-flex align-items-center mb-3">
-              <MapPin className="me-2" size={20} />
-              <span>Description: {data.description}</span>
-            </div>
-            <div className="d-flex align-items-center mb-3">
-              <Calendar className="me-2" size={20} />
-              Match Date:{' '}
-              <DatePicker
-                value={dayjs(data.matchDate)}
-                showTime={{ format: 'HH:mm' }}
-                format="YYYY-MM-DD HH:mm"
-                disabled
-              />
-            </div>
-          </div>
-          <div className="col-md-6">
-            <div className="d-flex align-items-center mb-3">
-              <Users className="me-2" size={20} />
-              <span>Match Format: {MatchFormat[data.matchFormat]}</span>
-            </div>
-            <div className="d-flex align-items-center mb-3">
-              <Trophy className="me-2" size={20} />
-              <span>
-                Match Type:{' '}
-                {data.matchCategory === MatchCategory.Custom
-                  ? 'Friendly'
-                  : 'Competitive'}
-              </span>
-            </div>
-          </div>
-        </div>
-
-        <div className="row">
-          <div className="col-12 mb-3">
-            <div className="row align-items-center text-center">
-              {/* Team 1 */}
-              <div className="col-md-5">
-                <div className="card h-100">
-                  <div className="card-header">
-                    <h3 className="h5 mb-0">{data.teams[0].name}</h3>
-                  </div>
-                  <div className="card-body">
-                    {MatchFormat[data.matchFormat]
-                      .toLowerCase()
-                      .includes('single') ? (
-                      data.player1 && (
-                        <div key={data.player1.id} className="my-5">
-                          <div className="d-flex flex-column align-items-center">
-                            <div
-                              className="position-relative mb-2"
-                              style={{ width: 50, height: 50 }}
-                            >
-                              <Image
-                                src={
-                                  data.player1.avatarUrl ??
-                                  'https://inkythuatso.com/uploads/thumbnails/800/2023/03/9-anh-dai-dien-trang-inkythuatso-03-15-27-03.jpg'
-                                }
-                                alt={data.player1.avatarUrl}
-                                className="rounded-circle object-fit-cover border"
-                              />
-                            </div>
-                            <h4 className="h6 mb-1">{`${data.player1.firstName} ${data.player1.lastName}`}</h4>
-                          </div>
-                        </div>
-                      )
-                    ) : (
-                      <>
-                        {data.player1 && (
-                          <div
-                            key={data.player1 ? data.player1.id : 0}
-                            className="my-5"
-                          >
-                            <div className="d-flex flex-column align-items-center">
-                              <div
-                                className="position-relative mb-2"
-                                style={{ width: 50, height: 50 }}
-                              >
-                                <Image
-                                  src={
-                                    data.player1
-                                      ? data.player1.avatarUrl
-                                      : 'https://inkythuatso.com/uploads/thumbnails/800/2023/03/9-anh-dai-dien-trang-inkythuatso-03-15-27-03.jpg'
-                                  }
-                                  alt={
-                                    data.player1
-                                      ? `${data.player1.firstName} ${data.player1.lastName}`
-                                      : ''
-                                  }
-                                  className="rounded-circle object-fit-cover border"
-                                />
-                              </div>
-                              <h4 className="h6 mb-1">
-                                {data.player1
-                                  ? `${data.player1.firstName} ${data.player1.lastName}`
-                                  : ''}
-                              </h4>
-                            </div>
-                          </div>
-                        )}
-
-                        {data.player2 && (
-                          <div
-                            key={data.player2 ? data.player2.id : 0}
-                            className="my-5"
-                          >
-                            <div className="d-flex flex-column align-items-center">
-                              <div
-                                className="position-relative mb-2"
-                                style={{ width: 50, height: 50 }}
-                              >
-                                <Image
-                                  src={
-                                    data.player2
-                                      ? data.player2.avatarUrl
-                                      : 'https://inkythuatso.com/uploads/thumbnails/800/2023/03/9-anh-dai-dien-trang-inkythuatso-03-15-27-03.jpg'
-                                  }
-                                  alt={
-                                    data.player2
-                                      ? `${data.player2.firstName} ${data.player2.lastName}`
-                                      : ''
-                                  }
-                                  className="rounded-circle object-fit-cover border"
-                                />
-                              </div>
-                              <h4 className="h6 mb-1">
-                                {data.player2
-                                  ? `${data.player2.firstName} ${data.player2.lastName}`
-                                  : ''}
-                              </h4>
-                            </div>
-                          </div>
-                        )}
-                      </>
-                    )}
-                  </div>
-                </div>
-              </div>
-
-              {/* Score */}
-              <div className="col-md-2 my-3 my-md-0">
-                <div className="d-flex justify-content-center align-items-center">
-                  <div className="display-4 fw-bold">
-                    {/* {data.teams[0].id} - {data.teams[1].id} */}
-                  </div>
-                </div>
-              </div>
-
-              {/* Team 2 */}
-              <div className="col-md-5">
-                <div className="card h-100">
-                  <div className="card-header">
-                    <h3 className="h5 mb-0">{data.teams[1].name}</h3>
-                  </div>
-                  <div className="card-body">
-                    {MatchFormat[data.matchFormat]
-                      .toLowerCase()
-                      .includes('single') ? (
-                      data.player3 ? (
-                        <div key={data.player3.id} className="my-5">
-                          <div className="d-flex flex-column align-items-center">
-                            <div
-                              className="position-relative mb-2"
-                              style={{ width: 50, height: 50 }}
-                            >
-                              <Image
-                                src={
-                                  data.player3.avatarUrl ??
-                                  'https://inkythuatso.com/uploads/thumbnails/800/2023/03/9-anh-dai-dien-trang-inkythuatso-03-15-27-03.jpg'
-                                }
-                                alt={data.player3.avatarUrl}
-                                className="rounded-circle object-fit-cover border"
-                              />
-                            </div>
-                            <h4 className="h6 mb-1">{`${data.player3.firstName} ${data.player3.lastName}`}</h4>
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="my-5">
-                          <div className="d-flex flex-column align-items-center">
-                            <div
-                              className="position-relative mb-2"
-                              style={{ width: 50, height: 50 }}
-                            >
-                              <PlusCircleOutlined
-                                style={{ fontSize: '50px', cursor: 'pointer' }}
-                                className="rounded-circle object-fit-cover border"
-                                onClick={handleOnClick}
-                              />
-                            </div>
-                            <h4 className="h6 mb-1">Empty</h4>
-                          </div>
-                        </div>
-                      )
-                    ) : (
-                      <>
-                        {data.player3 ? (
-                          <div
-                            key={data.player3 ? data.player3.id : 0}
-                            className="my-5"
-                          >
-                            <div className="d-flex flex-column align-items-center">
-                              <div
-                                className="position-relative mb-2"
-                                style={{ width: 50, height: 50 }}
-                              >
-                                <Image
-                                  src={
-                                    data.player3
-                                      ? data.player3.avatarUrl
-                                      : 'https://inkythuatso.com/uploads/thumbnails/800/2023/03/9-anh-dai-dien-trang-inkythuatso-03-15-27-03.jpg'
-                                  }
-                                  alt={
-                                    data.player3
-                                      ? `${data.player3.firstName} ${data.player3.lastName}`
-                                      : ''
-                                  }
-                                  className="rounded-circle object-fit-cover border"
-                                />
-                              </div>
-                              <h4 className="h6 mb-1">
-                                {data.player3
-                                  ? `${data.player3.firstName} ${data.player3.lastName}`
-                                  : ''}
-                              </h4>
-                            </div>
-                          </div>
-                        ) : (
-                          <div className="my-5">
-                            <div className="d-flex flex-column align-items-center">
-                              <div
-                                className="position-relative mb-2"
-                                style={{ width: 50, height: 50 }}
-                              >
-                                <PlusCircleOutlined
-                                  style={{
-                                    fontSize: '50px',
-                                    cursor: 'pointer',
-                                  }}
-                                  className="rounded-circle object-fit-cover border"
-                                  onClick={handleOnClick}
-                                />
-                              </div>
-                              <h4 className="h6 mb-1">Empty</h4>
-                            </div>
-                          </div>
-                        )}
-
-                        {data.player4 ? (
-                          <div
-                            key={data.player4 ? data.player4.id : 0}
-                            className="my-5"
-                          >
-                            <div className="d-flex flex-column align-items-center">
-                              <div
-                                className="position-relative mb-2"
-                                style={{ width: 50, height: 50 }}
-                              >
-                                <Image
-                                  src={
-                                    data.player4
-                                      ? data.player4.avatarUrl
-                                      : 'https://inkythuatso.com/uploads/thumbnails/800/2023/03/9-anh-dai-dien-trang-inkythuatso-03-15-27-03.jpg'
-                                  }
-                                  alt={
-                                    data.player4
-                                      ? `${data.player4.firstName} ${data.player4.lastName}`
-                                      : ''
-                                  }
-                                  className="rounded-circle object-fit-cover border"
-                                />
-                              </div>
-                              <h4 className="h6 mb-1">
-                                {data.player4
-                                  ? `${data.player4.firstName} ${data.player4.lastName}`
-                                  : ''}
-                              </h4>
-                            </div>
-                          </div>
-                        ) : (
-                          <div className="my-5">
-                            <div className="d-flex flex-column align-items-center">
-                              <div
-                                className="position-relative mb-2"
-                                style={{ width: 50, height: 50 }}
-                              >
-                                <PlusCircleOutlined
-                                  style={{
-                                    fontSize: '50px',
-                                    cursor: 'pointer',
-                                  }}
-                                  className="rounded-circle object-fit-cover border"
-                                  onClick={handleOnClick}
-                                />
-                              </div>
-                              <h4 className="h6 mb-1">Empty</h4>
-                            </div>
-                          </div>
-                        )}
-                      </>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <MatchScore matchId={Number(id)} />
-        </div>
-        <Modal
-          title="Join Match"
-          visible={isModalVisible}
-          onCancel={handleCancel}
-          footer={[
-            <Button key="no" onClick={handleCancel}>
-              No
-            </Button>,
-            <Button key="yes" type="primary" onClick={() => handleJoinMatch()}>
-              Yes
-            </Button>,
-          ]}
+    <MotionRow
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      className="container mt-4"
+    >
+      <Col span={24}>
+        <MotionCard
+          title={
+            <Row justify="space-between" align="middle">
+              <Col>
+                <Title level={3} style={{ margin: 0 }}>
+                  {data.title}
+                </Title>
+              </Col>
+              <Col>
+                <Badge status={statusColor} text={MatchStatus[data.status]} />
+              </Col>
+            </Row>
+          }
+          className="match-detail-card"
         >
-          <p>Do you wanna join this match?</p>
-        </Modal>
-      </div>
-    </div>
+          <Divider orientation="left" className="section-divider">
+            <Space>
+              <TeamOutlined />
+              <span className="divider-title">Teams</span>
+            </Space>
+          </Divider>
+
+          <Row gutter={16} justify="center" align="middle" style={{ marginBottom: '16px' }}>
+            {/* Team 1 */}
+            <MotionCol
+              xs={24}
+              md={11}
+              initial={{ x: -50, opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+            >
+              <Card
+                title={
+                  <div className="team-header team1-header">
+                    <TeamOutlined className="team-icon" />
+                    <Text strong>{data.teams[0]?.name || 'Team 1'}</Text>
+                  </div>
+                }
+                className="team-card team1-card"
+                bordered={false}
+                style={{
+                  background: '#fff',
+                }}
+              >
+                {isSingleMatch ? (
+                  renderPlayer(data.player1, 1)
+                ) : (
+                  <>
+                    {renderPlayer(data.player1, 1)}
+                    {renderPlayer(data.player2, 2)}
+                  </>
+                )}
+              </Card>
+            </MotionCol>
+
+            {/* VS */}
+            <Col xs={24} md={2} className="text-center">
+              <motion.div
+                initial={{ scale: 0, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{
+                  duration: 0.5,
+                  delay: 0.4,
+                  type: 'spring',
+                  stiffness: 200,
+                }}
+                className="vs-container"
+                whileHover={{ scale: 1.1 }}
+              >
+                <Text className="vs-text">VS</Text>
+              </motion.div>
+            </Col>
+
+            {/* Team 2 */}
+            <MotionCol
+              xs={24}
+              md={11}
+              initial={{ x: 50, opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              transition={{ duration: 0.5, delay: 0.3 }}
+            >
+              <Card
+                title={
+                  <div className="team-header team2-header">
+                    <TeamOutlined className="team-icon" />
+                    <Text strong>{data.teams[1]?.name || 'Team 2'}</Text>
+                  </div>
+                }
+                className="team-card team2-card"
+                bordered={false}
+                style={{
+                  background: '#fff',
+                }}
+              >
+                {isSingleMatch ? (
+                  renderPlayer(data.player3, 3)
+                ) : (
+                  <>
+                    {renderPlayer(data.player3, 3)}
+                    {renderPlayer(data.player4, 4)}
+                  </>
+                )}
+              </Card>
+            </MotionCol>
+          </Row>
+          {/* Editable information section */}
+          {renderEditableInfo()}
+
+          {/* Only show scores for non-competitive matches */}
+          {!isCompetitive && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.5 }}
+            >
+              <Divider orientation="left" className="section-divider">
+                <Space>
+                  <TrophyOutlined />
+                  <span className="divider-title">Scores</span>
+                </Space>
+              </Divider>
+              <MatchScore matchId={matchId} />
+            </motion.div>
+          )}
+
+          {/* For competitive matches - show info message */}
+          {isCompetitive && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5, delay: 0.5 }}
+              className="mt-4"
+            >
+              <Card className="info-card">
+                <Space align="start">
+                  <InfoCircleOutlined className="info-icon-large" />
+                  <div>
+                    <Text strong className="competitive-title">
+                      Competitive Match
+                    </Text>
+                    <Paragraph className="competitive-info">
+                      Scores for competitive matches are managed through the
+                      matchmaking system. Players need to confirm scores after
+                      the match is completed.
+                    </Paragraph>
+                    <div className="competitive-badges">
+                      <Tag color="gold" icon={<TrophyOutlined />}>
+                        Ranking Points
+                      </Tag>
+                      <Tag color="cyan" icon={<TeamOutlined />}>
+                        Leaderboard Impact
+                      </Tag>
+                    </div>
+                  </div>
+                </Space>
+              </Card>
+            </motion.div>
+          )}
+        </MotionCard>
+      </Col>
+
+      {/* Join Match Modal */}
+      <Modal
+        title={
+          <div className="modal-title">
+            <TeamOutlined className="modal-icon" />
+            Join Match
+          </div>
+        }
+        open={isModalVisible}
+        onCancel={handleCancel}
+        className="join-match-modal"
+        footer={[
+          <Button key="no" onClick={handleCancel}>
+            Cancel
+          </Button>,
+          <Button
+            key="yes"
+            type="primary"
+            loading={isJoining}
+            onClick={handleJoinMatch}
+            icon={<CheckCircleOutlined />}
+          >
+            Confirm Join
+          </Button>,
+        ]}
+      >
+        <div className="modal-content">
+          <div
+            className="modal-F-icon"
+            style={{
+              background: joiningPosition <= 2 ? '#e6f7ff' : '#fff1f0',
+              color: joiningPosition <= 2 ? '#1890ff' : '#f5222d',
+            }}
+          >
+            <TeamOutlined />
+          </div>
+
+          <Title level={4} className="modal-question">
+            Ready to join this match?
+          </Title>
+
+          <Space align="center" className="modal-detail">
+            <Badge color={joiningPosition <= 2 ? 'blue' : 'red'} />
+            <Text>
+              You'll join{' '}
+              <strong>{joiningPosition <= 2 ? 'Team 1' : 'Team 2'}</strong>, as
+              Player {joiningPosition % 2 === 0 ? 2 : 1}
+            </Text>
+          </Space>
+
+          <div className="modal-match-detail">
+            <Tag color="blue" icon={<CalendarOutlined />}>
+              {dayjs(data.matchDate).format('MMM D, YYYY')}
+            </Tag>
+            <Tag color="purple" icon={<TeamOutlined />}>
+              {MatchFormat[data.matchFormat]}
+            </Tag>
+          </div>
+        </div>
+      </Modal>
+    </MotionRow>
   );
 }

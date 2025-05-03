@@ -48,7 +48,6 @@ import {
   StaffPage,
   // Import the (player view)
   TournamentPage,
-  RankingPage,
   RulePage,
   ContentPage,
   // Admin pages
@@ -105,6 +104,7 @@ import SponsorshipReturn from '@src/pages/tournament/SponsorshipReturn.tsx';
 import { useSelector } from 'react-redux';
 import CompetitiveLayout from '@src/layouts/competitive/index.tsx';
 import { RootState } from '@src/redux/store.ts';
+import RankingPage from '@src/pages/rankingPage/RankingPage.tsx';
 
 // Custom scroll restoration function
 export const ScrollToTop: React.FC = () => {
@@ -131,12 +131,12 @@ const PageWrapper = ({ children }: PageProps) => {
 
   // Only show the competitive matchmaking component if user is logged in and is a player (roleId === 1)
   const showCompetitive = !!user?.id && user?.roleId === 1;
-
+  console.log(showCompetitive);
+  
   return (
     <>
       <ScrollToTop />
       {children}
-
       {showCompetitive && (
         <CompetitiveLayout
           userId={user.id}

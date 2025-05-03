@@ -1,1 +1,0 @@
-export { RankingPage } from './RankingPage';

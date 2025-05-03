@@ -8,7 +8,7 @@ export * from './errors';
 export * from './tournament';
 export * from './user';
 export * from './tournamentPage';
-export * from './rankingPage';
+export * from './rankingPage/RankingPage.tsx';
 export * from './rulePage';
 export * from './rule';
 export * from './tournament/Admin';

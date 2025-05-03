@@ -32,11 +32,9 @@ export const axiosInstance: AxiosInstance = axios.create(apiRequestConfig);
 // -- Request --
 axiosInstance.interceptors.request.use(
   (cf) => {
-    console.log('Request Interceptor:', cf);
     return apiRequestInterceptor(cf);
   },
   (err) => {
-    console.error('Request Interceptor Error:', err);
     return apiFailureRequestInterceptor(err);
   }
 );
@@ -44,11 +42,9 @@ axiosInstance.interceptors.request.use(
 // -- Response --
 axiosInstance.interceptors.response.use(
   (res) => {
-    console.log('Response Interceptor:', res);
     return apiSuccessResponseInterceptor(res);
   },
   (err) => {
-    console.error('Response Interceptor Error:', err);
     return apiFailureResponseInterceptor(err);
   }
 );

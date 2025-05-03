@@ -60,12 +60,10 @@ export const apiFailureRequestInterceptor = async (error: unknown) => {
 export const apiSuccessResponseInterceptor = async (
   response: AxiosResponse
 ): Promise<AxiosResponse['data']> => {
-  console.log('Response Data:', response.data);
   return response.data;
 };
 
 export const apiFailureResponseInterceptor = async (error: AxiosError) => {
-  console.error('Response Error:', error);
   if (error.response) {
     if (error.response.status === 401) {
       try {

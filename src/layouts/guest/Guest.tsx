@@ -375,7 +375,7 @@ export const GuestLayout = () => {
                           icon={item.icon}
                           className={`nav-link ${
                             isActive(item.path, item.exact) ? 'active' : ''
-                          }`}
+                          } font-weight-500`}
                         >
                           {item.label}
                         </Button>
@@ -389,27 +389,35 @@ export const GuestLayout = () => {
                   {user ? (
                     <Flex gap="small" align="center">
                       {userMenuItems.map((item) => (
-                        <motion.div
-                          key={item.path}
-                          whileHover={{ y: -2 }}
-                          whileTap={{ scale: 0.95 }}
+                      <motion.div
+                        key={item.path}
+                        whileHover={{ y: -3, scale: 1.05 }}
+                        whileTap={{ scale: 0.9 }}
+                      >
+                        <Link to={item.path} className="nav-link-container">
+                        <Button
+                          type={
+                          isActive(item.path, item.exact)
+                            ? 'primary'
+                            : 'text'
+                          }
+                          icon={item.icon}
+                          className={`nav-link ${
+                          isActive(item.path, item.exact) ? 'active' : ''
+                          } font-weight-600`}
+                          style={{
+                          fontWeight: 600,
+                          textTransform: 'uppercase',
+                          letterSpacing: '0.5px',
+                          boxShadow: isActive(item.path, item.exact) 
+                            ? '0 4px 8px rgba(0,0,0,0.15)' 
+                            : 'none'
+                          }}
                         >
-                          <Link to={item.path} className="nav-link-container">
-                            <Button
-                              type={
-                                isActive(item.path, item.exact)
-                                  ? 'primary'
-                                  : 'text'
-                              }
-                              icon={item.icon}
-                              className={`nav-link ${
-                                isActive(item.path, item.exact) ? 'active' : ''
-                              }`}
-                            >
-                              {item.label}
-                            </Button>
-                          </Link>
-                        </motion.div>
+                          {item.label}
+                        </Button>
+                        </Link>
+                      </motion.div>
                       ))}
 
                       {/* Notification Button */}
