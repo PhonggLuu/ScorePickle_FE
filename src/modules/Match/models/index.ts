@@ -216,7 +216,7 @@ export interface MatchAndScore {
   matchScoreDetails: MatchScoreDetail[] | null | undefined;
 }
 
-interface MatchScoreDetail {
+export interface MatchScoreDetail {
   matchScoreId: number;
   round: number;
   note: string;
