@@ -1,13 +1,5 @@
 import React, { useMemo } from 'react';
-import {
-  Avatar,
-  Card,
-  Col,
-  Row,
-  Table,
-  Tag,
-  Typography,
-} from 'antd';
+import { Avatar, Card, Col, Row, Table, Tag, Typography } from 'antd';
 import { TrophyOutlined } from '@ant-design/icons';
 import { motion } from 'framer-motion';
 import { useSelector } from 'react-redux';
@@ -44,7 +36,7 @@ const getMedalIcon = (rank: number) => {
 };
 
 const RankingPage: React.FC = () => {
-  const { data: leaderboard = [], isLoading } = useGetTopPlayer();
+  const { data: leaderboard = [] } = useGetTopPlayer();
   const userId = useSelector((state: RootState) => state.auth.user?.id);
 
   const topThreePlayers = useMemo(() => leaderboard.slice(0, 3), [leaderboard]);
@@ -68,7 +60,10 @@ const RankingPage: React.FC = () => {
       render: (text: string, record: TopPlayer) => (
         <div style={{ display: 'flex', alignItems: 'center' }}>
           <Avatar src={record.avatar} style={{ marginRight: 8 }} />
-          <Text strong style={{ color: record.userId === userId ? '#1677ff' : 'inherit' }}>
+          <Text
+            strong
+            style={{ color: record.userId === userId ? '#1677ff' : 'inherit' }}
+          >
             {text} {record.userId === userId && '(You)'}
           </Text>
         </div>
@@ -91,7 +86,8 @@ const RankingPage: React.FC = () => {
   return (
     <motion.div
       style={{
-        background: 'linear-gradient(to right, rgb(30, 58, 138), rgb(59, 130, 246))',
+        background:
+          'linear-gradient(to right, rgb(30, 58, 138), rgb(59, 130, 246))',
         minHeight: '100vh',
         padding: '80px 20px',
         borderRadius: 6,
@@ -102,7 +98,10 @@ const RankingPage: React.FC = () => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
     >
-      <Title level={2} style={{ textAlign: 'center', color: 'white', marginBottom: 40 }}>
+      <Title
+        level={2}
+        style={{ textAlign: 'center', color: 'white', marginBottom: 40 }}
+      >
         <TrophyOutlined style={{ color: '#FFD700', marginRight: 10 }} />
         Top Players
       </Title>
@@ -166,7 +165,9 @@ const RankingPage: React.FC = () => {
               </Text>
               <br />
               <Tag color="green">{currentUserRank.player.totalWins} Wins</Tag>
-              <Tag color="blue">{currentUserRank.player.rankingPoint} Points</Tag>
+              <Tag color="blue">
+                {currentUserRank.player.rankingPoint} Points
+              </Tag>
             </Col>
           </Row>
         </Card>
