@@ -50,7 +50,6 @@ import { MatchScore } from './components/MatchScore';
 import Paragraph from 'antd/es/typography/Paragraph';
 import { useUpdateMatch } from '@src/modules/Match/hooks/useUpdateMatch';
 import './styles/matchDetail.css';
-import MatchScoreModal from '../tournament/containers/MatchScoreModal';
 import { MatchConfirmationModal } from './components/MatchConfirmationModal';
 
 const { Text, Title } = Typography;
@@ -400,8 +399,8 @@ export default function MatchDetails() {
                 <Text>
                   Type:{' '}
                   {data.matchCategory === MatchCategory.Custom
-                    ? 'Friendly' 
-                    : MatchCategory.Tournament 
+                    ? 'Friendly'
+                    : MatchCategory.Tournament
                       ? 'Tournament'
                       : 'Competitive'}
                 </Text>
@@ -463,20 +462,20 @@ export default function MatchDetails() {
         return (
           <div className="status-action-buttons">
             <div
-                style={{
-                  display: 'flex',
-                  justifyContent: 'end',
-                  marginBottom: 16,
-                }}
+              style={{
+                display: 'flex',
+                justifyContent: 'end',
+                marginBottom: 16,
+              }}
+            >
+              <Button
+                type="primary"
+                icon={<TrophyOutlined />}
+                onClick={() => setIsScoreModalVisible(true)}
               >
-                <Button
-                  type="primary"
-                  icon={<TrophyOutlined />}
-                  onClick={() => setIsScoreModalVisible(true)}
-                >
-                  Manage Score
-                </Button>
-              </div>
+                Manage Score
+              </Button>
+            </div>
             <Button
               type="primary"
               icon={<CheckCircleOutlined />}

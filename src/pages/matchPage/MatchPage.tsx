@@ -7,7 +7,6 @@ import { SearchOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { useGetAllMatches } from '@src/modules/Match/hooks/useGetAllCompetitiveAndCustomMatch';
 import MatchListCard from './components/MatchListCard';
-import { Bold } from 'lucide-react';
 
 export const MatchesPage: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -72,7 +71,7 @@ export const MatchesPage: React.FC = () => {
       <div className="flex-grow-1 container py-4">
         <div className="d-flex align-items-center mb-4">
           <h1 className="display-4 fw-bold mb-0">Matches</h1>
-            <Button
+          <Button
             onClick={navigateCreateMatch}
             onMouseEnter={() => setIsHover(true)}
             onMouseLeave={() => setIsHover(false)}
@@ -85,16 +84,20 @@ export const MatchesPage: React.FC = () => {
               background: isHover ? '#ffffff' : '#ffffff',
               color: '#1890ff',
               borderRadius: '40px',
-              boxShadow: isHover ? '0 8px 16px rgba(24, 144, 255, 0.3)' : '0 4px 8px rgba(24, 144, 255, 0.2)',
+              boxShadow: isHover
+                ? '0 8px 16px rgba(24, 144, 255, 0.3)'
+                : '0 4px 8px rgba(24, 144, 255, 0.2)',
               border: 'none',
               padding: '10px 20px',
-              height: 'auto'
+              height: 'auto',
             }}
+          >
+            <span
+              style={{ fontSize: '16px', fontWeight: 'bold', color: '#096dd9' }}
             >
-            <span style={{ fontSize: '16px', fontWeight: 'bold', color: '#096dd9' }}>
               + Create Match
             </span>
-            </Button>
+          </Button>
         </div>
 
         <div

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { message } from 'antd';
-import { ExtendMatchDetail, IMatch } from '@src/modules/Match/models';
+import { ExtendMatchDetail } from '@src/modules/Match/models';
 
 // Constants for localStorage
 const MATCH_SCORES_STORAGE_KEY = 'pickleball_match_scores';

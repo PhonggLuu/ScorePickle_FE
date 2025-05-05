@@ -29,7 +29,11 @@ import {
 } from 'antd';
 import type { ColumnsType, ColumnType } from 'antd/es/table';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { IMatch, MatchStatus } from '@src/modules/Match/models';
+import {
+  ExtendMatchDetail,
+  IMatch,
+  MatchStatus,
+} from '@src/modules/Match/models';
 import { useGetMatchByTournamentId } from '@src/modules/Match/hooks/useGetMatchByTournamentId';
 import { Match, Member } from '@src/modules/Tournament/models';
 import { fetchUserById } from '@src/modules/User/hooks/useGetUserById';
@@ -72,7 +76,7 @@ const MatchRoom = ({ id }: MatchRoomProps) => {
   const [isScoreModalVisible, setIsScoreModalVisible] =
     useState<boolean>(false);
   const [selectedMatchForScores, setSelectedMatchForScores] =
-    useState<IMatch | null>(null);
+    useState<ExtendMatchDetail | null>(null);
 
   // Calculate statistics
   const statistics = useMemo(() => {
@@ -528,29 +532,31 @@ const MatchRoom = ({ id }: MatchRoomProps) => {
     {
       title: 'Actions',
       key: 'actions',
-      render: (record: any) => (
-        <Space>
-          <Button
-            type="primary"
-            icon={<EditOutlined />}
-            onClick={() => {
-              setSelectedMatch(record);
-              setIsUpdateModalVisible(true);
-            }}
-          >
-            Update
-          </Button>
-          <Button
-            icon={<ReloadOutlined />}
-            onClick={() => {
-              setSelectedMatchForScores(record);
-              setIsScoreModalVisible(true);
-            }}
-          >
-            Scores
-          </Button>
-        </Space>
-      ),
+      render: (record: any) =>
+        record.status !== MatchStatus.Completed &&
+        record.status !== MatchStatus.Disabled ? (
+          <Space>
+            <Button
+              type="primary"
+              icon={<EditOutlined />}
+              onClick={() => {
+                setSelectedMatch(record);
+                setIsUpdateModalVisible(true);
+              }}
+            >
+              Update
+            </Button>
+            <Button
+              icon={<ReloadOutlined />}
+              onClick={() => {
+                setSelectedMatchForScores(record);
+                setIsScoreModalVisible(true);
+              }}
+            >
+              Scores
+            </Button>
+          </Space>
+        ) : null,
     },
   ];
 
@@ -890,7 +896,7 @@ const MatchRoom = ({ id }: MatchRoomProps) => {
               setIsScoreModalVisible(false);
               setSelectedMatchForScores(null);
             }}
-            match={selectedMatchForScores}
+            match={selectedMatchForScores as ExtendMatchDetail}
             refetch={refetch}
           />
         )}

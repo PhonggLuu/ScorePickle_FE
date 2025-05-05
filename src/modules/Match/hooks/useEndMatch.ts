@@ -18,7 +18,6 @@ export interface EndMatchResponse {
   message?: string;
 }
 
-
 /**
  * Sends a request to end a match with the provided scores
  * @param endMatchData The match completion data including scores
@@ -28,7 +27,7 @@ export const endMatch = async (
   endMatchData: EndMatchRequest
 ): Promise<EndMatchResponse> => {
   const response = await Api.post<EndMatchResponse>(
-    'Match/EndMatchNormalAndCompetitive', 
+    'Match/EndMatchNormalAndCompetitive',
     endMatchData
   );
   return response.data;
@@ -40,16 +39,16 @@ export const endMatch = async (
  */
 export function useEndMatch() {
   const queryClient = useQueryClient();
-  
+
   return useMutation<EndMatchResponse, Error, { data: EndMatchRequest }>({
     mutationFn: ({ data }) => endMatch(data),
-    onSuccess: (data) => {
+    onSuccess: () => {
       notification.success({
         message: 'Match Completed',
         description: 'The match has been completed with the final scores.',
         placement: 'topRight',
       });
-      
+
       // Invalidate related queries to refetch updated data
       queryClient.invalidateQueries({ queryKey: [END_MATCH] });
       queryClient.invalidateQueries({ queryKey: ['matches'] });
@@ -58,7 +57,8 @@ export function useEndMatch() {
     onError: (error) => {
       notification.error({
         message: 'Failed to Complete Match',
-        description: error.message || 'An error occurred while completing the match.',
+        description:
+          error.message || 'An error occurred while completing the match.',
         placement: 'topRight',
       });
     },

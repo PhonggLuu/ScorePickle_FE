@@ -6,8 +6,6 @@ export const GET_MATCH_BY_REFEREE_ID = 'GET_MATCH_BY_REFEREE_ID';
 
 const fetchMatchByRefereeId = async (refereeId: number): Promise<Match[]> => {
   try {
-    console.log('heeree');
-
     const response = await Api.get(`/Refree/GetMatchByRefeeId/${refereeId}`);
     return response.data as Match[];
   } catch (error) {

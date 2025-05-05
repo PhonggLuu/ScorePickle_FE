@@ -136,7 +136,6 @@ const PageWrapper = ({ children }: PageProps) => {
 
   // Only show the competitive matchmaking component if user is logged in and is a player (roleId === 1)
   const showCompetitive = !!user?.id && user?.roleId === 1;
-  console.log(showCompetitive);
 
   return (
     <>

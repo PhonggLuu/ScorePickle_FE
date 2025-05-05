@@ -32,7 +32,7 @@ import type { ColumnsType, ColumnType } from 'antd/es/table';
 import Title from 'antd/es/typography/Title';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { IMatch } from '@src/modules/Match/models';
+import { ExtendMatchDetail, MatchStatus } from '@src/modules/Match/models';
 import { useGetMatchByRefereeId } from '@src/modules/Referee/hooks/useGetMatchByRefereeId';
 import { Match, Member } from '@src/modules/Tournament/models';
 import { useGetAllReferees } from '@src/modules/User/hooks/useGetAllReferee';
@@ -69,7 +69,7 @@ const MatchRoom = () => {
   const [isScoreModalVisible, setIsScoreModalVisible] =
     useState<boolean>(false);
   const [selectedMatchForScores, setSelectedMatchForScores] =
-    useState<IMatch | null>(null);
+    useState<ExtendMatchDetail | null>(null);
 
   // Calculate statistics
   const statistics = useMemo(() => {
@@ -543,19 +543,21 @@ const MatchRoom = () => {
     {
       title: 'Actions',
       key: 'actions',
-      render: (_, record: any) => (
-        <Space>
-          <Button
-            icon={<ReloadOutlined />}
-            onClick={() => {
-              setSelectedMatchForScores(record);
-              setIsScoreModalVisible(true);
-            }}
-          >
-            Scores
-          </Button>
-        </Space>
-      ),
+      render: (_, record: any) =>
+        record.status !== MatchStatus.Completed &&
+        record.status !== MatchStatus.Disabled ? (
+          <Space>
+            <Button
+              icon={<ReloadOutlined />}
+              onClick={() => {
+                setSelectedMatchForScores(record);
+                setIsScoreModalVisible(true);
+              }}
+            >
+              Scores
+            </Button>
+          </Space>
+        ) : null,
     },
   ];
 
@@ -847,7 +849,7 @@ const MatchRoom = () => {
             setIsScoreModalVisible(false);
             setSelectedMatchForScores(null);
           }}
-          match={selectedMatchForScores}
+          match={selectedMatchForScores as ExtendMatchDetail}
           refetch={refetch}
         />
       )}
