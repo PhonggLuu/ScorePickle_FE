@@ -2,8 +2,8 @@ import {
   CalendarOutlined,
   CheckCircleOutlined,
   CloseCircleOutlined,
+  CopyOutlined,
   EditOutlined,
-  EnvironmentOutlined,
   InfoCircleOutlined,
   PlusCircleOutlined,
   SaveOutlined,
@@ -369,7 +369,7 @@ export default function MatchDetails() {
           <Col xs={24} md={12}>
             <Space direction="vertical" size="middle" style={{ width: '100%' }}>
               <div className="info-item">
-                <EnvironmentOutlined className="info-icon" />
+                <CopyOutlined className="info-icon" />
                 <Text>{data.description || 'No description'}</Text>
               </div>
 
@@ -395,7 +395,9 @@ export default function MatchDetails() {
                   Type:{' '}
                   {data.matchCategory === MatchCategory.Custom
                     ? 'Friendly'
-                    : 'Competitive'}
+                    : data.matchCategory === MatchCategory.Competitive
+                      ? 'Competitive'
+                      : 'Tournament'}
                 </Text>
               </div>
             </Space>
@@ -448,7 +450,12 @@ export default function MatchDetails() {
             </Space>
           </Divider>
 
-          <Row gutter={16} justify="center" align="middle" style={{ marginBottom: '16px' }}>
+          <Row
+            gutter={16}
+            justify="center"
+            align="middle"
+            style={{ marginBottom: '16px' }}
+          >
             {/* Team 1 */}
             <MotionCol
               xs={24}
