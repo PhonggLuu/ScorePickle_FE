@@ -6,7 +6,7 @@ import {
   CheckCircleOutlined,
   TeamOutlined,
 } from '@ant-design/icons';
-import { IMatch, EndTournamentMatchDTO } from '@src/modules/Match/models';
+import { IMatch, EndTournamentMatchDTO, ExtendMatchDetail } from '@src/modules/Match/models';
 import { useEndTournamentMatch } from '@src/modules/Match/hooks/useEndTournamentMatch';
 import { useMatchScoring } from '@src/modules/Tournament/hooks/useMatchScoring';
 
@@ -22,7 +22,7 @@ const { TabPane } = Tabs;
 interface MatchScoreModalProps {
   visible: boolean;
   onClose: () => void;
-  match: IMatch;
+  match: ExtendMatchDetail;
   refetch: () => void;
 }
 
@@ -31,6 +31,7 @@ const MatchScoreModal: React.FC<MatchScoreModalProps> = ({
   onClose,
   match,
   refetch,
+  
 }) => {
   const [activeTab, setActiveTab] = useState('viewScores');
   const [editingRound, setEditingRound] = useState<number | null>(null);

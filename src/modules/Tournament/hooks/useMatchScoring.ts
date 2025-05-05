@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { message } from 'antd';
-import { IMatch } from '@src/modules/Match/models';
+import { ExtendMatchDetail, IMatch } from '@src/modules/Match/models';
 
 // Constants for localStorage
 const MATCH_SCORES_STORAGE_KEY = 'pickleball_match_scores';
@@ -36,7 +36,7 @@ interface ScoringHistoryEntry {
   timestamp: string;
 }
 
-export const useMatchScoring = (match: IMatch | null) => {
+export const useMatchScoring = (match: ExtendMatchDetail | null) => {
   // Core state
   const [matchScores, setMatchScores] = useState<MatchScore[]>([]);
   const [currentRound, setCurrentRound] = useState<number>(1);

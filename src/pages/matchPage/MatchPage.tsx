@@ -7,6 +7,7 @@ import { SearchOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { useGetAllMatches } from '@src/modules/Match/hooks/useGetAllCompetitiveAndCustomMatch';
 import MatchListCard from './components/MatchListCard';
+import { Bold } from 'lucide-react';
 
 export const MatchesPage: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -55,17 +56,6 @@ export const MatchesPage: React.FC = () => {
   const handleSearch = (e) => {
     const term = e.target.value;
     setSearchTerm(term);
-
-    // Lọc dữ liệu
-    // const filtered = (data ?? []).filter((item) => {
-    //   return (
-    //     (item.secondName !== undefined &&
-    //       item.secondName.toLowerCase().includes(term.toLowerCase())) ||
-    //     item.lastName.toLowerCase().includes(term.toLowerCase()) ||
-    //     item.firstName.toLowerCase().includes(term.toLowerCase())
-    //   );
-    // });
-    //setVisibleMatches(filtered);
   };
 
   const goToMatchDetail = (id: string) => {
@@ -77,33 +67,34 @@ export const MatchesPage: React.FC = () => {
     navigate('/add-match');
   };
 
-  // if (isLoading) {
-  //   return (
-  //     <div className="d-flex justify-content-center align-items-center">
-  //       <Spin style={{ fontSize: '50px' }} />
-  //     </div>
-  //   );
-  // }
-
   return (
     <div className="d-flex flex-column min-vh-100 text-white justify-content-center">
       <div className="flex-grow-1 container py-4">
         <div className="d-flex align-items-center mb-4">
           <h1 className="display-4 fw-bold mb-0">Matches</h1>
-          <Button
+            <Button
             onClick={navigateCreateMatch}
             onMouseEnter={() => setIsHover(true)}
             onMouseLeave={() => setIsHover(false)}
             className="ms-auto"
+            type="primary"
             style={{
-              /* chuyển động nâng nhẹ khi hover */
               transform: isHover ? 'translateY(-4px)' : 'translateY(0)',
-              transition: 'transform 0.2s ease-in-out',
+              transition: 'all 0.3s ease',
               cursor: 'pointer',
+              background: isHover ? '#ffffff' : '#ffffff',
+              color: '#1890ff',
+              borderRadius: '40px',
+              boxShadow: isHover ? '0 8px 16px rgba(24, 144, 255, 0.3)' : '0 4px 8px rgba(24, 144, 255, 0.2)',
+              border: 'none',
+              padding: '10px 20px',
+              height: 'auto'
             }}
-          >
-            <span className="">Create Match</span>
-          </Button>
+            >
+            <span style={{ fontSize: '16px', fontWeight: 'bold', color: '#096dd9' }}>
+              + Create Match
+            </span>
+            </Button>
         </div>
 
         <div

@@ -4,9 +4,12 @@ import {
   CloseCircleOutlined,
   EditOutlined,
   EnvironmentOutlined,
+  ExclamationCircleOutlined,
   InfoCircleOutlined,
+  PlayCircleOutlined,
   PlusCircleOutlined,
   SaveOutlined,
+  StopOutlined,
   TeamOutlined,
   TrophyOutlined,
   UserOutlined,
@@ -47,6 +50,8 @@ import { MatchScore } from './components/MatchScore';
 import Paragraph from 'antd/es/typography/Paragraph';
 import { useUpdateMatch } from '@src/modules/Match/hooks/useUpdateMatch';
 import './styles/matchDetail.css';
+import MatchScoreModal from '../tournament/containers/MatchScoreModal';
+import { MatchConfirmationModal } from './components/MatchConfirmationModal';
 
 const { Text, Title } = Typography;
 const { TextArea } = Input;
@@ -58,6 +63,7 @@ const MotionCol = motion(Col);
 
 export default function MatchDetails() {
   const { id } = useParams<{ id: string }>();
+  const [isScoreModalVisible, setIsScoreModalVisible] = useState(false);
   const matchId = Number(id || 0);
   const { data, isLoading, refetch } = useGetMatchDetail(matchId);
   const { mutate: joinMatch, isPending: isJoining } = useJoinMatch();
@@ -70,7 +76,7 @@ export default function MatchDetails() {
   const [form] = Form.useForm();
 
   const user = useSelector((state: RootState) => state.auth.user);
-  const isCurrentUserRoomOwner = user?.id === data?.roomOwner;
+  const isCurrentUserRoomOwner = user?.id === data?.roomOwner ? true : false;
 
   // Initialize form with match data when available
   useEffect(() => {
@@ -418,235 +424,394 @@ export default function MatchDetails() {
     );
   };
 
-  return (
-    <MotionRow
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-      className="container mt-4"
-    >
-      <Col span={24}>
-        <MotionCard
-          title={
-            <Row justify="space-between" align="middle">
-              <Col>
-                <Title level={3} style={{ margin: 0 }}>
-                  {data.title}
-                </Title>
-              </Col>
-              <Col>
-                <Badge status={statusColor} text={MatchStatus[data.status]} />
-              </Col>
-            </Row>
-          }
-          className="match-detail-card"
-        >
-          <Divider orientation="left" className="section-divider">
-            <Space>
-              <TeamOutlined />
-              <span className="divider-title">Teams</span>
-            </Space>
-          </Divider>
-
-          <Row gutter={16} justify="center" align="middle" style={{ marginBottom: '16px' }}>
-            {/* Team 1 */}
-            <MotionCol
-              xs={24}
-              md={11}
-              initial={{ x: -50, opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-            >
-              <Card
-                title={
-                  <div className="team-header team1-header">
-                    <TeamOutlined className="team-icon" />
-                    <Text strong>{data.teams[0]?.name || 'Team 1'}</Text>
-                  </div>
-                }
-                className="team-card team1-card"
-                bordered={false}
-                style={{
-                  background: '#fff',
-                }}
-              >
-                {isSingleMatch ? (
-                  renderPlayer(data.player1, 1)
-                ) : (
-                  <>
-                    {renderPlayer(data.player1, 1)}
-                    {renderPlayer(data.player2, 2)}
-                  </>
-                )}
-              </Card>
-            </MotionCol>
-
-            {/* VS */}
-            <Col xs={24} md={2} className="text-center">
-              <motion.div
-                initial={{ scale: 0, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                transition={{
-                  duration: 0.5,
-                  delay: 0.4,
-                  type: 'spring',
-                  stiffness: 200,
-                }}
-                className="vs-container"
-                whileHover={{ scale: 1.1 }}
-              >
-                <Text className="vs-text">VS</Text>
-              </motion.div>
-            </Col>
-
-            {/* Team 2 */}
-            <MotionCol
-              xs={24}
-              md={11}
-              initial={{ x: 50, opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              transition={{ duration: 0.5, delay: 0.3 }}
-            >
-              <Card
-                title={
-                  <div className="team-header team2-header">
-                    <TeamOutlined className="team-icon" />
-                    <Text strong>{data.teams[1]?.name || 'Team 2'}</Text>
-                  </div>
-                }
-                className="team-card team2-card"
-                bordered={false}
-                style={{
-                  background: '#fff',
-                }}
-              >
-                {isSingleMatch ? (
-                  renderPlayer(data.player3, 3)
-                ) : (
-                  <>
-                    {renderPlayer(data.player3, 3)}
-                    {renderPlayer(data.player4, 4)}
-                  </>
-                )}
-              </Card>
-            </MotionCol>
-          </Row>
-          {/* Editable information section */}
-          {renderEditableInfo()}
-
-          {/* Only show scores for non-competitive matches */}
-          {!isCompetitive && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.5 }}
-            >
-              <Divider orientation="left" className="section-divider">
-                <Space>
-                  <TrophyOutlined />
-                  <span className="divider-title">Scores</span>
-                </Space>
-              </Divider>
-              <MatchScore matchId={matchId} />
-            </motion.div>
-          )}
-
-          {/* For competitive matches - show info message */}
-          {isCompetitive && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.5, delay: 0.5 }}
-              className="mt-4"
-            >
-              <Card className="info-card">
-                <Space align="start">
-                  <InfoCircleOutlined className="info-icon-large" />
-                  <div>
-                    <Text strong className="competitive-title">
-                      Competitive Match
-                    </Text>
-                    <Paragraph className="competitive-info">
-                      Scores for competitive matches are managed through the
-                      matchmaking system. Players need to confirm scores after
-                      the match is completed.
-                    </Paragraph>
-                    <div className="competitive-badges">
-                      <Tag color="gold" icon={<TrophyOutlined />}>
-                        Ranking Points
-                      </Tag>
-                      <Tag color="cyan" icon={<TeamOutlined />}>
-                        Leaderboard Impact
-                      </Tag>
-                    </div>
-                  </div>
-                </Space>
-              </Card>
-            </motion.div>
-          )}
-        </MotionCard>
-      </Col>
-
-      {/* Join Match Modal */}
-      <Modal
-        title={
-          <div className="modal-title">
-            <TeamOutlined className="modal-icon" />
-            Join Match
-          </div>
-        }
-        open={isModalVisible}
-        onCancel={handleCancel}
-        className="join-match-modal"
-        footer={[
-          <Button key="no" onClick={handleCancel}>
-            Cancel
-          </Button>,
-          <Button
-            key="yes"
-            type="primary"
-            loading={isJoining}
-            onClick={handleJoinMatch}
-            icon={<CheckCircleOutlined />}
-          >
-            Confirm Join
-          </Button>,
-        ]}
-      >
-        <div className="modal-content">
+  const renderActions = () => {
+    // Return different buttons based on the match status
+    switch (data.status) {
+      case MatchStatus.Scheduled:
+        return (
           <div
-            className="modal-F-icon"
+            className="status-action-buttons"
             style={{
-              background: joiningPosition <= 2 ? '#e6f7ff' : '#fff1f0',
-              color: joiningPosition <= 2 ? '#1890ff' : '#f5222d',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '10px',
             }}
           >
-            <TeamOutlined />
+            <Button
+              type="primary"
+              icon={<PlayCircleOutlined />}
+              onClick={() => handleStatusChange(MatchStatus.Ongoing)}
+              className="action-button start-button"
+            >
+              Start Match
+            </Button>
+
+            <Button
+              danger
+              icon={<StopOutlined />}
+              onClick={() => handleStatusChange(MatchStatus.Disabled)}
+              className="action-button disable-button"
+            >
+              Disable Match
+            </Button>
           </div>
+        );
 
-          <Title level={4} className="modal-question">
-            Ready to join this match?
-          </Title>
-
-          <Space align="center" className="modal-detail">
-            <Badge color={joiningPosition <= 2 ? 'blue' : 'red'} />
-            <Text>
-              You'll join{' '}
-              <strong>{joiningPosition <= 2 ? 'Team 1' : 'Team 2'}</strong>, as
-              Player {joiningPosition % 2 === 0 ? 2 : 1}
-            </Text>
-          </Space>
-
-          <div className="modal-match-detail">
-            <Tag color="blue" icon={<CalendarOutlined />}>
-              {dayjs(data.matchDate).format('MMM D, YYYY')}
-            </Tag>
-            <Tag color="purple" icon={<TeamOutlined />}>
-              {MatchFormat[data.matchFormat]}
-            </Tag>
+      case MatchStatus.Ongoing:
+        return (
+          <div className="status-action-buttons">
+            <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'end',
+                  marginBottom: 16,
+                }}
+              >
+                <Button
+                  type="primary"
+                  icon={<TrophyOutlined />}
+                  onClick={() => setIsScoreModalVisible(true)}
+                >
+                  Manage Score
+                </Button>
+              </div>
+            <Button
+              type="primary"
+              icon={<CheckCircleOutlined />}
+              onClick={() => handleStatusChange(MatchStatus.Completed)}
+              className="action-button complete-button"
+            >
+              Complete Match
+            </Button>
           </div>
-        </div>
-      </Modal>
-    </MotionRow>
+        );
+
+      default:
+        return null; // No actions for Completed or Disabled matches
+    }
+  };
+
+  // Helper function to update match status
+  const handleStatusChange = (newStatus: MatchStatus) => {
+    // Create appropriate confirmation message based on the action
+    const statusMessages = {
+      [MatchStatus.Ongoing]: {
+        title: 'Start Match',
+        content:
+          'Are you sure you want to start this match? This will mark it as in progress.',
+      },
+      [MatchStatus.Disabled]: {
+        title: 'Disable Match',
+        content:
+          'Are you sure you want to disable this match? This cannot be undone.',
+      },
+      [MatchStatus.Completed]: {
+        title: 'Complete Match',
+        content: 'Are you sure you want to mark this match as completed?',
+      },
+    };
+
+    // Show confirmation dialog
+    Modal.confirm({
+      title: statusMessages[newStatus].title,
+      content: statusMessages[newStatus].content,
+      icon: <ExclamationCircleOutlined />,
+      onOk() {
+        // Prepare update payload
+        const updatedData = {
+          id: matchId,
+          description: data.description,
+          status: newStatus,
+        };
+
+        // Call the update mutation
+        updateMatchMutation(
+          {
+            data: updatedData,
+            id: data.id,
+          },
+          {
+            onSuccess: () => {
+              notification.success({
+                message: 'Status Updated',
+                description: `Match status has been updated to ${MatchStatus[newStatus]}.`,
+              });
+              refetch();
+            },
+            onError: (error) => {
+              notification.error({
+                message: 'Status Update Failed',
+                description: error.message || 'Failed to update match status.',
+              });
+            },
+          }
+        );
+      },
+      okText: 'Yes',
+      cancelText: 'No',
+    });
+  };
+
+  return (
+    <>
+      <MotionRow
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="container mt-4 "
+        style={{
+          display: 'flex',
+          justifyContent: 'end',
+        }}
+      >
+        {renderActions()}
+      </MotionRow>
+
+      <MotionRow
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="container mt-4"
+      >
+        <Col span={24}>
+          <MotionCard
+            title={
+              <Row justify="space-between" align="middle">
+                <Col>
+                  <Title level={3} style={{ margin: 0 }}>
+                    {data.title}
+                  </Title>
+                </Col>
+                <Col>
+                  <Badge status={statusColor} text={MatchStatus[data.status]} />
+                </Col>
+              </Row>
+            }
+            className="match-detail-card"
+          >
+            <Divider orientation="left" className="section-divider">
+              <Space>
+                <TeamOutlined />
+                <span className="divider-title">Teams</span>
+              </Space>
+            </Divider>
+
+            <Row
+              gutter={16}
+              justify="center"
+              align="middle"
+              style={{ marginBottom: '16px' }}
+            >
+              {/* Team 1 */}
+              <MotionCol
+                xs={24}
+                md={11}
+                initial={{ x: -50, opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                transition={{ duration: 0.5, delay: 0.2 }}
+              >
+                <Card
+                  title={
+                    <div className="team-header team1-header">
+                      <TeamOutlined className="team-icon" />
+                      <Text strong>{data.teams[0]?.name || 'Team 1'}</Text>
+                    </div>
+                  }
+                  className="team-card team1-card"
+                  bordered={false}
+                  style={{
+                    background: '#fff',
+                  }}
+                >
+                  {isSingleMatch ? (
+                    renderPlayer(data.player1, 1)
+                  ) : (
+                    <>
+                      {renderPlayer(data.player1, 1)}
+                      {renderPlayer(data.player2, 2)}
+                    </>
+                  )}
+                </Card>
+              </MotionCol>
+
+              {/* VS */}
+              <Col xs={24} md={2} className="text-center">
+                <motion.div
+                  initial={{ scale: 0, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={{
+                    duration: 0.5,
+                    delay: 0.4,
+                    type: 'spring',
+                    stiffness: 200,
+                  }}
+                  className="vs-container"
+                  whileHover={{ scale: 1.1 }}
+                >
+                  <Text className="vs-text">VS</Text>
+                </motion.div>
+              </Col>
+
+              {/* Team 2 */}
+              <MotionCol
+                xs={24}
+                md={11}
+                initial={{ x: 50, opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                transition={{ duration: 0.5, delay: 0.3 }}
+              >
+                <Card
+                  title={
+                    <div className="team-header team2-header">
+                      <TeamOutlined className="team-icon" />
+                      <Text strong>{data.teams[1]?.name || 'Team 2'}</Text>
+                    </div>
+                  }
+                  className="team-card team2-card"
+                  bordered={false}
+                  style={{
+                    background: '#fff',
+                  }}
+                >
+                  {isSingleMatch ? (
+                    renderPlayer(data.player3, 3)
+                  ) : (
+                    <>
+                      {renderPlayer(data.player3, 3)}
+                      {renderPlayer(data.player4, 4)}
+                    </>
+                  )}
+                </Card>
+              </MotionCol>
+            </Row>
+            {/* Editable information section */}
+            {renderEditableInfo()}
+
+            {/* Only show scores for non-competitive matches */}
+            {!isCompetitive && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.5 }}
+              >
+                <Divider orientation="left" className="section-divider">
+                  <Space>
+                    <TrophyOutlined />
+                    <span className="divider-title">Scores</span>
+                  </Space>
+                </Divider>
+                <MatchScore matchId={matchId} />
+              </motion.div>
+            )}
+
+            {/* For competitive matches - show info message */}
+            {isCompetitive && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.5, delay: 0.5 }}
+                className="mt-4"
+              >
+                <Card className="info-card">
+                  <Space align="start">
+                    <InfoCircleOutlined className="info-icon-large" />
+                    <div>
+                      <Text strong className="competitive-title">
+                        Competitive Match
+                      </Text>
+                      <Paragraph className="competitive-info">
+                        Scores for competitive matches are managed through the
+                        matchmaking system. Players need to confirm scores after
+                        the match is completed.
+                      </Paragraph>
+                      <div className="competitive-badges">
+                        <Tag color="gold" icon={<TrophyOutlined />}>
+                          Ranking Points
+                        </Tag>
+                        <Tag color="cyan" icon={<TeamOutlined />}>
+                          Leaderboard Impact
+                        </Tag>
+                      </div>
+                    </div>
+                  </Space>
+                </Card>
+              </motion.div>
+            )}
+          </MotionCard>
+        </Col>
+
+        {/* Join Match Modal */}
+        <Modal
+          title={
+            <div className="modal-title">
+              <TeamOutlined className="modal-icon" />
+              Join Match
+            </div>
+          }
+          open={isModalVisible}
+          onCancel={handleCancel}
+          className="join-match-modal"
+          footer={[
+            <Button key="no" onClick={handleCancel}>
+              Cancel
+            </Button>,
+            <Button
+              key="yes"
+              type="primary"
+              loading={isJoining}
+              onClick={handleJoinMatch}
+              icon={<CheckCircleOutlined />}
+            >
+              Confirm Join
+            </Button>,
+          ]}
+        >
+          <div className="modal-content">
+            <div
+              className="modal-F-icon"
+              style={{
+                background: joiningPosition <= 2 ? '#e6f7ff' : '#fff1f0',
+                color: joiningPosition <= 2 ? '#1890ff' : '#f5222d',
+              }}
+            >
+              <TeamOutlined />
+            </div>
+
+            <Title level={4} className="modal-question">
+              Ready to join this match?
+            </Title>
+
+            <Space align="center" className="modal-detail">
+              <Badge color={joiningPosition <= 2 ? 'blue' : 'red'} />
+              <Text>
+                You'll join{' '}
+                <strong>{joiningPosition <= 2 ? 'Team 1' : 'Team 2'}</strong>,
+                as Player {joiningPosition % 2 === 0 ? 2 : 1}
+              </Text>
+            </Space>
+
+            <div className="modal-match-detail">
+              <Tag color="blue" icon={<CalendarOutlined />}>
+                {dayjs(data.matchDate).format('MMM D, YYYY')}
+              </Tag>
+              <Tag color="purple" icon={<TeamOutlined />}>
+                {MatchFormat[data.matchFormat]}
+              </Tag>
+            </div>
+          </div>
+        </Modal>
+      </MotionRow>
+      <MatchConfirmationModal
+        open={isScoreModalVisible}
+        onClose={() => setIsScoreModalVisible(false)}
+        matchId={matchId.toString()}
+        isRoomOwner={isCurrentUserRoomOwner}
+        teamName={(() => {
+          const isTeam1 =
+            user?.id === data?.player1?.id || user?.id === data?.player2?.id;
+          return isTeam1 ? 'Team 1' : 'Team 2';
+        })()}
+      />
+    </>
   );
 }
