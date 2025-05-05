@@ -400,8 +400,10 @@ export default function MatchDetails() {
                 <Text>
                   Type:{' '}
                   {data.matchCategory === MatchCategory.Custom
-                    ? 'Friendly'
-                    : 'Competitive'}
+                    ? 'Friendly' 
+                    : MatchCategory.Tournament 
+                      ? 'Tournament'
+                      : 'Competitive'}
                 </Text>
               </div>
             </Space>

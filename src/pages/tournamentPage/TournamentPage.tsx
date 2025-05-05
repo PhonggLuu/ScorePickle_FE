@@ -162,10 +162,16 @@ export const TournamentPage = () => {
           justifyContent: 'space-between',
           width: '100%',
           boxSizing: 'border-box',
-          marginLeft: isSidebarHidden ? '0' : '2rem',
         }}
       >
-        <h1 style={{ fontSize: '2.5rem', fontWeight: 700, margin: 0 }}>
+        <h1
+          style={{
+            fontSize: '2.5rem',
+            fontWeight: 700,
+            margin: 0,
+            marginLeft: isSidebarHidden ? '3rem' : '2rem',
+          }}
+        >
           Tournaments
         </h1>
         <div
@@ -472,6 +478,7 @@ export const TournamentPage = () => {
             transition: 'all .3s ease',
             willChange: 'width',
             marginTop: '0px',
+            marginLeft: isSidebarHidden ? '5rem' : '1rem',
           }}
         >
           {/* Header sticky */}
