@@ -1,6 +1,6 @@
 import {
   CalendarOutlined,
-  EnvironmentOutlined,
+  CopyOutlined,
   LoginOutlined,
   TrophyOutlined,
 } from '@ant-design/icons';
@@ -274,7 +274,7 @@ export const TournamentDetailPage: React.FC = () => {
             style={{ width: '100%' }}
             disabled={true}
           >
-            The tournament has closed accepting applications
+            Closed tournament
           </Button>
         </motion.div>
       );
@@ -536,7 +536,7 @@ export const TournamentDetailPage: React.FC = () => {
                 {formatDates(tournament.endDate)}
               </motion.span>
               <motion.span className="meta-item" variants={metaItemVariants}>
-                <EnvironmentOutlined /> {tournament.location}
+                <CopyOutlined /> {tournament.location}
               </motion.span>
               <motion.span className="meta-item" variants={metaItemVariants}>
                 <TrophyOutlined /> {tournament.type}
