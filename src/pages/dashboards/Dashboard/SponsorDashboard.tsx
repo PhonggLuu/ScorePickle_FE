@@ -20,7 +20,6 @@ import {
 import {
   CalendarOutlined,
   TrophyOutlined,
-  DollarOutlined,
   InfoCircleOutlined,
   PlusOutlined,
   EnvironmentOutlined,
@@ -232,12 +231,6 @@ const SponsorDashboard: React.FC<SponsorDashboardProps> = ({ user }) => {
       ),
     },
   ];
-
-  const totalSpent =
-    sponnerBill?.reduce(
-      (sum: number, bill: any) => sum + (bill.amount || 0),
-      0
-    ) || 0;
 
   return (
     <div>

@@ -37,7 +37,6 @@ import {
   Modal,
   notification,
   Row,
-  Select,
   Skeleton,
   Space,
   Tag,
@@ -57,7 +56,6 @@ import { useVenueById } from '@src/modules/Venues/hooks/useGetVenueById';
 
 const { Text, Title } = Typography;
 const { TextArea } = Input;
-const { Option } = Select;
 
 const MotionRow = motion(Row);
 const MotionCard = motion(Card);
