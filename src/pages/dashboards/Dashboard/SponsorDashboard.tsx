@@ -32,7 +32,6 @@ import { Link } from 'react-router-dom';
 import { useGetTournamentsBySponsorId } from '@src/modules/Tournament/hooks/useGetTournamentsBySponsorId';
 import { useGetVenueBySponserId } from '@src/modules/Venues/hooks/useGetVenueBySponserId';
 import { useGetRefereeBySponsorId } from '@src/modules/User/hooks/useGetAllReferee';
-import { useGetAllBillBySponnerId } from '@src/modules/Payment/hooks/useGetAllBillBySponnerId';
 import { User } from '@src/modules/User/models';
 import RuleOfAwardTable from '@src/components/RuleOfAwardTable';
 
@@ -54,7 +53,6 @@ const SponsorDashboard: React.FC<SponsorDashboardProps> = ({ user }) => {
     useGetVenueBySponserId(user?.id || 0);
   const { data: sponsorReferees = [], isLoading: isLoadingReferees } =
     useGetRefereeBySponsorId(user?.id?.toString() || '');
-  const { data: sponnerBill } = useGetAllBillBySponnerId(user?.id || 0);
 
   const statistics = useMemo(() => {
     if (!sponsorTournaments || !Array.isArray(sponsorTournaments)) {
