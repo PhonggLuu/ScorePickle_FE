@@ -34,7 +34,7 @@ const PlayerForm: React.FC = () => {
         setProvinces(provinceItems);
       })
       .catch(() => {
-        message.error('Không thể tải danh sách tỉnh/thành phố');
+        message.error('Cannot loading province');
       });
   }, []);
 
@@ -53,7 +53,7 @@ const PlayerForm: React.FC = () => {
         setLoadingDistricts(false);
       })
       .catch(() => {
-        message.error('Không thể tải danh sách quận/huyện');
+        message.error('Cannot loading city');
         setLoadingDistricts(false);
       });
   };
@@ -66,7 +66,7 @@ const PlayerForm: React.FC = () => {
       },
       {
         onSuccess: () => {
-          navigate('/auth/signin');
+          navigate('/auth/select-role');
         },
       }
     );
@@ -95,7 +95,7 @@ const PlayerForm: React.FC = () => {
                 optionFilterProp="children"
               >
                 {provinces.map((province) => (
-                  <Option key={province.code} value={province.code}>
+                  <Option key={province.name} value={province.code}>
                     {province.name}
                   </Option>
                 ))}
@@ -104,7 +104,7 @@ const PlayerForm: React.FC = () => {
 
             <Form.Item
               label="District"
-              name="district"
+              name="city"
               rules={[{ required: true, message: 'Please select a district' }]}
             >
               <Select
@@ -115,7 +115,7 @@ const PlayerForm: React.FC = () => {
                 optionFilterProp="children"
               >
                 {districts.map((district) => (
-                  <Option key={district.code} value={district.code}>
+                  <Option key={district.name} value={district.code}>
                     {district.name}
                   </Option>
                 ))}

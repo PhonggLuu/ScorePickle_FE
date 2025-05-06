@@ -106,7 +106,12 @@ export const PasswordResetPage = () => {
                 >
                   Submit
                 </Button>
-                <Button type="text" size="middle" loading={loading}>
+                <Button
+                  type="text"
+                  size="middle"
+                  loading={loading}
+                  onClick={() => navigate('/auth/signin')}
+                >
                   Cancel
                 </Button>
               </Flex>

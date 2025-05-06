@@ -31,7 +31,8 @@ const userSlice = createSlice({
     setUserId: (state, action: PayloadAction<number>) => {
       state.userId = action.payload;
     },
-    clearAuth: (state) => {
+    clearVerified: (state) => {
+      state.userId = initialState.userId;
       state.email = initialState.email;
       state.otp = initialState.otp;
       state.isVerified = initialState.isVerified;
@@ -39,5 +40,6 @@ const userSlice = createSlice({
   },
 });
 
-export const { setEmail, setOtp, setUserId, setVerified } = userSlice.actions;
+export const { setEmail, setOtp, setUserId, setVerified, clearVerified } =
+  userSlice.actions;
 export default userSlice.reducer;

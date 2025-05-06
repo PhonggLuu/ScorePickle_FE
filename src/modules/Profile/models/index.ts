@@ -15,7 +15,7 @@ export interface UpdateSponsorProfileRequest {
   companyName: string;
   logoUrl: string;
   urlSocial: string;
-  urlSocial1: string;
+  urlSocial1: string | null;
   contactEmail: string;
   descreption: string;
 }

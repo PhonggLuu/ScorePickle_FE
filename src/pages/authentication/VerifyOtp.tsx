@@ -6,6 +6,7 @@ import {
   Input,
   message,
   Row,
+  Spin,
   theme,
   Typography,
 } from 'antd';
@@ -32,19 +33,31 @@ export const VerifyOtp = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const onFinish = (values: any) => {
-    setLoading(true);
+  if (loading) {
+    return (
+      <Spin className="d-flex justify-content-between align-items-center"></Spin>
+    );
+  }
 
-    if (values.otp === otp) {
-      message.success('OTP verified successfully!');
-      dispatch(setVerified(true));
-      navigate('/auth/signup');
+  const onFinish = async (values: FieldType) => {
+    setLoading(true);
+    try {
+      if (Number(values.otp) === otp) {
+        message.success('OTP verified successfully!');
+        dispatch(setVerified(true));
+        navigate('/auth/signup');
+      } else {
+        message.error('Incorrect OTP. Please try again.');
+      }
+    } catch (error) {
+      message.error('Something went wrong. Please try again later.');
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   const onFinishFailed = (errorInfo: any) => {
-    console.log('Failed:', errorInfo);
+    console.log('Form Failed:', errorInfo);
   };
 
   return (
@@ -57,7 +70,8 @@ export const VerifyOtp = () => {
           className="text-center"
           style={{ background: colorPrimary, height: '100%', padding: '1rem' }}
         >
-          <div></div>
+          {/* You can add an image or illustration here */}
+          <></>
         </Flex>
       </Col>
       <Col xs={24} lg={12}>
@@ -69,9 +83,9 @@ export const VerifyOtp = () => {
           style={{ height: '100%', width: '100%', padding: '2rem' }}
         >
           <Title className="m-0">Verify OTP</Title>
-          <Text>Enter otp to verify email.</Text>
+          <Text>Enter the OTP sent to your email to verify your account.</Text>
           <Form
-            name="sign-up-form"
+            name="otp-verify-form"
             layout="vertical"
             labelCol={{ span: 24 }}
             wrapperCol={{ span: 24 }}
@@ -83,11 +97,18 @@ export const VerifyOtp = () => {
             style={{ width: '100%' }}
           >
             <Form.Item<FieldType>
-              label="Otp"
+              label="OTP"
               name="otp"
-              rules={[{ required: true, message: 'Please input otp' }]}
+              rules={[
+                { required: true, message: 'Please enter the OTP' },
+                {
+                  len: 6,
+                  message: 'OTP must be 6 digits',
+                  transform: (value) => value?.trim(),
+                },
+              ]}
             >
-              <Input />
+              <Input maxLength={6} />
             </Form.Item>
             <Form.Item>
               <Flex align="center" gap="small">
@@ -99,7 +120,12 @@ export const VerifyOtp = () => {
                 >
                   Submit
                 </Button>
-                <Button type="text" size="middle" loading={loading}>
+                <Button
+                  type="text"
+                  size="middle"
+                  disabled={loading}
+                  onClick={() => navigate('/auth/register-account')}
+                >
                   Cancel
                 </Button>
               </Flex>

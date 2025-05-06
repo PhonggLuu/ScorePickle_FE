@@ -20,6 +20,7 @@ const SponsorProfile: React.FC = () => {
   const { mutate: createProfile } = useCreateSponsorProfile();
   const sponsorId = useSelector((state: RootState) => state.user.userId) ?? 0;
   const user = useSelector((state: RootState) => state.auth.user);
+  const email = useSelector((state: RootState) => state.user.email);
   const [userId, setUserId] = useState(0);
 
   useEffect(() => {
@@ -46,6 +47,7 @@ const SponsorProfile: React.FC = () => {
     const updatedValues = {
       ...values,
       id: sponsorId ?? userId,
+      contactEmail: email ?? user?.email,
       logoUrl,
     };
 
@@ -145,6 +147,13 @@ const SponsorProfile: React.FC = () => {
             <Form.Item
               name="urlSocial"
               label={<span className="text-black">Social URL</span>}
+              rules={[
+                { required: true, message: 'Please input url' },
+                {
+                  pattern: /^(https?:\/\/)/,
+                  message: 'URL must start with http:// or https://',
+                },
+              ]}
             >
               <Input
                 size="large"
@@ -157,26 +166,33 @@ const SponsorProfile: React.FC = () => {
             <Form.Item
               name="urlSocial1"
               label={<span className="text-black">Other Social URL</span>}
+              rules={[
+                { required: true, message: 'Please input url' },
+                {
+                  pattern: /^(https?:\/\/)/,
+                  message: 'URL must start with http:// or https://',
+                },
+              ]}
             >
               <Input
                 size="large"
                 className="rounded-pill"
                 style={{ height: '50px' }}
-                required
               />
             </Form.Item>
 
-            <Form.Item
+            {/* <Form.Item
               name="contactEmail"
               label={<span className="text-black">Contact Email</span>}
             >
-              <Input
+              <Input 
                 size="large"
                 className="rounded-pill"
                 style={{ height: '50px' }}
-                required
+                value={user?.email} 
+                readOnly 
               />
-            </Form.Item>
+            </Form.Item> */}
 
             {/* Save Button */}
             <Form.Item className="text-end mt-4">
