@@ -134,7 +134,7 @@ const SideNav = ({ ...others }: SiderProps) => {
               ]),
               getItem('Tournament', 'tournament', <TrophyOutlined />, [
                 getItem(
-                  <Link to={PATH_TOURNAMENT.list}>Tournaments List</Link>,
+                  <Link to={PATH_TOURNAMENT.list}>Sponsorable Tournament</Link>,
                   'all'
                 ),
                 getItem(

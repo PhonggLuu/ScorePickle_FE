@@ -726,7 +726,7 @@ export const PaymentSponsor = () => {
             <Statistic
               title={
                 <Text strong style={{ fontSize: '16px' }}>
-                  Total Spend
+                  Total Sponsored
                 </Text>
               }
               value={statistics.totalAmount}

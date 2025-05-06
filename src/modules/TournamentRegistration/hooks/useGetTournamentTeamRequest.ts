@@ -18,5 +18,6 @@ export function useGetTournamentTeamRequestByPlayerId(id: number) {
   return useQuery({
     queryKey: [GET_TOURNAMENT_TEAM_REQUEST_BY_ID, id],
     queryFn: () => fetchTournamentTeamRequestByPlayerId(id),
+    refetchInterval: 1000,
   });
 }

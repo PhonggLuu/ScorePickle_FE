@@ -3,7 +3,7 @@ import {
   CheckCircleOutlined,
   CloseCircleOutlined,
   EditOutlined,
-  EnvironmentOutlined,
+  CopyOutlined,
   ExclamationCircleOutlined,
   InfoCircleOutlined,
   PlayCircleOutlined,
@@ -13,6 +13,7 @@ import {
   TeamOutlined,
   TrophyOutlined,
   UserOutlined,
+  EnvironmentOutlined,
 } from '@ant-design/icons';
 import { useGetMatchDetail } from '@src/modules/Match/hooks/useGetMatchDetail';
 import { useJoinMatch } from '@src/modules/Match/hooks/useJoinMatch';
@@ -31,11 +32,11 @@ import {
   Divider,
   Empty,
   Form,
+  Image,
   Input,
   Modal,
   notification,
   Row,
-  Select,
   Skeleton,
   Space,
   Tag,
@@ -51,10 +52,10 @@ import Paragraph from 'antd/es/typography/Paragraph';
 import { useUpdateMatch } from '@src/modules/Match/hooks/useUpdateMatch';
 import './styles/matchDetail.css';
 import { MatchConfirmationModal } from './components/MatchConfirmationModal';
+import { useVenueById } from '@src/modules/Venues/hooks/useGetVenueById';
 
 const { Text, Title } = Typography;
 const { TextArea } = Input;
-const { Option } = Select;
 
 const MotionRow = motion(Row);
 const MotionCard = motion(Card);
@@ -65,6 +66,7 @@ export default function MatchDetails() {
   const [isScoreModalVisible, setIsScoreModalVisible] = useState(false);
   const matchId = Number(id || 0);
   const { data, isLoading, refetch } = useGetMatchDetail(matchId);
+  const { data: venue } = useVenueById(data?.venueId ?? 0);
   const { mutate: joinMatch, isPending: isJoining } = useJoinMatch();
   const { mutate: updateMatchMutation, isPending: isUpdating } =
     useUpdateMatch();
@@ -153,13 +155,6 @@ export default function MatchDetails() {
             }, position ${joiningPosition % 2 === 0 ? 2 : 1}.`,
           });
           refetch();
-        },
-        onError: (error) => {
-          notification.error({
-            message: 'Failed to join',
-            description:
-              error.message || 'An error occurred while joining the match.',
-          });
         },
       }
     );
@@ -314,7 +309,7 @@ export default function MatchDetails() {
             <TextArea rows={3} placeholder="Enter match description" />
           </Form.Item>
 
-          <Form.Item
+          {/* <Form.Item
             name="status"
             label="Status"
             rules={[{ required: true, message: 'Please select a status' }]}
@@ -345,7 +340,7 @@ export default function MatchDetails() {
                 {MatchStatus[MatchStatus.Disabled]}
               </Option>
             </Select>
-          </Form.Item>
+          </Form.Item> */}
 
           <div className="form-actions">
             <Button
@@ -374,7 +369,7 @@ export default function MatchDetails() {
           <Col xs={24} md={12}>
             <Space direction="vertical" size="middle" style={{ width: '100%' }}>
               <div className="info-item">
-                <EnvironmentOutlined className="info-icon" />
+                <CopyOutlined className="info-icon" />
                 <Text>{data.description || 'No description'}</Text>
               </div>
 
@@ -421,6 +416,55 @@ export default function MatchDetails() {
             </Button>
           </div>
         )}
+
+        {venue && (
+          <>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.5 }}
+            >
+              <Divider orientation="left" className="section-divider">
+                <Space>
+                  <EnvironmentOutlined />
+                  <span className="divider-title">Venue</span>
+                </Space>
+              </Divider>
+            </motion.div>
+            <Row justify="start">
+              <Card style={{ width: '500px' }}>
+                <Row>
+                  <Col
+                    xs={16}
+                    md={12}
+                    style={{ display: 'flex', justifyContent: 'end' }}
+                  >
+                    <Image src={venue?.urlImage} alt={venue?.name} />
+                  </Col>
+                  <Col
+                    xs={8}
+                    md={12}
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'start',
+                      paddingLeft: '16px',
+                      flexDirection: 'column',
+                    }}
+                  >
+                    <Text style={{ color: 'cadetblue', fontWeight: 'bold' }}>
+                      Venue name:
+                    </Text>{' '}
+                    • {venue.name}
+                    <Text style={{ color: 'cadetblue', fontWeight: 'bold' }}>
+                      Address:
+                    </Text>{' '}
+                    • {venue.address}
+                  </Col>
+                </Row>
+              </Card>
+            </Row>
+          </>
+        )}
       </>
     );
   };
@@ -438,15 +482,17 @@ export default function MatchDetails() {
               gap: '10px',
             }}
           >
-            <Button
-              type="primary"
-              icon={<PlayCircleOutlined />}
-              onClick={() => handleStatusChange(MatchStatus.Ongoing)}
-              className="action-button start-button"
-            >
-              Start Match
-            </Button>
-
+            {new Date(data.matchDate).getTime() <= Date.now() && (
+              <Button
+                type="primary"
+                icon={<PlayCircleOutlined />}
+                onClick={() => handleStatusChange(MatchStatus.Ongoing)}
+                className="action-button start-button"
+                style={{ border: '1px solid rgb(86, 106, 159)' }}
+              >
+                Start Match
+              </Button>
+            )}
             <Button
               danger
               icon={<StopOutlined />}
@@ -494,7 +540,62 @@ export default function MatchDetails() {
 
   // Helper function to update match status
   const handleStatusChange = (newStatus: MatchStatus) => {
-    // Create appropriate confirmation message based on the action
+    const isSingleMatch = MatchFormat[data.matchFormat]
+      .toLowerCase()
+      .includes('single');
+
+    // Validate player count before allowing status update to Ongoing
+    if (newStatus === MatchStatus.Ongoing) {
+      const requiredPlayers = isSingleMatch ? 2 : 4;
+      const actualPlayers = [
+        data.player1,
+        data.player2,
+        data.player3,
+        data.player4,
+      ].filter(Boolean).length;
+
+      if (actualPlayers < requiredPlayers) {
+        Modal.confirm({
+          title: 'Not Enough Players',
+          icon: <ExclamationCircleOutlined />,
+          content: `This match requires at least ${requiredPlayers} players to start. Do you want to disable it instead?`,
+          okText: 'Disable Match',
+          cancelText: 'Cancel',
+          onOk() {
+            const disabledData = {
+              id: matchId,
+              description: data.description,
+              status: MatchStatus.Disabled,
+            };
+
+            updateMatchMutation(
+              { data: disabledData, id: data.id },
+              {
+                onSuccess: () => {
+                  notification.success({
+                    message: 'Match Disabled',
+                    description:
+                      'The match has been disabled due to insufficient players.',
+                  });
+                  refetch();
+                },
+                onError: (error) => {
+                  notification.error({
+                    message: 'Failed to Disable',
+                    description:
+                      error.message || 'Could not update match status.',
+                  });
+                },
+              }
+            );
+          },
+        });
+
+        return;
+      }
+    }
+
+    // Confirmation messages
     const statusMessages = {
       [MatchStatus.Ongoing]: {
         title: 'Start Match',
@@ -512,25 +613,19 @@ export default function MatchDetails() {
       },
     };
 
-    // Show confirmation dialog
     Modal.confirm({
       title: statusMessages[newStatus].title,
       content: statusMessages[newStatus].content,
       icon: <ExclamationCircleOutlined />,
       onOk() {
-        // Prepare update payload
         const updatedData = {
           id: matchId,
           description: data.description,
           status: newStatus,
         };
 
-        // Call the update mutation
         updateMatchMutation(
-          {
-            data: updatedData,
-            id: data.id,
-          },
+          { data: updatedData, id: data.id },
           {
             onSuccess: () => {
               notification.success({

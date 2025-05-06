@@ -6,6 +6,7 @@ import { useSelector } from 'react-redux';
 import { motion } from 'framer-motion';
 import './participants.css';
 import { RootState } from '@src/redux/store';
+import { TouramentregistrationStatus } from '@src/modules/TournamentRegistration/models';
 
 const { Title, Text } = Typography;
 
@@ -29,7 +30,7 @@ const PlayerCard = ({
     animate={{ opacity: 1, y: 0 }}
     transition={{ duration: 0.4 }}
   >
-    <Card 
+    <Card
       className="profile-card border rounded mb-2 card player-card"
       hoverable
     >
@@ -37,7 +38,7 @@ const PlayerCard = ({
         <div className="avatar-container">
           <motion.div
             whileHover={{ scale: 1.1 }}
-            transition={{ type: "spring", stiffness: 300, damping: 10 }}
+            transition={{ type: 'spring', stiffness: 300, damping: 10 }}
           >
             <Avatar
               style={{ marginLeft: '10px' }}
@@ -67,12 +68,16 @@ const PlayerCard = ({
             style={{
               top: '50%',
               transform: 'translateY(-50%)',
-              background: ranking >= 7 ? 'rgba(22, 119, 255, 0.1)' : 
-                        ranking >= 4 ? 'rgba(82, 196, 26, 0.1)' : 'rgba(250, 173, 20, 0.1)',
-              color: ranking >= 7 ? '#1677ff' : 
-                    ranking >= 4 ? '#52c41a' : '#faad14',
+              background:
+                ranking >= 7
+                  ? 'rgba(22, 119, 255, 0.1)'
+                  : ranking >= 4
+                    ? 'rgba(82, 196, 26, 0.1)'
+                    : 'rgba(250, 173, 20, 0.1)',
+              color:
+                ranking >= 7 ? '#1677ff' : ranking >= 4 ? '#52c41a' : '#faad14',
               border: 'none',
-              fontWeight: '600'
+              fontWeight: '600',
             }}
           >
             Level {ranking}
@@ -85,7 +90,7 @@ const PlayerCard = ({
 
 export const Participants = ({ registrations = [] }: PlayersTableProps) => {
   const [filteredRegistrations] = useState<RegistrationDetail[]>(registrations);
-  
+
   const user = useSelector((state: RootState) => state.auth.user);
 
   // Animation variants for container
@@ -94,10 +99,10 @@ export const Participants = ({ registrations = [] }: PlayersTableProps) => {
     visible: {
       opacity: 1,
       transition: {
-        when: "beforeChildren",
-        staggerChildren: 0.1
-      }
-    }
+        when: 'beforeChildren',
+        staggerChildren: 0.1,
+      },
+    },
   };
 
   // Animation variants for table rows
@@ -107,11 +112,11 @@ export const Participants = ({ registrations = [] }: PlayersTableProps) => {
       opacity: 1,
       y: 0,
       transition: {
-        type: "spring",
+        type: 'spring',
         stiffness: 100,
-        damping: 12
-      }
-    }
+        damping: 12,
+      },
+    },
   };
 
   // 1. Kiểm tra xem có bản ghi nào có partner không
@@ -123,16 +128,25 @@ export const Participants = ({ registrations = [] }: PlayersTableProps) => {
       title: hasPartner ? 'Player 1' : 'Player',
       dataIndex: ['playerDetails', 'avatarUrl'],
       key: 'avatarUrl',
-      render: (_: string, record) => (
-        <PlayerCard
-          firstName={record.playerDetails.firstName}
-          secondName={record.playerDetails.secondName}
-          lastName={record.playerDetails.lastName}
-          avatarUrl={record.playerDetails.avatarUrl}
-          email={record.playerDetails.email}
-          ranking={record.playerDetails.ranking}
-        />
-      ),
+      render: (_: string, record) => {
+        if (
+          record.status === TouramentregistrationStatus.Approved ||
+          record.status === TouramentregistrationStatus.Eliminated ||
+          record.status === TouramentregistrationStatus.Winner
+        ) {
+          return (
+            <PlayerCard
+              firstName={record.playerDetails.firstName}
+              secondName={record.playerDetails.secondName}
+              lastName={record.playerDetails.lastName}
+              avatarUrl={record.playerDetails.avatarUrl}
+              email={record.playerDetails.email}
+              ranking={record.playerDetails.ranking}
+            />
+          );
+        }
+        return null;
+      },
     },
   ];
 
@@ -142,24 +156,25 @@ export const Participants = ({ registrations = [] }: PlayersTableProps) => {
       title: 'Player 2',
       dataIndex: ['partnerDetails', 'avatarUrl'],
       key: 'avatarUrl',
-      render: (_: string, record) => (
-        record.partnerDetails ? (
-          <PlayerCard
-            firstName={record.partnerDetails.firstName}
-            secondName={record.partnerDetails.secondName}
-            lastName={record.partnerDetails.lastName}
-            avatarUrl={record.partnerDetails.avatarUrl}
-            email={record.partnerDetails.email}
-            ranking={record.partnerDetails.ranking}
-          />
-        ) : (
-          <Card className="profile-card border rounded mb-2 card empty-partner">
-            <div className="d-flex align-items-center justify-content-center" style={{ height: "60px" }}>
-              <Text type="secondary">No partner</Text>
-            </div>
-          </Card>
-        )
-      ),
+      render: (_: string, record) => {
+        if (
+          record.status === TouramentregistrationStatus.Approved ||
+          record.status === TouramentregistrationStatus.Eliminated ||
+          record.status === TouramentregistrationStatus.Winner
+        ) {
+          return (
+            <PlayerCard
+              firstName={record.partnerDetails.firstName}
+              secondName={record.partnerDetails.secondName}
+              lastName={record.partnerDetails.lastName}
+              avatarUrl={record.partnerDetails.avatarUrl}
+              email={record.partnerDetails.email}
+              ranking={record.partnerDetails.ranking}
+            />
+          );
+        }
+        return null;
+      },
     },
   ];
 
@@ -189,11 +204,13 @@ export const Participants = ({ registrations = [] }: PlayersTableProps) => {
           <Title level={4} className="mb-3">
             {registrations.length > 0 ? (
               <>
-                Tournament Participants 
-                <span className="participant-count">{registrations.length}</span>
+                Tournament Participants
+                <span className="participant-count">
+                  {registrations.length}
+                </span>
               </>
             ) : (
-              "No Participants Yet"
+              'No Participants Yet'
             )}
           </Title>
         </div>
@@ -219,22 +236,19 @@ export const Participants = ({ registrations = [] }: PlayersTableProps) => {
             dataSource={filteredRegistrations}
             rowKey="id"
             className="participants-table"
-            pagination={{ 
+            pagination={{
               pageSize: 10,
               showSizeChanger: false,
               position: ['bottomCenter'],
-              className: "custom-pagination" 
+              className: 'custom-pagination',
             }}
             rowClassName={rowClassName}
           />
         </motion.div>
       ) : (
-        <motion.div
-          variants={itemVariants}
-          className="empty-state"
-        >
-          <Empty 
-            description="No participants have registered yet" 
+        <motion.div variants={itemVariants} className="empty-state">
+          <Empty
+            description="No participants have registered yet"
             image={Empty.PRESENTED_IMAGE_SIMPLE}
           />
         </motion.div>

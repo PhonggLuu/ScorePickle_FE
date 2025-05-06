@@ -7,14 +7,28 @@ import { SearchOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { useGetAllMatches } from '@src/modules/Match/hooks/useGetAllCompetitiveAndCustomMatch';
 import MatchListCard from './components/MatchListCard';
+import { Matches, MatchStatus } from '@src/modules/Match/models';
 
 export const MatchesPage: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [visibleMatches, setVisibleMatches] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
-  const { data, isLoading } = useGetAllMatches();
+  const { data: allMatch, isLoading } = useGetAllMatches();
+  const [data, setData] = useState<Matches[]>([]);
   const navigate = useNavigate();
   const [isHover, setIsHover] = useState(false);
+
+  useEffect(() => {
+    if (allMatch) {
+      setData(
+        allMatch.filter(
+          (m) =>
+            m.status !== MatchStatus.Disabled &&
+            m.status !== MatchStatus.Completed
+        )
+      );
+    }
+  }, [allMatch]);
 
   const { ref, inView } = useInView({
     triggerOnce: false, // Kiểm tra liên tục khi cuộn
@@ -135,10 +149,13 @@ export const MatchesPage: React.FC = () => {
                 )}
                 <div className="container-fluid" style={{ padding: '0' }}>
                   {visibleMatches
-                    .filter((match) =>
-                      `${match.firstName} ${match.secondName} ${match.lastName}`
-                        .toLowerCase()
-                        .includes(searchTerm.toLowerCase())
+                    .filter(
+                      (match) =>
+                        `${match.firstName} ${match.secondName} ${match.lastName}`
+                          .toLowerCase()
+                          .includes(searchTerm.toLowerCase()) &&
+                        match.status !== MatchStatus.Disabled &&
+                        match.status !== MatchStatus.Completed
                     )
                     .map((match) => (
                       <div

@@ -4,6 +4,25 @@ import { useRespondTeamRequest } from '@src/modules/TournamentRegistration/hooks
 import { InvitationStatus } from '@src/modules/TournamentRegistration/models';
 import { Button, message, Spin } from 'antd';
 import { useNavigate } from 'react-router-dom';
+const containerStyle: React.CSSProperties = {
+  maxHeight: '300px',
+  overflowY: 'auto',
+  overflowX: 'hidden',
+  paddingRight: '10px',
+  border: '1px solid #ccc',
+  borderRadius: '8px',
+  // Ẩn scrollbar trên Chrome, Edge, Safari
+  scrollbarWidth: 'none', // Firefox
+  msOverflowStyle: 'none',
+};
+
+const requestStyle: React.CSSProperties = {
+  display: 'flex',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  padding: '8px',
+  borderBottom: '1px solid #eee',
+};
 
 const TournamentInvitation = ({ playerId }) => {
   const { data, error, isLoading, refetch } =
@@ -61,9 +80,9 @@ const TournamentInvitation = ({ playerId }) => {
   };
 
   return (
-    <ul>
+    <ul style={containerStyle}>
       {(data ?? []).map((invitation, index) => (
-        <li key={index} className="row mb-2">
+        <li key={index} className="row mb-2" style={requestStyle}>
           <strong
             className="col-8"
             style={{ cursor: 'pointer' }}
