@@ -10,8 +10,8 @@ export const createSponsorProfile = async (
   data: UpdateSponsorProfileRequest
 ): Promise<UpdateSponsorProfileResponse> => {
   try {
-    const response = await api.patch<UpdateSponsorProfileResponse>(
-      `/Sponner/CreateSponner/${id}`,
+    const response = await api.post<UpdateSponsorProfileResponse>(
+      `/Sponner/CreateSponner`,
       data
     );
     return response.data;

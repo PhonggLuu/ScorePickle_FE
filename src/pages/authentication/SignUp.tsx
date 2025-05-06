@@ -130,7 +130,7 @@ export const SignUpPage = () => {
             <Text>Already have an account?</Text>
             <Link href={PATH_AUTH.signin}>Sign in here</Link>
           </Flex>
-          <Flex
+          {/* <Flex
             vertical={isMobile}
             gap="small"
             wrap="wrap"
@@ -141,6 +141,7 @@ export const SignUpPage = () => {
             <Button icon={<TwitterOutlined />}>Sign up with Twitter</Button>
           </Flex>
           <Divider className="m-0">or</Divider>
+           */}
           <Form
             name="sign-up-form"
             layout="vertical"
@@ -168,15 +169,21 @@ export const SignUpPage = () => {
                 </Form.Item>
               </Col>
               <Col xs={24} lg={8}>
-                <Form.Item<FieldType> label="Second name" name="secondName">
+                <Form.Item<FieldType>
+                  label={
+                    <span style={{ whiteSpace: 'nowrap' }}>Second name</span>
+                  }
+                  name="secondName"
+                >
                   <Input />
                 </Form.Item>
               </Col>
               <Col xs={24} lg={8}>
                 <Form.Item<FieldType>
-                  label="Last name"
+                  label={
+                    <span style={{ whiteSpace: 'nowrap' }}>Last name</span>
+                  }
                   name="lastName"
-                  labelCol={{ span: 6 }}
                   rules={[
                     { required: true, message: 'Please input your last name!' },
                   ]}
@@ -230,7 +237,7 @@ export const SignUpPage = () => {
                     { required: true, message: 'Please input your email' },
                   ]}
                 >
-                  <Input value={email} />
+                  <Input value={email} readOnly />
                 </Form.Item>
               </Col>
               <Col xs={24}>

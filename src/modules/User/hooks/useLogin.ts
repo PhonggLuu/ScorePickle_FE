@@ -10,6 +10,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { PATH_LANDING } from '@src/constants';
 import { PATH_AUTH, PATH_DASHBOARD } from '@src/constants/routes';
+import { setEmail, setUserId, setVerified } from '@src/redux/user/userSlice';
 
 // integration with redux for login user
 const login = async (request: LoginRequest): Promise<LoginResponse> => {
@@ -37,9 +38,12 @@ export function useLogin() {
           navigate(PATH_DASHBOARD.default);
         else if (user.roleId === RoleFactory.Sponsor)
           navigate(PATH_DASHBOARD.default);
-        else if (user.roleId === RoleFactory.User)
+        else if (user.roleId === RoleFactory.User) {
           navigate(PATH_AUTH.selectRole);
-        else navigate(PATH_LANDING.root);
+          dispatch(setUserId(user.id));
+          dispatch(setVerified(true));
+          dispatch(setEmail(user.email));
+        } else navigate(PATH_LANDING.root);
       });
     },
     onError: (error) => {

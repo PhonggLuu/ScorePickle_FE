@@ -9,8 +9,9 @@ import {
   RoleFactory,
 } from '../models';
 import { useDispatch } from 'react-redux';
-import { setUserId } from '@src/redux/user/userSlice';
+import { setUserId, clearVerified } from '@src/redux/user/userSlice';
 import { message } from 'antd';
+import { useNavigate } from 'react-router-dom';
 
 const registerUser = async (
   user: RegisterUserRequest
@@ -65,10 +66,14 @@ export function useRegisterPlayer() {
 }
 
 export const useCreatePlayer = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   return useMutation<CreatePlayerResponse, Error, CreatePlayerRequest>({
     mutationFn: (request: CreatePlayerRequest) => createPlayer(request),
     onSuccess: () => {
       message.success('Player created successfully!');
+      dispatch(clearVerified());
+      navigate('/auth/signin');
     },
     onError: (error) => {
       console.error('❌ Failed to create player:', error.message);

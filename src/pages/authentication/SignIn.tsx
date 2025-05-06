@@ -164,7 +164,7 @@ export const SignInPage = () => {
               </Flex>
             </Form.Item>
           </Form>
-          <Divider className="m-0">or</Divider>
+          {/* <Divider className="m-0">or</Divider>
           <Flex
             vertical={isMobile}
             gap="small"
@@ -174,7 +174,7 @@ export const SignInPage = () => {
             <Button icon={<GoogleOutlined />}>Sign in with Google</Button>
             <Button icon={<FacebookFilled />}>Sign in with Facebook</Button>
             <Button icon={<TwitterOutlined />}>Sign in with Twitter</Button>
-          </Flex>
+          </Flex> */}
         </Flex>
       </Col>
     </Row>
