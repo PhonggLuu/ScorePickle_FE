@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   Modal,
   Form,
@@ -28,6 +28,7 @@ import type { Dayjs } from 'dayjs'; // Import Dayjs type
 import useCloudinaryUpload from '@src/modules/Cloudinary/hooks/useCloudinaryUpload';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
+import { decode } from 'html-entities';
 
 const { Title } = Typography;
 const { Option } = Select;
@@ -70,8 +71,9 @@ const CreateTournamentModal: React.FC<CreateTournamentModalProps> = ({
   const [imageUrl, setImageUrl] = useState<string>(sampleTournamentData.banner);
   const [uploadMethod, setUploadMethod] = useState<'url' | 'upload'>('url');
   const { uploadToCloudinary, uploading, progress } = useCloudinaryUpload();
-  const [quillContent, setQuillContent] = useState(sampleTournamentData.note);
+  const [quillContent, setQuillContent] = useState<string>('');
   const [isFree, setIsFree] = useState(sampleTournamentData.isFree);
+  const quillRef = useRef<any>(null);
 
   // Initialize form with default dates when modal becomes visible
   useEffect(() => {
@@ -81,7 +83,15 @@ const CreateTournamentModal: React.FC<CreateTournamentModalProps> = ({
       const nextWeek = tomorrow.add(7, 'day');
 
       setImageUrl(sampleTournamentData.banner);
-      setQuillContent(sampleTournamentData.note);
+
+      // Ensure we're using the decoded content consistently
+      const decodedContent = decode(sampleTournamentData.note);
+      setQuillContent(decodedContent);
+
+      // Add small delay to allow ReactQuill to initialize properly
+      setTimeout(() => {
+        setQuillContent(decodedContent);
+      }, 100);
 
       form.setFieldsValue({
         startDate: tomorrow,
@@ -416,13 +426,28 @@ const CreateTournamentModal: React.FC<CreateTournamentModalProps> = ({
         </Form.Item>
 
         <Form.Item label="Notes/Rules">
-          <ReactQuill
-            theme="snow"
-            style={{ height: '200px', marginBottom: '50px' }}
-            value={quillContent}
-            onChange={setQuillContent}
-            placeholder="Enter tournament notes or rules"
-          />
+          <div className="quill-container" style={{ minHeight: '300px' }}>
+            <ReactQuill
+              ref={quillRef}
+              theme="snow"
+              style={{ height: '250px', marginBottom: '50px' }}
+              value={quillContent}
+              onChange={(content) => {
+                setQuillContent(content);
+              }}
+              placeholder="Enter tournament notes or rules"
+              modules={{
+                toolbar: [
+                  ['bold', 'italic', 'underline', 'strike'],
+                  [{ list: 'ordered' }, { list: 'bullet' }],
+                  [{ indent: '-1' }, { indent: '+1' }],
+                  [{ header: [1, 2, 3, 4, 5, 6, false] }],
+                  ['clean'],
+                ],
+              }}
+              preserveWhitespace={true}
+            />
+          </div>
         </Form.Item>
 
         <Form.Item
