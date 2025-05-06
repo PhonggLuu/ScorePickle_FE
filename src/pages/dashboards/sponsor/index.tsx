@@ -1060,7 +1060,12 @@ export const PaymentSponsor = () => {
           columns={columns}
           dataSource={filterBillsByTab()}
           rowKey="id"
-          pagination={{ pageSize: 10, showSizeChanger: true }}
+          pagination={{
+            pageSize: 50,
+            showSizeChanger: true,
+            pageSizeOptions: ['50', '100'],
+            defaultPageSize: 50,
+          }}
           bordered
           size="middle"
           scroll={{ x: 'max-content' }}

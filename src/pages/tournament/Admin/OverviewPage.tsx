@@ -7,6 +7,7 @@ import {
   ReloadOutlined,
   MessageOutlined,
   DollarOutlined,
+  FileTextOutlined,
 } from '@ant-design/icons';
 import type { InputRef } from 'antd';
 import {
@@ -48,6 +49,8 @@ export const OverviewAdminPage = () => {
   const [searchedColumn, setSearchedColumn] = useState<string>('');
   const searchInput = useRef<InputRef>(null);
   const [activeTab, setActiveTab] = useState<string>('all');
+  const [policyModalOpen, setPolicyModalOpen] = useState(false);
+  const [selectedPolicy, setSelectedPolicy] = useState<string>('');
 
   const [tournamentNotes, setTournamentNotes] = useState<Record<number, any>>(
     {}
@@ -329,6 +332,16 @@ export const OverviewAdminPage = () => {
     }
   };
 
+  // Add this function to open the policy modal
+  const openPolicyModal = (record: any) => {
+    if (record.note) {
+      setSelectedPolicy(record.note);
+      setPolicyModalOpen(true);
+    } else {
+      message.info('No policy information available for this tournament');
+    }
+  };
+
   const columns: ColumnsType<any> = [
     {
       title: 'Tournament',
@@ -433,6 +446,27 @@ export const OverviewAdminPage = () => {
         );
       },
       width: 180,
+    },
+    {
+      title: 'Policy',
+      key: 'policy',
+      render: (_, record) => (
+        <div style={{ padding: '6px 0' }}>
+          {record.note ? (
+            <Button
+              type="default"
+              size="small"
+              icon={<FileTextOutlined />}
+              onClick={() => openPolicyModal(record)}
+            >
+              View Policy
+            </Button>
+          ) : (
+            <Tag color="default">No Policy</Tag>
+          )}
+        </div>
+      ),
+      width: 110,
     },
     {
       title: 'Approval',
@@ -635,7 +669,6 @@ export const OverviewAdminPage = () => {
           </Col>
         </Row>
       </Card>
-
       <Card title="Tournament List" className="table-card">
         <Tabs
           activeKey={activeTab}
@@ -679,7 +712,6 @@ export const OverviewAdminPage = () => {
           rowClassName={(record) => (!record.isAccept ? 'pending-row' : '')}
         />
       </Card>
-
       <style>
         {`
           .admin-overview {
@@ -807,7 +839,6 @@ export const OverviewAdminPage = () => {
           </Form.Item>
         </Form>
       </Modal>
-
       <Modal
         title="Tournament Note"
         open={viewNoteModalOpen}
@@ -833,6 +864,30 @@ export const OverviewAdminPage = () => {
             </Descriptions.Item>
           </Descriptions>
         )}
+      </Modal>
+      // Add the new modal at the end, right after the existing modals
+      <Modal
+        title={
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <FileTextOutlined style={{ color: '#1890ff', fontSize: '20px' }} />
+            <span>Tournament Policy</span>
+          </div>
+        }
+        open={policyModalOpen}
+        onCancel={() => setPolicyModalOpen(false)}
+        width={800}
+        footer={[
+          <Button key="close" onClick={() => setPolicyModalOpen(false)}>
+            Close
+          </Button>,
+        ]}
+      >
+        <Card
+          className="policy-content"
+          style={{ maxHeight: '70vh', overflow: 'auto' }}
+        >
+          <div dangerouslySetInnerHTML={{ __html: selectedPolicy }} />
+        </Card>
       </Modal>
     </div>
   );
