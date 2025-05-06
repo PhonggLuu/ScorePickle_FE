@@ -289,12 +289,18 @@ const BillTab = ({ id }: BillTabProps) => {
       key: 'type',
       render: (type: number | string) => {
         const typeNum = Number(type);
-        const typeText = typeNum === 1 ? 'Registration' : 'Other';
+        const typeText =
+          typeNum === 1
+            ? 'Sponsorship'
+            : typeNum === 2
+              ? 'Registration'
+              : 'Award';
         return <Tag color={typeNum === 1 ? 'green' : 'blue'}>{typeText}</Tag>;
       },
       filters: [
-        { text: 'Registration', value: 1 },
-        { text: 'Other', value: 2 },
+        { text: 'Sponsorship', value: 1 },
+        { text: 'Registration', value: 2 },
+        { text: 'Award', value: 3 },
       ],
       onFilter: (value, record) => Number(record.type) === value,
     },

@@ -1,6 +1,7 @@
 import {
   CalendarOutlined,
   RightOutlined,
+  TeamOutlined,
   UserOutlined,
 } from '@ant-design/icons';
 import { Matches, MatchFormat, MatchStatus } from '@src/modules/Match/models';
@@ -176,8 +177,26 @@ export default function MatchListCard({ value }: MatchCardProps) {
         variants={contentVariants}
       >
         <div className="d-flex align-items-center me-3">
-          <UserOutlined className="me-2 text-primary" />
+          {MatchFormat[value.matchFormat].toLowerCase().includes('single') ? (
+            <UserOutlined className="me-2 text-primary" />
+          ) : (
+            <TeamOutlined className="me-2 text-primary" />
+          )}
           <Text strong>{MatchFormat[value.matchFormat]}</Text>
+        </div>
+        <div className="d-flex align-items-center me-3">
+          {MatchFormat[value.matchFormat].toLowerCase().includes('single') ? (
+            <UserOutlined className="me-2 text-primary" />
+          ) : (
+            <TeamOutlined className="me-2 text-primary" />
+          )}
+          <Text strong>
+            Players:{' '}
+            {value.teams[0].members.length | value.teams[1].members.length}/
+            {MatchFormat[value.matchFormat].toLowerCase().includes('single')
+              ? 2
+              : 4}
+          </Text>
         </div>
       </motion.div>
 

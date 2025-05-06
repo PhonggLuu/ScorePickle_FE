@@ -456,11 +456,9 @@ export const OverviewPage = () => {
       key: 'action',
       render: (_, record) => (
         <div style={{ padding: '6px 0' }}>
-          {record.isAccept ? (
-            <Button type="link" style={{ padding: '4px 0' }}>
-              <Link to={`/tournament/${record.id}`}>Details</Link>
-            </Button>
-          ) : null}
+          <Button type="link" style={{ padding: '4px 0' }}>
+            <Link to={`/tournament/${record.id}`}>Details</Link>
+          </Button>
         </div>
       ),
       width: 100,

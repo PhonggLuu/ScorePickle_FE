@@ -108,8 +108,25 @@ export function MatchScore({ matchId }: MatchCollapseProps) {
       return {
         key: roundKey,
         label: (
-          <Title level={4} style={{ margin: 0 }}>
-            Round {round} — {scoreSummary}
+          <Title
+            level={4}
+            style={{
+              margin: 0,
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+            }}
+          >
+            <div>Round {round}</div> {/* Round bên trái */}
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'center', // Căn giữa nội dung trong div
+                flexGrow: 1, // Giúp div chiếm không gian còn lại
+              }}
+            >
+              {scoreSummary}
+            </div>
           </Title>
         ),
         children: (

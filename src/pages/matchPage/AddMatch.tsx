@@ -12,6 +12,8 @@ import {
   Tag,
   AutoComplete,
   message,
+  Image,
+  Card,
 } from 'antd';
 import { UserOutlined, MinusCircleOutlined } from '@ant-design/icons';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -30,8 +32,9 @@ import {
 } from '@src/modules/Match/models';
 import { createMatch } from '@src/modules/Match/hooks/useCreateMatch';
 import { useNavigate } from 'react-router-dom';
+import { useGetVenueAll } from '@src/modules/Venues/hooks/useGetAllVenue';
 
-const { Title } = Typography;
+const { Title, Text } = Typography;
 //const { TabPane } = Tabs;
 
 interface Player {
@@ -85,8 +88,8 @@ const AddMatches: React.FC = () => {
   const [title, setTitle] = useState<string>('');
   const [description, setDescription] = useState<string>('');
 
-  // const { data: venueData } = useGetVenueAll();
-  // const [venue, setVenue] = useState<number>(venueData?.[0]?.id ?? 0);
+  const { data: venueData } = useGetVenueAll();
+  const [venue, setVenue] = useState<number | null>(null);
 
   // const { data: refereeData } = useGetReferees();
   // const [referee, setReferee] = useState<number>(refereeData?.[0]?.id ?? 0);
@@ -227,33 +230,34 @@ const AddMatches: React.FC = () => {
       return;
     }
     // Validate players selection for custom category
-    if (matchCategory === 'custom') {
-      if (matchType === 'single') {
-        if (!playersSelected.players[1]) {
-          message.error('At least 2 persons for a single match');
-          return;
-        }
-      } else {
-        if (
-          playersSelected.players.length < 4 ||
-          !playersSelected.players[1] ||
-          !playersSelected.players[2] ||
-          !playersSelected.players[3]
-        ) {
-          message.error('At least 4 persons for a double match');
-          return;
-        }
-      }
-    }
+    // if (matchCategory === 'custom') {
+    //   if (matchType === 'single') {
+    //     if (!playersSelected.players[1]) {
+    //       message.error('At least 2 persons for a single match');
+    //       return;
+    //     }
+    //   } else {
+    //     if (
+    //       playersSelected.players.length < 4 ||
+    //       !playersSelected.players[1] ||
+    //       !playersSelected.players[2] ||
+    //       !playersSelected.players[3]
+    //     ) {
+    //       message.error('At least 4 persons for a double match');
+    //       return;
+    //     }
+    //   }
+    // }
     const isComp =
       matchCategory === MatchCategory[MatchCategory.Competitive].toLowerCase();
     const isSingle = matchType === 'single';
+    let matchDate = selectedDate.add(7, 'hour').toISOString();
     const payload: MatchRequest = {
       title: title,
       description: description,
-      matchDate: selectedDate.toISOString(),
+      matchDate: matchDate,
       status: MatchStatus.Scheduled,
-      venueId: null,
+      venueId: venue ?? null,
       matchCategory: isComp ? MatchCategory.Competitive : MatchCategory.Custom,
       matchFormat: isComp
         ? user?.gender?.toLowerCase().includes('female')
@@ -268,17 +272,9 @@ const AddMatches: React.FC = () => {
       isPublic: !isComp,
       roomOnwer: user!.id,
       player1Id: user!.id,
-      player2Id: isComp ? null : playersSelected.players[1].id ?? null,
-      player3Id: isComp
-        ? null
-        : isSingle
-          ? null
-          : playersSelected.players[2].id,
-      player4Id: isComp
-        ? null
-        : isSingle
-          ? null
-          : playersSelected.players[3].id,
+      player2Id: playersSelected.players[1]?.id ?? null,
+      player3Id: playersSelected.players[2]?.id ?? null,
+      player4Id: playersSelected.players[3]?.id ?? null,
       refereeId: null,
       tournamentId: null,
     };
@@ -555,16 +551,13 @@ const AddMatches: React.FC = () => {
                   onChange={(e) => setMatchCategory(e.target.value)}
                   buttonStyle="solid"
                 >
-                  <Radio.Button
+                  {/* <Radio.Button
                     className="rounded-pill rounded-end-0"
                     value="competitive"
                   >
                     Competitive
-                  </Radio.Button>
-                  <Radio.Button
-                    className="rounded-pill rounded-start-0"
-                    value="custom"
-                  >
+                  </Radio.Button> */}
+                  <Radio.Button className="rounded-pill" value="custom">
                     Friendly
                   </Radio.Button>
                 </Radio.Group>
@@ -607,7 +600,7 @@ const AddMatches: React.FC = () => {
                   ))}
                 </Select>
               </div>
-              {/* <div className="d-flex justify-content-between align-items-center mb-3">
+              <div className="d-flex justify-content-between align-items-center mb-3">
                 <label className="form-label">Venue</label>
                 <Select
                   className="w-50"
@@ -625,12 +618,13 @@ const AddMatches: React.FC = () => {
                         <Image src={venue.urlImage} />
                         <br />
                         <Text>{venue.name}</Text>
+                        <Text>{venue.address}</Text>
                       </Card>
                     </Select.Option>
                   ))}
                 </Select>
               </div>
-              <div className="d-flex justify-content-between align-items-center mb-3">
+              {/* <div className="d-flex justify-content-between align-items-center mb-3">
                 <label className="form-label">Referee</label>
                 <Select
                   className="w-50"

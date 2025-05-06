@@ -377,7 +377,7 @@ const SponsorDashboard: React.FC<SponsorDashboardProps> = ({ user }) => {
         </Col>
 
         {/* Financial Stats Card */}
-        <Col xs={24} sm={12} lg={8}>
+        {/* <Col xs={24} sm={12} lg={8}>
           <Card
             style={{
               height: '100%',
@@ -422,7 +422,6 @@ const SponsorDashboard: React.FC<SponsorDashboardProps> = ({ user }) => {
                   marginTop: '8px',
                 }}
               >
-                {/* <Text><CalendarOutlined /> Last payment: {sponnerBill && sponnerBill.length > 0 ? new Date(sponnerBill[0].createAt).toLocaleDateString() : 'N/A'}</Text> */}
               </div>
               <Progress
                 percent={Math.min(100, totalSpent / 1000)}
@@ -441,7 +440,7 @@ const SponsorDashboard: React.FC<SponsorDashboardProps> = ({ user }) => {
               </Link>
             </Space>
           </Card>
-        </Col>
+        </Col> */}
 
         {/* Resources Card */}
         <Col xs={24} lg={8}>

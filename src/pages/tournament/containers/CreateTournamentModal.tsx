@@ -35,20 +35,20 @@ const { TextArea } = Input;
 
 const sampleTournamentData = {
   name: 'Pickleball Championship ',
-  location: 'HCM, Việt Nam',
+  location: '01 Nguyễn Du, Bến Nghé, Quận 1, Hồ Chí Minh, Việt Nam',
   maxPlayer: 16,
   description:
-    'The Pickleball Online Championship 2025 is open to all, giving players a great chance to showcase their skills and compete in a vibrant sports community',
+    'The tournament is open to all, giving players a great chance to showcase their skills and compete in a vibrant sports community',
   banner:
     'https://pickleball360.com.vn/wp-content/uploads/2024/08/banner-pickleball-the-thaoPyRa4.webp',
-  note: '',
+  note: '<p>1. Đối tượng &amp; Điều kiện:</p><p>&nbsp;&nbsp;- Đơn nữ, có thẻ thành viên Liên đoàn Pickleball Việt Nam còn hạn.</p><p>&nbsp;&nbsp;- Chứng nhận y tế trong vòng 6 tháng.</p><p><br></p><p>2. Thời hạn &amp; Phí:</p><p>&nbsp;&nbsp;- Hạn chót đăng ký: 16:00, ngày 10/05/2025.</p><p>&nbsp;&nbsp;- Phí tham dự: 100.000 ₫/người.</p><p><br></p><p>3. Thể thức thi đấu:</p><p>&nbsp;&nbsp;- 16 cặp đấu theo thể thức loại trực tiếp</p><p>&nbsp;&nbsp;- Thắng ở mỗi trận sẽ vào vòng tiếp theo.</p><p><br></p><p>4. Luật &amp; Trọng tài:</p><p>&nbsp;&nbsp;- Áp dụng Luật USA Pickleball 2024, mỗi set đến 11 điểm (cách biệt 2 điểm).</p><p>&nbsp;&nbsp;- Tie-break nếu hòa đánh đến 15.</p><p>&nbsp;&nbsp;- 1 trọng tài chính cho mỗi trận, quyết định của trọng tài là cuối cùng.</p><p><br></p><p>5. Sân bãi &amp; Thiết bị:</p><p>&nbsp;&nbsp;- 4 sân chuẩn pickleball, mặt nền nhựa tổng hợp.</p><p>&nbsp;&nbsp;- Bóng thi đấu: Drink &amp; Serve (indoor).</p><p><br></p><p>6. Giải thưởng:</p><p>&nbsp;&nbsp;- Tổng giải: 1.000.000 ₫.</p><p>&nbsp;&nbsp;- Nhất: Cúp + 40% tổng tiền giải.</p><p>&nbsp;&nbsp;- Nhì: Cúp + 30% tổng tiền giải.</p><p>&nbsp;&nbsp;- Ba Tư (đồng giải): 15% tổng tiền giải.</p><p><br></p><p>7. Khác:</p><p>&nbsp;&nbsp;- Rút lui khỏi giải sẽ mất phí.</p><p>&nbsp;&nbsp;- Khiếu nại nộp trong 15 phút sau trận.</p><p>&nbsp;&nbsp;- BTC không chịu trách nhiệm chấn thương.</p><p>&nbsp;&nbsp;- Thông tin cập nhật qua email và fanpage.</p>',
   isMinRanking: 1,
   isMaxRanking: 9, // Changed from 10 to 9
   social: 'https://facebook.com/example',
   totalPrize: 100000,
   isFree: true,
   entryFee: 10000,
-  type: 1,
+  type: 2,
 };
 
 interface CreateTournamentModalProps {

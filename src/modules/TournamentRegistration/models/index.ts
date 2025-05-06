@@ -49,4 +49,5 @@ export enum TouramentregistrationStatus {
   Waiting = 4, // Cho accept tu partner
   Eliminated = 5, // Bi loai
   Request = 6, // Nhan duoc loi moi tham gia
+  Winner = 7,
 }
