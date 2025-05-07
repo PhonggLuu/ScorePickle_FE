@@ -52,7 +52,7 @@ export interface Member {
 export interface MatchRequest {
   title: string;
   description: string;
-  matchDate: Date;
+  matchDate: string;
   venueId?: number | null;
   status: number;
   matchCategory: number;
