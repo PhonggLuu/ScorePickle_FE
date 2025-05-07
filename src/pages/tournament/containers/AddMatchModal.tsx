@@ -15,12 +15,19 @@ import seedrandom from 'seedrandom';
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '@src/redux/store';
-import { useGetAllReferees } from '@src/modules/User/hooks/useGetAllReferee';
+import {
+  useGetAllReferees,
+  useGetRefereeBySponsorId,
+} from '@src/modules/User/hooks/useGetAllReferee';
 import { useGetTournamentById } from '@src/modules/Tournament/hooks/useGetTournamentById';
 import { useGetVenueBySponserId } from '@src/modules/Venues/hooks/useGetVenueBySponserId';
 import { useCreateMatch } from '@src/modules/Match/hooks/useCreateMatch';
 import { DeleteOutlined, InfoCircleOutlined } from '@ant-design/icons';
-import { RegistrationDetail } from '@src/modules/Tournament/models';
+import {
+  RegistrationDetail,
+  TournamentTypes,
+} from '@src/modules/Tournament/models';
+import { MatchStatus } from '@src/modules/Match/models';
 
 const { Option } = Select;
 const { Panel } = Collapse;
@@ -81,9 +88,13 @@ const AddMatchModal: React.FC<AddMatchModalProps> = ({
   const [hideAssignedTeams, setHideAssignedTeams] = useState<boolean>(true);
   const [assignedTeams, setAssignedTeams] = useState<number[]>([]);
 
-  const { data: referees } = useGetAllReferees();
   const { data: tournamentDetails } = useGetTournamentById(tournamentId);
-  const { data: venues } = useGetVenueBySponserId(user?.id || 0);
+  const { data: referees } = useGetRefereeBySponsorId(
+    tournamentDetails?.organizerId?.toString() || ''
+  );
+  const { data: venues } = useGetVenueBySponserId(
+    tournamentDetails?.organizerId || 0
+  );
 
   const { mutate: createMatch, isError, error } = useCreateMatch();
 
@@ -123,6 +134,7 @@ const AddMatchModal: React.FC<AddMatchModalProps> = ({
           matchData = {
             ...values,
             roomOnwer: user?.id,
+            matchDate: new Date(values.matchDate).toISOString(),
             tournamentId,
             player1Id: team1.playerId, // First player from team 1
             player2Id: team2.playerId, // First player from team 2
@@ -133,6 +145,7 @@ const AddMatchModal: React.FC<AddMatchModalProps> = ({
             ...values,
             roomOnwer: user?.id,
             tournamentId,
+            matchDate: new Date(values.matchDate).toISOString(),
             player1Id: team1.playerId, // First player from team 1
             player2Id: team1.partnerId, // Partner from team 1
             player3Id: team2.playerId, // First player from team 2
@@ -141,28 +154,31 @@ const AddMatchModal: React.FC<AddMatchModalProps> = ({
         }
 
         // Create the match with the prepared data
-        createMatch(matchData, {
-          onSuccess: () => {
-            // Save the selected teams to localStorage
-            saveAssignedTeamsToStorage(tournamentId, [
-              values.team1Id,
-              values.team2Id,
-            ]);
-            // Update local state
-            setAssignedTeams((prev) => [
-              ...new Set([...prev, values.team1Id, values.team2Id]),
-            ]);
+        createMatch(
+          { data: matchData },
+          {
+            onSuccess: () => {
+              // Save the selected teams to localStorage
+              saveAssignedTeamsToStorage(tournamentId, [
+                values.team1Id,
+                values.team2Id,
+              ]);
+              // Update local state
+              setAssignedTeams((prev) => [
+                ...new Set([...prev, values.team1Id, values.team2Id]),
+              ]);
 
-            message.success('Match created successfully');
-            onClose();
-            form.resetFields();
-            refetch();
-          },
-          onError: (err) => {
-            message.error('Error creating match');
-            console.error('Error creating match:', err);
-          },
-        });
+              message.success('Match created successfully');
+              onClose();
+              form.resetFields();
+              refetch();
+            },
+            onError: (err) => {
+              message.error('Error creating match');
+              console.error('Error creating match:', err);
+            },
+          }
+        );
       })
       .catch((info) => {
         console.log('Validate Failed:', info);
@@ -312,11 +328,12 @@ const AddMatchModal: React.FC<AddMatchModalProps> = ({
                 <Form.Item
                   name="status"
                   label="Status"
-                  rules={[
-                    { required: true, message: 'Please select the status!' },
-                  ]}
+                  initialValue={1}
+                  // rules={[
+                  //   { required: true, message: 'Please select the status!' },
+                  // ]}
                 >
-                  <Select disabled>
+                  <Select defaultValue={1} disabled>
                     <Option value={1}>Scheduled</Option>
                     <Option value={2}>Ongoing</Option>
                     <Option value={3}>Completed</Option>
@@ -330,12 +347,13 @@ const AddMatchModal: React.FC<AddMatchModalProps> = ({
                 <Form.Item
                   name="matchCategory"
                   label="Match Category"
-                  rules={[
-                    {
-                      required: true,
-                      message: 'Please select the match category!',
-                    },
-                  ]}
+                  // rules={[
+                  //   {
+                  //     required: true,
+                  //     message: 'Please select the match category!',
+                  //   },
+                  // ]}
+                  initialValue={tournamentDetails?.type}
                 >
                   <Select disabled>
                     <Option value={1}>Competitive</Option>
@@ -348,14 +366,19 @@ const AddMatchModal: React.FC<AddMatchModalProps> = ({
                 <Form.Item
                   name="matchFormat"
                   label="Match Format"
-                  rules={[
-                    {
-                      required: true,
-                      message: 'Please select the match format!',
-                    },
-                  ]}
+                  // rules={[
+                  //   {
+                  //     required: true,
+                  //     message: 'Please select the match format!',
+                  //   },
+                  // ]}
+                  initialValue={
+                    tournamentDetails?.type !== undefined
+                      ? TournamentTypes[tournamentDetails.type]
+                      : undefined
+                  }
                 >
-                  <Select onChange={(value) => setMatchFormat(value)}>
+                  {/* <Select onChange={(value) => setMatchFormat(value)}>
                     {tournamentDetails?.type == 'Doubles' ? (
                       <>
                         <Option value={MatchFormat.DoubleFemale}>
@@ -378,7 +401,11 @@ const AddMatchModal: React.FC<AddMatchModalProps> = ({
                         </Option>
                       </>
                     )}
-                  </Select>
+                  </Select> */}
+                  <Select
+                    defaultValue={tournamentDetails?.type}
+                    disabled
+                  ></Select>
                 </Form.Item>
               </Col>
             </Row>

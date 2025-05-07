@@ -4,6 +4,7 @@ import {
   FilterOutlined,
   LockFilled,
   MailFilled,
+  PlusOutlined,
   ReloadOutlined,
   SearchOutlined,
   TeamOutlined,
@@ -26,6 +27,8 @@ import {
   Typography,
   Tabs,
   Progress,
+  Select,
+  Badge,
 } from 'antd';
 import type { ColumnsType, ColumnType } from 'antd/es/table';
 import { useEffect, useMemo, useRef, useState } from 'react';
@@ -38,12 +41,17 @@ import { useGetMatchByTournamentId } from '@src/modules/Match/hooks/useGetMatchB
 import { Match, Member } from '@src/modules/Tournament/models';
 import { fetchUserById } from '@src/modules/User/hooks/useGetUserById';
 import { User } from '@src/modules/User/models';
-import { useGetAllReferees } from '@src/modules/User/hooks/useGetAllReferee';
+import {
+  useGetAllReferees,
+  useGetRefereeBySponsorId,
+} from '@src/modules/User/hooks/useGetAllReferee';
 import { useGetVenueAll } from '@src/modules/Venues/hooks/useGetAllVenue';
 import AddMatchModal from './AddMatchModal';
 import UpdateMatchModal from './UpdateMatchModal';
 import MatchScoreModal from './MatchScoreModal';
 import Title from 'antd/es/typography/Title';
+import { Option } from 'antd/es/mentions';
+import { useGetVenueBySponserId } from '@src/modules/Venues/hooks/useGetVenueBySponserId';
 
 const { Text } = Typography;
 const { Meta } = Card;
@@ -62,8 +70,8 @@ const MatchRoom = ({ id }: MatchRoomProps) => {
     error: errorMatches,
     refetch,
   } = useGetMatchByTournamentId(Number(id));
-  const { data: referees } = useGetAllReferees();
-  const { data: venues } = useGetVenueAll();
+  const { data: referees } = useGetRefereeBySponsorId(id.toString());
+  const { data: venues } = useGetVenueBySponserId(id);
   const [userDetails, setUserDetails] = useState<any[]>([]);
   const [filteredDetails, setFilteredDetails] = useState<Match[]>([]);
   const [filterStatus, setFilterStatus] = useState<string>('All');
@@ -688,7 +696,7 @@ const MatchRoom = ({ id }: MatchRoomProps) => {
           </Col>
         </Row>
 
-        {/* Match Management Header
+        {/* Match Management Header */}
         <Card
           title={
             <Title level={4} style={{ margin: 0 }}>
@@ -726,12 +734,12 @@ const MatchRoom = ({ id }: MatchRoomProps) => {
                     <TrophyOutlined /> Completed
                   </Option>
                 </Select>
-                <Input.Search
+                {/* <Input.Search
                   placeholder="Search match title"
                   style={{ width: '60%' }}
                   onSearch={handleSearchByTitle}
                   allowClear
-                />
+                /> */}
               </Input.Group>
             </Col>
             <Col xs={24} md={8}>
@@ -764,7 +772,7 @@ const MatchRoom = ({ id }: MatchRoomProps) => {
               </div>
             </Col>
           </Row>
-        </Card> */}
+        </Card>
 
         {/* Tab View for Different Status */}
         <Tabs

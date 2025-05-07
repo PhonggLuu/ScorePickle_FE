@@ -129,23 +129,16 @@ export const Participants = ({ registrations = [] }: PlayersTableProps) => {
       dataIndex: ['playerDetails', 'avatarUrl'],
       key: 'avatarUrl',
       render: (_: string, record) => {
-        if (
-          record.status === TouramentregistrationStatus.Approved ||
-          record.status === TouramentregistrationStatus.Eliminated ||
-          record.status === TouramentregistrationStatus.Winner
-        ) {
-          return (
-            <PlayerCard
-              firstName={record.playerDetails.firstName}
-              secondName={record.playerDetails.secondName}
-              lastName={record.playerDetails.lastName}
-              avatarUrl={record.playerDetails.avatarUrl}
-              email={record.playerDetails.email}
-              ranking={record.playerDetails.ranking}
-            />
-          );
-        }
-        return null;
+        return (
+          <PlayerCard
+            firstName={record.playerDetails.firstName}
+            secondName={record.playerDetails.secondName}
+            lastName={record.playerDetails.lastName}
+            avatarUrl={record.playerDetails.avatarUrl}
+            email={record.playerDetails.email}
+            ranking={record.playerDetails.ranking}
+          />
+        );
       },
     },
   ];
@@ -157,23 +150,16 @@ export const Participants = ({ registrations = [] }: PlayersTableProps) => {
       dataIndex: ['partnerDetails', 'avatarUrl'],
       key: 'avatarUrl',
       render: (_: string, record) => {
-        if (
-          record.status === TouramentregistrationStatus.Approved ||
-          record.status === TouramentregistrationStatus.Eliminated ||
-          record.status === TouramentregistrationStatus.Winner
-        ) {
-          return (
-            <PlayerCard
-              firstName={record.partnerDetails.firstName}
-              secondName={record.partnerDetails.secondName}
-              lastName={record.partnerDetails.lastName}
-              avatarUrl={record.partnerDetails.avatarUrl}
-              email={record.partnerDetails.email}
-              ranking={record.partnerDetails.ranking}
-            />
-          );
-        }
-        return null;
+        return (
+          <PlayerCard
+            firstName={record.partnerDetails.firstName}
+            secondName={record.partnerDetails.secondName}
+            lastName={record.partnerDetails.lastName}
+            avatarUrl={record.partnerDetails.avatarUrl}
+            email={record.partnerDetails.email}
+            ranking={record.partnerDetails.ranking}
+          />
+        );
       },
     },
   ];
