@@ -32,7 +32,11 @@ import type { ColumnsType, ColumnType } from 'antd/es/table';
 import Title from 'antd/es/typography/Title';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { ExtendMatchDetail, MatchStatus } from '@src/modules/Match/models';
+import {
+  ExtendMatchDetail,
+  IMatch,
+  MatchStatus,
+} from '@src/modules/Match/models';
 import { useGetMatchByRefereeId } from '@src/modules/Referee/hooks/useGetMatchByRefereeId';
 import { Match, Member } from '@src/modules/Tournament/models';
 import { useGetAllReferees } from '@src/modules/User/hooks/useGetAllReferee';
@@ -69,7 +73,7 @@ const MatchRoom = () => {
   const [isScoreModalVisible, setIsScoreModalVisible] =
     useState<boolean>(false);
   const [selectedMatchForScores, setSelectedMatchForScores] =
-    useState<ExtendMatchDetail | null>(null);
+    useState<IMatch | null>(null);
 
   // Calculate statistics
   const statistics = useMemo(() => {
@@ -849,7 +853,7 @@ const MatchRoom = () => {
             setIsScoreModalVisible(false);
             setSelectedMatchForScores(null);
           }}
-          match={selectedMatchForScores as ExtendMatchDetail}
+          match={selectedMatchForScores}
           refetch={refetch}
         />
       )}

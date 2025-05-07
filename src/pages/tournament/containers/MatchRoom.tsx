@@ -84,7 +84,7 @@ const MatchRoom = ({ id }: MatchRoomProps) => {
   const [isScoreModalVisible, setIsScoreModalVisible] =
     useState<boolean>(false);
   const [selectedMatchForScores, setSelectedMatchForScores] =
-    useState<ExtendMatchDetail | null>(null);
+    useState<IMatch | null>(null);
 
   // Calculate statistics
   const statistics = useMemo(() => {
@@ -904,7 +904,7 @@ const MatchRoom = ({ id }: MatchRoomProps) => {
               setIsScoreModalVisible(false);
               setSelectedMatchForScores(null);
             }}
-            match={selectedMatchForScores as ExtendMatchDetail}
+            match={selectedMatchForScores}
             refetch={refetch}
           />
         )}
