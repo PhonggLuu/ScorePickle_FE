@@ -202,8 +202,14 @@ export const RefereeDashboard = () => {
         // Determine tag color based on tournament type
         let typeColor = '';
         switch (record.type) {
+          case 'SingleMale':
+            typeColor = 'blue';
+            break;
           case 'SinglesMale':
             typeColor = 'blue';
+            break;
+          case 'SingleFemale':
+            typeColor = 'magenta';
             break;
           case 'SinglesFemale':
             typeColor = 'magenta';
@@ -211,10 +217,19 @@ export const RefereeDashboard = () => {
           case 'DoublesMale':
             typeColor = 'geekblue';
             break;
+          case 'DoubleMale':
+            typeColor = 'geekblue';
+            break;
           case 'DoublesFemale':
             typeColor = 'purple';
             break;
+          case 'DoubleFemale':
+            typeColor = 'purple';
+            break;
           case 'DoublesMix':
+            typeColor = 'cyan';
+            break;
+          case 'DoubleMix':
             typeColor = 'cyan';
             break;
           default:

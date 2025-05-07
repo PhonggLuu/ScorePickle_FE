@@ -70,8 +70,8 @@ const MatchRoom = ({ id }: MatchRoomProps) => {
     error: errorMatches,
     refetch,
   } = useGetMatchByTournamentId(Number(id));
-  const { data: referees } = useGetRefereeBySponsorId(id.toString());
-  const { data: venues } = useGetVenueBySponserId(id);
+  const { data: referees } = useGetAllReferees();
+  const { data: venues } = useGetVenueAll();
   const [userDetails, setUserDetails] = useState<any[]>([]);
   const [filteredDetails, setFilteredDetails] = useState<Match[]>([]);
   const [filterStatus, setFilterStatus] = useState<string>('All');

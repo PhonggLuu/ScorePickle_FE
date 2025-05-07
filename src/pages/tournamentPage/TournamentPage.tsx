@@ -8,7 +8,7 @@ import { RootState } from '@src/redux/store';
 import { Button, Checkbox, Input, message } from 'antd';
 import 'antd/dist/reset.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { TournamentCard } from './containers/TournamentCard';
 
@@ -43,6 +43,13 @@ export const TournamentPage = () => {
   });
 
   const user = useSelector((state: RootState) => state.auth.user);
+
+  useEffect(() => {
+    setFilters((prev) => ({
+      ...prev,
+      status: ['Scheduled'],
+    }));
+  }, []);
 
   const formatDates = (startDate: string, endDate: string) => {
     const start = new Date(startDate);
@@ -439,6 +446,7 @@ export const TournamentPage = () => {
               >
                 <Checkbox
                   className="text-white"
+                  checked={filters.status.includes('Scheduled')}
                   onChange={() => handleCheckboxChange('status', 'Scheduled')}
                 >
                   Coming Soon

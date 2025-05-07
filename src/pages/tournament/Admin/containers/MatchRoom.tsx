@@ -35,6 +35,7 @@ import { Match, Member } from '@src/modules/Tournament/models';
 import { RootState } from '@src/redux/store';
 import { User } from '@src/modules/User/models';
 import { fetchUserById } from '@src/modules/User/hooks/useGetUserById';
+import { useGetVenueAll } from '@src/modules/Venues/hooks/useGetAllVenue';
 
 const { Text } = Typography;
 const { Option } = Select;
@@ -54,8 +55,8 @@ const MatchRoom = ({ id }: MatchRoomProps) => {
     error: errorMatches,
     refetch,
   } = useGetMatchByTournamentId(Number(id));
-  const { data: venues } = useGetVenueBySponserId(user?.id || 0);
   const { data: referees } = useGetAllReferees();
+  const { data: venues } = useGetVenueAll();
   const [userDetails, setUserDetails] = useState<any[]>([]);
   const [filteredDetails, setFilteredDetails] = useState<Match[]>([]);
   const [filterStatus, setFilterStatus] = useState<string>('All');
