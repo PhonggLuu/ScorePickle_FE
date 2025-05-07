@@ -85,29 +85,22 @@ const SideNav = ({ ...others }: SiderProps) => {
           ]),
           getItem('User', 'user', <UserOutlined />, [
             getItem(
-              <Link to={PATH_USER.managerSponsor}>Sponsor Management</Link>,
+              <Link to={PATH_USER.managerSponsor}>Sponsor</Link>,
               'managerSponsor'
             ),
-            getItem(
-              <Link to={PATH_USER.blockUser}>User Management</Link>,
-              'blockUser'
-            ),
+            getItem(<Link to={PATH_USER.blockUser}>User</Link>, 'blockUser'),
           ]),
           getItem('Tournaments', 'admin/tournament', <TrophyOutlined />, [
             getItem(
-              <Link to={PATH_ADMIN_TOURNAMENT.overview}>
-                Tournament Management
-              </Link>,
+              <Link to={PATH_ADMIN_TOURNAMENT.overview}>Tournament</Link>,
               'overview'
             ),
             getItem(
-              <Link to={PATH_ADMIN_TOURNAMENT.venues}>Venue Management</Link>,
+              <Link to={PATH_ADMIN_TOURNAMENT.venues}>Venue</Link>,
               'venues'
             ),
             getItem(
-              <Link to={PATH_ADMIN_TOURNAMENT.referees}>
-                Referee Management
-              </Link>,
+              <Link to={PATH_ADMIN_TOURNAMENT.referees}>Referee</Link>,
               'referees'
             ),
           ]),
@@ -134,29 +127,25 @@ const SideNav = ({ ...others }: SiderProps) => {
               ]),
               getItem('Tournament', 'tournament', <TrophyOutlined />, [
                 getItem(
-                  <Link to={PATH_TOURNAMENT.list}>Sponsorable Tournament</Link>,
-                  'all'
-                ),
-                getItem(
-                  <Link to={PATH_TOURNAMENT.overview}>
-                    Tournament Management
-                  </Link>,
+                  <Link to={PATH_TOURNAMENT.overview}>Tournament</Link>,
                   'overview'
                 ),
                 getItem(
-                  <Link to={PATH_TOURNAMENT.venues}>Venue Management</Link>,
+                  <Link to={PATH_TOURNAMENT.venues}>Venue</Link>,
                   'schedule'
                 ),
                 getItem(
-                  <Link to={PATH_TOURNAMENT.referees}>Referee Management</Link>,
+                  <Link to={PATH_TOURNAMENT.referees}>Referee</Link>,
                   'referees'
                 ),
               ]),
               getItem('Sponsorships', 'payment', <FundOutlined />, [
                 getItem(
-                  <Link to={PATH_SPONSOR_PAYMENT.root}>
-                    Sponsorship Management
-                  </Link>,
+                  <Link to={PATH_TOURNAMENT.list}>Sponsorable Tournament</Link>,
+                  'all'
+                ),
+                getItem(
+                  <Link to={PATH_SPONSOR_PAYMENT.root}>Sponsorship</Link>,
                   'List'
                 ),
               ]),

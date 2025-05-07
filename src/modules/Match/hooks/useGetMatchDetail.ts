@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
-import { GET_MATCH_BY_ID } from '../constants';
-import { ExtendMatchDetail, Matches } from '../models';
+import { GET_MATCH_BY_ID, GET_MATCH_DETAILS } from '../constants';
+import { ExtendMatchDetail, MatchAndScore, Matches } from '../models';
 import Api from '@src/api/api';
 import { fetchUserById } from '@src/modules/User/hooks/useGetUserById';
 
@@ -84,5 +84,29 @@ export function useGetMatchDetail(id: number) {
   return useQuery<ExtendMatchDetail>({
     queryKey: [GET_MATCH_BY_ID, id],
     queryFn: () => fetchMatchtDetailById(id),
+  });
+}
+
+const fetchMatchDetails = async (matchId: number): Promise<MatchAndScore> => {
+  try {
+    const response = await Api.get<MatchAndScore>(
+      `/Match/GetMatchDetails/${matchId}`
+    );
+    return response.data;
+  } catch (error) {
+    throw new Error(`Error fetching match details: ${error}`);
+  }
+};
+
+/**
+ * Hook to fetch and manage match details data
+ *
+ * @param matchId - ID of the match to fetch details for
+ */
+export function useGetMatchDetails(matchId: number) {
+  return useQuery<MatchAndScore>({
+    queryKey: [GET_MATCH_DETAILS, matchId],
+    queryFn: () => fetchMatchDetails(matchId),
+    enabled: !!matchId,
   });
 }

@@ -70,8 +70,8 @@ const MatchRoom = ({ id }: MatchRoomProps) => {
     error: errorMatches,
     refetch,
   } = useGetMatchByTournamentId(Number(id));
-  const { data: referees } = useGetRefereeBySponsorId(id.toString());
-  const { data: venues } = useGetVenueBySponserId(id);
+  const { data: referees } = useGetAllReferees();
+  const { data: venues } = useGetVenueAll();
   const [userDetails, setUserDetails] = useState<any[]>([]);
   const [filteredDetails, setFilteredDetails] = useState<Match[]>([]);
   const [filterStatus, setFilterStatus] = useState<string>('All');
@@ -84,7 +84,7 @@ const MatchRoom = ({ id }: MatchRoomProps) => {
   const [isScoreModalVisible, setIsScoreModalVisible] =
     useState<boolean>(false);
   const [selectedMatchForScores, setSelectedMatchForScores] =
-    useState<ExtendMatchDetail | null>(null);
+    useState<IMatch | null>(null);
 
   // Calculate statistics
   const statistics = useMemo(() => {
@@ -904,7 +904,7 @@ const MatchRoom = ({ id }: MatchRoomProps) => {
               setIsScoreModalVisible(false);
               setSelectedMatchForScores(null);
             }}
-            match={selectedMatchForScores as ExtendMatchDetail}
+            match={selectedMatchForScores}
             refetch={refetch}
           />
         )}

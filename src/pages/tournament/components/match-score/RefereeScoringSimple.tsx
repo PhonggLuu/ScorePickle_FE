@@ -11,19 +11,23 @@ import {
   Select,
   Input,
   Alert,
+  Timeline,
 } from 'antd';
 import {
   SaveOutlined,
   EditOutlined,
   TrophyOutlined,
   ReloadOutlined,
+  ClockCircleOutlined,
 } from '@ant-design/icons';
+import { useMatchRealtimeLogs } from '@src/modules/Match/hooks/useMatchRealtimeLogs';
 
 const { Title, Text } = Typography;
 const { TextArea } = Input;
 const { Option } = Select;
 
 interface RefereeScoringSimpleProps {
+  matchId: number;
   currentRound: number;
   team1Score: number;
   team2Score: number;
@@ -40,7 +44,9 @@ interface RefereeScoringSimpleProps {
   onUndoLastScore: () => void;
   onCancel: () => void;
   canUndo: boolean;
-  onResetScores: () => void; // Add this new prop
+  onResetScores: () => void;
+  scoringHistory: { team: number; points: number; timestamp: string }[];
+  disableSubmit?: boolean; // Add this new prop
 }
 
 const RefereeScoringSimple: React.FC<RefereeScoringSimpleProps> = ({
@@ -61,11 +67,15 @@ const RefereeScoringSimple: React.FC<RefereeScoringSimpleProps> = ({
   onCancel,
   canUndo,
   onResetScores,
+  scoringHistory,
+  disableSubmit = false,
+  matchId,
 }) => {
+  const { addLog, calculateScoresFromLogs, logs, resetLogs, undoLastLog } =
+    useMatchRealtimeLogs(matchId, currentRound);
   const winner = hasWinner();
   const inOvertime = team1Score >= targetScore || team2Score >= targetScore;
 
-  // Calculate progress messages for each team
   const getTeamProgress = (teamScore: number, teamNum: number) => {
     if (teamScore === 0) return '';
     if (winner === teamNum) return 'WINNER!';
@@ -73,19 +83,41 @@ const RefereeScoringSimple: React.FC<RefereeScoringSimpleProps> = ({
     return `${targetScore - teamScore} to win`;
   };
 
+  const formatTimestamp = (timestamp: string) => {
+    return new Date(timestamp).toLocaleTimeString([], {
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: false,
+    });
+  };
+
+  const handleAddPoint = (team: number, points: number = 1) => {
+    addLog(team, points); // Firebase log
+    onAddPoint(team, points); // Local state
+  };
+
+  const handleUndoLastScore = () => {
+    undoLastLog(); // Firebase remove
+    onUndoLastScore(); // Local undo
+  };
+
+  const handleResetScores = () => {
+    resetLogs(); // Firebase reset
+    onResetScores(); // Local reset
+  };
+
   return (
     <>
       <div style={{ textAlign: 'center', marginBottom: 24 }}>
         <Title level={3}>Round {currentRound}</Title>
 
-        {/* Score Targets */}
         <div style={{ marginBottom: 16 }}>
           <Text type="secondary">
             Target Score: {targetScore} | Overtime Limit: {overtimeLimit}
           </Text>
         </div>
 
-        {/* Win Notification */}
         {winner && (
           <Alert
             message={`Team ${winner} has won the round!`}
@@ -153,8 +185,12 @@ const RefereeScoringSimple: React.FC<RefereeScoringSimpleProps> = ({
                   <Button
                     type="primary"
                     size="large"
-                    style={{ height: '60px', width: '100px', fontSize: '24px' }}
-                    onClick={() => onAddPoint(1)}
+                    style={{
+                      height: '60px',
+                      width: '100px',
+                      fontSize: '24px',
+                    }}
+                    onClick={() => handleAddPoint(1)}
                     disabled={!!winner}
                   >
                     +1
@@ -162,7 +198,7 @@ const RefereeScoringSimple: React.FC<RefereeScoringSimpleProps> = ({
                   <Button
                     size="large"
                     style={{ height: '60px', width: '60px' }}
-                    onClick={() => onAddPoint(1, -1)}
+                    onClick={() => handleAddPoint(1, -1)}
                     disabled={team1Score <= 0 || !!winner}
                   >
                     -1
@@ -216,7 +252,7 @@ const RefereeScoringSimple: React.FC<RefereeScoringSimpleProps> = ({
                       background: winner === 2 ? '#52c41a' : '#fa8c16',
                       borderColor: winner === 2 ? '#52c41a' : '#fa8c16',
                     }}
-                    onClick={() => onAddPoint(2)}
+                    onClick={() => handleAddPoint(2)}
                     disabled={!!winner}
                   >
                     +1
@@ -224,7 +260,7 @@ const RefereeScoringSimple: React.FC<RefereeScoringSimpleProps> = ({
                   <Button
                     size="large"
                     style={{ height: '60px', width: '60px' }}
-                    onClick={() => onAddPoint(2, -1)}
+                    onClick={() => handleAddPoint(2, -1)}
                     disabled={team2Score <= 0 || !!winner}
                   >
                     -1
@@ -235,7 +271,6 @@ const RefereeScoringSimple: React.FC<RefereeScoringSimpleProps> = ({
           </Col>
         </Row>
 
-        {/* Current Half and Notes fields */}
         <Row gutter={16} style={{ marginBottom: 16 }}>
           <Col span={24}>
             <Card bordered style={{ marginBottom: 16 }}>
@@ -270,9 +305,52 @@ const RefereeScoringSimple: React.FC<RefereeScoringSimpleProps> = ({
           </Col>
         </Row>
 
+        {scoringHistory.length > 0 && (
+          <div style={{ marginBottom: 24 }}>
+            <Divider orientation="left">Current Round Scoring History</Divider>
+            <Card bordered>
+              <Timeline style={{ maxHeight: '200px', overflowY: 'auto' }}>
+                {scoringHistory.map((log, index) => (
+                  <Timeline.Item
+                    key={index}
+                    color={log.team === 1 ? 'blue' : 'orange'}
+                    dot={
+                      log.points > 0 ? undefined : (
+                        <ClockCircleOutlined style={{ fontSize: '16px' }} />
+                      )
+                    }
+                  >
+                    <Space>
+                      <Tag color={log.team === 1 ? 'blue' : 'orange'}>
+                        Team {log.team}
+                      </Tag>
+                      <Text type={log.points > 0 ? 'success' : 'danger'}>
+                        {log.points > 0 ? `+${log.points}` : log.points}
+                      </Text>
+                      <Text type="secondary">
+                        {formatTimestamp(log.timestamp)}
+                      </Text>
+                    </Space>
+                  </Timeline.Item>
+                ))}
+              </Timeline>
+            </Card>
+          </div>
+        )}
+
+        {disableSubmit && (
+          <Alert
+            message="Cannot Add More Rounds"
+            description="This match has reached the maximum number of allowed rounds."
+            type="warning"
+            showIcon
+            style={{ marginBottom: 16 }}
+          />
+        )}
+
         <Space style={{ marginBottom: 24 }}>
           <Button
-            onClick={onUndoLastScore}
+            onClick={handleUndoLastScore}
             disabled={!canUndo || !!winner}
             icon={<EditOutlined />}
             size="large"
@@ -280,9 +358,8 @@ const RefereeScoringSimple: React.FC<RefereeScoringSimpleProps> = ({
             Undo Last Score
           </Button>
 
-          {/* Add Reset button */}
           <Button
-            onClick={onResetScores}
+            onClick={handleResetScores}
             icon={<ReloadOutlined />}
             size="large"
             type="default"
@@ -301,8 +378,19 @@ const RefereeScoringSimple: React.FC<RefereeScoringSimpleProps> = ({
             type="primary"
             icon={<SaveOutlined />}
             onClick={onSubmitScores}
-            disabled={(team1Score === 0 && team2Score === 0) || !winner}
+            disabled={
+              disableSubmit || (team1Score === 0 && team2Score === 0) || !winner
+            }
             size="large"
+            title={
+              disableSubmit
+                ? 'Maximum rounds reached'
+                : team1Score === 0 && team2Score === 0
+                  ? 'Cannot submit with no points'
+                  : !winner
+                    ? 'No winner yet'
+                    : 'Submit round score'
+            }
           >
             Submit Round Score
           </Button>

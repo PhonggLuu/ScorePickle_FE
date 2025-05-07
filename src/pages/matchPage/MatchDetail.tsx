@@ -34,6 +34,7 @@ import {
   Form,
   Image,
   Input,
+  message,
   Modal,
   notification,
   Row,
@@ -46,7 +47,7 @@ import dayjs from 'dayjs';
 import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { MatchScore } from './components/MatchScore';
 import Paragraph from 'antd/es/typography/Paragraph';
 import { useUpdateMatch } from '@src/modules/Match/hooks/useUpdateMatch';
@@ -62,6 +63,7 @@ const MotionCard = motion(Card);
 const MotionCol = motion(Col);
 
 export default function MatchDetails() {
+  const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const [isScoreModalVisible, setIsScoreModalVisible] = useState(false);
   const matchId = Number(id || 0);
@@ -131,6 +133,10 @@ export default function MatchDetails() {
     | 'default' = statusColorMap[data.status] || 'default';
 
   const handleOnClick = (position: number) => {
+    if (user?.id === undefined) {
+      message.info('You have to login to join this match');
+      navigate('/auth/signin');
+    }
     setJoiningPosition(position);
     setIsModalVisible(true);
   };
@@ -493,14 +499,20 @@ export default function MatchDetails() {
                 Start Match
               </Button>
             )}
-            <Button
-              danger
-              icon={<StopOutlined />}
-              onClick={() => handleStatusChange(MatchStatus.Disabled)}
-              className="action-button disable-button"
-            >
-              Disable Match
-            </Button>
+            {data.matchCategory !== MatchCategory.Tournament &&
+              (data.player1?.id === user?.id ||
+                data.player2?.id === user?.id ||
+                data.player3?.id === user?.id ||
+                data.player4?.id === user?.id) && (
+                <Button
+                  danger
+                  icon={<StopOutlined />}
+                  onClick={() => handleStatusChange(MatchStatus.Disabled)}
+                  className="action-button disable-button"
+                >
+                  Disable Match
+                </Button>
+              )}
           </div>
         );
 

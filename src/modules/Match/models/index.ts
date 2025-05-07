@@ -75,6 +75,7 @@ export interface IMatchScope {
   currentHaft: number;
   team1Score: number;
   team2Score: number;
+  logs: string;
 }
 
 export interface EndTournamentMatchDTO extends IMatchScope {}
@@ -223,6 +224,7 @@ export interface MatchScoreDetail {
   currentHaft: number;
   team1Score: number;
   team2Score: number;
+  logs?: string;
 }
 
 export interface FullMatchInfo {
