@@ -132,3 +132,11 @@ export interface RuleOfAward {
   percentOfPrize: number;
   position: number;
 }
+
+export enum TournamentTypes {
+  SinglesMale = 1,
+  SinglesFemale = 2,
+  DoublesMale = 3,
+  DoublesFemale = 4,
+  DoublesMix = 5,
+}

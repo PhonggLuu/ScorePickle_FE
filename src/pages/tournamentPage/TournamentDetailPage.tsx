@@ -7,7 +7,10 @@ import {
 import { getPaymentUrl } from '@src/modules/Payment/hooks/useGetPaymentUrl';
 import { useCheckJoinTournament } from '@src/modules/Tournament/hooks/useCheckJoinTournament';
 import { useGetTournamentById } from '@src/modules/Tournament/hooks/useGetTournamentById';
-import { Tournament } from '@src/modules/Tournament/models';
+import {
+  TouramentregistrationStatus,
+  Tournament,
+} from '@src/modules/Tournament/models';
 import { useCreateRegistration } from '@src/modules/TournamentRegistration/hooks/useCreateRegistration';
 import { useGetTournamentTeamRequestByPlayerIdAndTournamentId } from '@src/modules/TournamentRegistration/hooks/useGetTournamentTeamRequestByTournamentAndPlayerId';
 import { RootState } from '@src/redux/store';
@@ -605,7 +608,14 @@ export const TournamentDetailPage: React.FC = () => {
                     transition={{ duration: 0.3 }}
                   >
                     <Participants
-                      registrations={tournament.registrationDetails}
+                      registrations={tournament.registrationDetails.filter(
+                        (registration) =>
+                          [
+                            TouramentregistrationStatus.Approved,
+                            TouramentregistrationStatus.Eliminated,
+                            TouramentregistrationStatus.Winner,
+                          ].includes(registration.isApproved)
+                      )}
                       tournamentId={tournament.id}
                       refetch={() => {
                         console.log('Refetching tournament data...');

@@ -54,9 +54,9 @@ export interface MatchRequest {
   description: string;
   matchDate: string;
   venueId?: number | null;
-  status: MatchStatus;
-  matchCategory: MatchCategory;
-  matchFormat: MatchFormat | null;
+  status: number;
+  matchCategory: number;
+  matchFormat: number | null;
   winScore: number;
   isPublic: boolean;
   roomOnwer: number;
