@@ -141,7 +141,7 @@ const PaymentReturn: React.FC = () =>
               })()}
             </h4>
 
-            {vnp_ResponseCode !== '00' && vnp_ResponseCode !== '07' && (
+            {vnp_ResponseCode !== '00' && (
               <h4 className="mb-5" style={{ fontSize: '16px' }}>
                 <span className="fw-normal">
                   {getErrorMessage(vnp_ResponseCode)}
@@ -159,17 +159,31 @@ const PaymentReturn: React.FC = () =>
               </div>
             </div>
 
-            <Button
-              type="primary"
-              size="large"
-              className="w-100"
-              style={{ backgroundColor: '#0d6efd', borderColor: '#0d6efd' }}
-              onClick={() => {
-                window.location.href = '/my-tournament';
-              }}
-            >
-              Back to registered tournament
-            </Button>
+            {vnp_ResponseCode !== '00' ? (
+              <Button
+                type="primary"
+                size="large"
+                className="w-100"
+                style={{ backgroundColor: '#0d6efd', borderColor: '#0d6efd' }}
+                onClick={() => {
+                  window.location.href = '/my-tournament';
+                }}
+              >
+                Back to registered tournament
+              </Button>
+            ) : (
+              <Button
+                type="primary"
+                size="large"
+                className="w-100"
+                style={{ backgroundColor: '#0d6efd', borderColor: '#0d6efd' }}
+                onClick={() => {
+                  window.location.href = '/tournament-page';
+                }}
+              >
+                Back to tournament page
+              </Button>
+            )}
           </div>
         </Card>
       </div>

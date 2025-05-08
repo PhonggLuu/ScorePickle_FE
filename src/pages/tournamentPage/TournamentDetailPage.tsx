@@ -28,6 +28,7 @@ import './tournament-detail.css';
 import { motion, AnimatePresence } from 'framer-motion';
 import Rank from '@src/components/Rank';
 import Donate from '../tournament/containers/Donate';
+import { useGetRegistration } from '@src/modules/TournamentRegistration/hooks/useGetTournamenRegistration';
 
 const { Title } = Typography;
 const { TabPane } = Tabs;
@@ -128,6 +129,10 @@ export const TournamentDetailPage: React.FC = () => {
       Number(id || 0)
     );
   const { data: isRegistered } = useCheckJoinTournament(
+    user?.id ?? 0,
+    Number(id || 0)
+  );
+  const { data: registration } = useGetRegistration(
     user?.id ?? 0,
     Number(id || 0)
   );
@@ -293,6 +298,50 @@ export const TournamentDetailPage: React.FC = () => {
     ) {
       if (tournament.type.toLocaleLowerCase().includes('single')) {
         if (isRegistered) {
+          if (isRegistered.status === TouramentregistrationStatus.Pending) {
+            return (
+              <motion.div
+                variants={buttonVariants}
+                initial="initial"
+                animate="animate"
+              >
+                <Button
+                  type="primary"
+                  size="large"
+                  style={{ width: '100%' }}
+                  onClick={() => {
+                    if (
+                      tournament.registrationDetails.some(
+                        (r: { id: number }) => r.id === registration?.id
+                      )
+                    ) {
+                      handlePayment(registration?.id);
+                    }
+                  }}
+                >
+                  Pay Registration
+                </Button>
+              </motion.div>
+            );
+          }
+          if (isRegistered.status === TouramentregistrationStatus.Rejected) {
+            return (
+              <motion.div
+                variants={buttonVariants}
+                initial="initial"
+                animate="animate"
+              >
+                <Button
+                  type="primary"
+                  size="large"
+                  disabled={true}
+                  style={{ width: '100%' }}
+                >
+                  Registration Rejected
+                </Button>
+              </motion.div>
+            );
+          }
           return (
             <motion.div
               variants={buttonVariants}

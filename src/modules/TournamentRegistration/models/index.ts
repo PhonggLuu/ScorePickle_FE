@@ -51,3 +51,13 @@ export enum TouramentregistrationStatus {
   Request = 6, // Nhan duoc loi moi tham gia
   Winner = 7,
 }
+
+export interface GetTournamentRegistrationResponse {
+  id: number;
+  playerId: number;
+  tournamentId: number;
+  registeredAt: Date; // ISO date string
+  isApproved: boolean;
+  partnerId: number | null;
+  requestId: number | null;
+}

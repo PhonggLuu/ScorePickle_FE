@@ -350,7 +350,7 @@ const SponsorDashboard: React.FC<SponsorDashboardProps> = ({ user }) => {
                 showInfo={false}
                 style={{ marginTop: '12px' }}
               />
-              <Link to="/tournament//overview">
+              <Link to="/tournament/overview">
                 <Button
                   type="primary"
                   style={{

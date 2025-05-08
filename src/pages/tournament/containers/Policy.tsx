@@ -4,6 +4,10 @@ import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import { Tournament } from '@src/modules/Tournament/models';
 import { useUpdateTournament } from '@src/modules/Tournament/hooks/useUpdateTournament';
+import { useSelector } from 'react-redux';
+import { RootState } from '@src/redux/store';
+import { RoleFactory } from '@src/modules/User/models';
+import { useGetTournamentById } from '@src/modules/Tournament/hooks/useGetTournamentById';
 
 export interface PolicyProps {
   id: number;
@@ -16,6 +20,8 @@ const Policy: React.FC<PolicyProps> = ({ data, id, refetch }) => {
   const { mutate: updateTournament } = useUpdateTournament();
   const [policyContent, setPolicyContent] = useState<string>(data.note || '');
   const [isPolicyExists, setIsPolicyExists] = useState<boolean>(!!data.note);
+  const user = useSelector((state: RootState) => state.auth.user);
+  const { data: tournament } = useGetTournamentById(id);
 
   useEffect(() => {
     if (data) {
@@ -78,11 +84,18 @@ const Policy: React.FC<PolicyProps> = ({ data, id, refetch }) => {
             </Form.Item>
           </Col>
         </Row>
-        <Form.Item>
-          <Button type="primary" htmlType="submit" style={{ width: '100%' }}>
-            Save
-          </Button>
-        </Form.Item>
+        {user?.roleId === RoleFactory.Sponsor &&
+          tournament?.status.toLowerCase() === 'pending' && (
+            <Form.Item>
+              <Button
+                type="primary"
+                htmlType="submit"
+                style={{ width: '100%' }}
+              >
+                Save
+              </Button>
+            </Form.Item>
+          )}
       </Form>
     </div>
   );
