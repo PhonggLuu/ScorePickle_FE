@@ -14,7 +14,7 @@ export interface Match {
 
 export const useMatchSubmission = (matchId: string) => {
   const db = getDatabase();
-  const matchRef = ref(db, `/competative/${matchId}`);
+  const matchRef = ref(db, `/competitive/${matchId}`);
   const [match, setMatch] = useState<Match | null>(null);
 
   // Theo dõi dữ liệu realtime từ Firebase

@@ -488,17 +488,15 @@ export default function MatchDetails() {
               gap: '10px',
             }}
           >
-            {new Date(data.matchDate).getTime() <= Date.now() && (
-              <Button
-                type="primary"
-                icon={<PlayCircleOutlined />}
-                onClick={() => handleStatusChange(MatchStatus.Ongoing)}
-                className="action-button start-button"
-                style={{ border: '1px solid rgb(86, 106, 159)' }}
-              >
-                Start Match
-              </Button>
-            )}
+            <Button
+              type="primary"
+              icon={<PlayCircleOutlined />}
+              onClick={() => handleStatusChange(MatchStatus.Ongoing)}
+              className="action-button start-button"
+              style={{ border: '1px solid rgb(86, 106, 159)' }}
+            >
+              Start Match
+            </Button>
             {data.matchCategory !== MatchCategory.Tournament &&
               (data.player1?.id === user?.id ||
                 data.player2?.id === user?.id ||
@@ -534,14 +532,14 @@ export default function MatchDetails() {
                 Manage Score
               </Button>
             </div>
-            <Button
+            {/* <Button
               type="primary"
               icon={<CheckCircleOutlined />}
               onClick={() => handleStatusChange(MatchStatus.Completed)}
               className="action-button complete-button"
             >
               Complete Match
-            </Button>
+            </Button> */}
           </div>
         );
 

@@ -43,7 +43,7 @@ const MatchScoreModal: React.FC<MatchScoreModalProps> = ({
   match,
   refetch,
 }) => {
-  const [activeTab, setActiveTab] = useState('viewScores');
+  const [activeTab, setActiveTab] = useState('refereeScoring');
   const [editingRound, setEditingRound] = useState<number | null>(null);
   const [form] = Form.useForm();
   const { mutateAsync: endMatch } = useEndTournamentMatch();
