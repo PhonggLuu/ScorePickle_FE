@@ -84,6 +84,7 @@ export function useGetMatchDetail(id: number) {
   return useQuery<ExtendMatchDetail>({
     queryKey: [GET_MATCH_BY_ID, id],
     queryFn: () => fetchMatchtDetailById(id),
+    refetchInterval: 2000,
   });
 }
 

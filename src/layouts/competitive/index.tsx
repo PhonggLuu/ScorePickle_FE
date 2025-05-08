@@ -334,7 +334,7 @@ const CompetitiveLayout = ({
                   >
                     View Match Details
                   </Button>
-                  <Button
+                  {/* <Button
                     onClick={handleConfirmScore}
                     icon={<CheckOutlined />}
                     disabled={confirmedPlayers.includes(userId)}
@@ -347,7 +347,7 @@ const CompetitiveLayout = ({
                     {confirmedPlayers.includes(userId)
                       ? 'Score Confirmed'
                       : 'Confirm Match Score'}
-                  </Button>
+                  </Button> */}
 
                   {/* New Find Match button */}
                   <Button

@@ -218,6 +218,7 @@ const AddMatchModal: React.FC<AddMatchModalProps> = ({
             ...fullValues,
             roomOnwer: user?.id,
             tournamentId,
+            matchDate: new Date(values.matchDate).toISOString(),
             player1Id: team1.playerId, // First player from team 1
             player2Id: team2.playerId, // First player from team 2
           };
@@ -227,6 +228,7 @@ const AddMatchModal: React.FC<AddMatchModalProps> = ({
             ...fullValues,
             roomOnwer: user?.id,
             tournamentId,
+            matchDate: new Date(values.matchDate).toISOString(),
             player1Id: team1.playerId, // First player from team 1
             player2Id: team1.partnerId, // Partner from team 1
             player3Id: team2.playerId, // First player from team 2
@@ -235,28 +237,30 @@ const AddMatchModal: React.FC<AddMatchModalProps> = ({
         }
 
         // Create the match with the prepared data
-        createMatch(matchData, {
-          onSuccess: () => {
-            // Save the selected teams to localStorage
-            saveAssignedTeamsToStorage(tournamentId, [
-              values.team1Id,
-              values.team2Id,
-            ]);
-            // Update local state
-            setAssignedTeams((prev) => [
-              ...new Set([...prev, values.team1Id, values.team2Id]),
-            ]);
+        createMatch(
+          { data: matchData },
+          {
+            onSuccess: () => {
+              // Save the selected teams to localStorage
+              saveAssignedTeamsToStorage(tournamentId, [
+                values.team1Id,
+                values.team2Id,
+              ]);
+              // Update local state
+              setAssignedTeams((prev) => [
+                ...new Set([...prev, values.team1Id, values.team2Id]),
+              ]);
 
-            message.success('Match created successfully');
-            onClose();
-            form.resetFields();
-            refetch();
-          },
-          onError: (err) => {
-            message.error('Error creating match');
-            console.error('Error creating match:', err);
-          },
-        });
+              onClose();
+              form.resetFields();
+              refetch();
+            },
+            onError: (err) => {
+              message.error('Error creating match');
+              console.error('Error creating match:', err);
+            },
+          }
+        );
       })
       .catch((info) => {
         console.log('Validate Failed:', info);
@@ -370,7 +374,7 @@ const AddMatchModal: React.FC<AddMatchModalProps> = ({
         form={form}
         layout="vertical"
         initialValues={{
-          title: 'PickerPall champion',
+          title: 'Round [ ] Match [ ]',
           description: 'This is a sample description for the match.',
           isPublic: false,
           winScore: WinScore.ElevenPoints,

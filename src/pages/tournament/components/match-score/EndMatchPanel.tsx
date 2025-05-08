@@ -74,10 +74,10 @@ const EndMatchPanel: React.FC<EndMatchPanelProps> = ({
 
       <div style={{ marginBottom: 24 }}>
         <Title level={4}>Score Summary</Title>
-        <ScoreSummary
+        {/* <ScoreSummary
           team1Score={totalScores.team1}
           team2Score={totalScores.team2}
-        />
+        /> */}
 
         <MatchScoreTable
           matchScores={matchScores}
