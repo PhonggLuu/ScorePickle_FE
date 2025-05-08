@@ -96,13 +96,15 @@ const AddMatchModal: React.FC<AddMatchModalProps> = ({
   const [hideAssignedTeams, setHideAssignedTeams] = useState<boolean>(true);
   const [assignedTeams, setAssignedTeams] = useState<number[]>([]);
   const [dateError, setDateError] = useState<string | null>(null);
-
-  const { data: referees } = useGetRefereeBySponsorId(
-    user?.id?.toString() || ''
-  );
   const { data: tournamentDetails, refetch: refetchTournament } =
     useGetTournamentById(tournamentId);
-  const { data: venues } = useGetVenueBySponserId(user?.id || 0);
+
+  const { data: referees } = useGetRefereeBySponsorId(
+    tournamentDetails?.organizerId?.toString() || ''
+  );
+  const { data: venues } = useGetVenueBySponserId(
+    tournamentDetails?.organizerId || 0
+  );
 
   const { mutate: createMatch, isError, error } = useCreateMatch();
 
@@ -154,6 +156,11 @@ const AddMatchModal: React.FC<AddMatchModalProps> = ({
     const tournamentStart = new Date(tournamentDetails.startDate);
     const tournamentEnd = new Date(tournamentDetails.endDate);
     const selectedDate = new Date(matchDate);
+
+    // Remove the time part by setting the date to midnight (00:00:00)
+    tournamentStart.setHours(0, 0, 0, 0);
+    tournamentEnd.setHours(0, 0, 0, 0);
+    selectedDate.setHours(0, 0, 0, 0);
 
     if (selectedDate < tournamentStart) {
       setDateError('Match date cannot be before tournament start date');
