@@ -50,6 +50,15 @@ axiosInstance.interceptors.response.use(
 );
 
 class Api {
+  static getNoData<T>(
+    url: string,
+    queryParams?: unknown,
+    config: AxiosRequestConfig = {}
+  ) {
+    const _url = url + convertObjectToHeader(queryParams);
+    return axiosInstance.get<T>(_url, { ...config }) as unknown as Promise<T>;
+  }
+
   static get<T>(
     url: string,
     queryParams?: unknown,
