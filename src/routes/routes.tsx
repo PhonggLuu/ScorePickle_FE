@@ -38,7 +38,6 @@ import {
   LogisticsDashboardPage,
   // Import the OverviewPage component, New Page
   OverviewPage,
-  TournamentDetail,
   // Import the user management component
   RefereePage,
   UserPage,
@@ -110,6 +109,7 @@ import { VerifyOtp } from '@src/pages/authentication/VerifyOtp.tsx';
 import { SelectRole } from '@src/pages/authentication/SelectRole.tsx';
 import SponsorForm from '@src/pages/authentication/SponsorForm.tsx';
 import PlayerForm from '@src/pages/authentication/PlayerForm.tsx';
+import TournamentDetail from '@src/pages/tournament/DetailPage.tsx';
 
 // Custom scroll restoration function
 export const ScrollToTop: React.FC = () => {
