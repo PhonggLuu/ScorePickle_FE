@@ -140,3 +140,8 @@ export enum TournamentTypes {
   DoublesFemale = 4,
   DoublesMix = 5,
 }
+
+export interface Reward {
+  tournamentId: number;
+  isReward: boolean;
+}

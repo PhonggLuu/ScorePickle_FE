@@ -1,25 +1,46 @@
-import { Button, Spin, Tabs, Card } from 'antd';
+import { Button, Card, Spin, Tabs, message } from 'antd';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useGetTournamentById } from '@src/modules/Tournament/hooks/useGetTournamentById';
+import Rank from '../../components/Rank';
+import { useCheckRewardTournament } from '../../modules/Tournament/hooks/useCheckRewardTournament';
+import { useGetTournamentById } from '../../modules/Tournament/hooks/useGetTournamentById';
+import BillTab from './containers/BillTab';
 import MatchRoom from './containers/MatchRoom';
 import PlayersTable from './containers/PlayerRegistration';
-import TournamentInfoForm from './containers/TournamentInfoForm';
 import Policy from './containers/Policy';
-import BillTab from './containers/BillTab';
-import Rank from '@src/components/Rank';
+import TournamentInfoForm from './containers/TournamentInfoForm';
+
+import { useRankRewardTournament } from '../../modules/Tournament/hooks/useRankRewardTournament';
 
 const { TabPane } = Tabs;
 
-export const TournamentDetail = () => {
+const TournamentDetail = () => {
   const { id } = useParams<{ id: string }>();
+
   const { data, isLoading, error, refetch } = useGetTournamentById(
     Number(id || 0)
   );
+
+  const { mutateAsync } = useRankRewardTournament();
+
+  const { data: Reward } = useCheckRewardTournament(id || '0');
+
   const navigate = useNavigate();
 
   const handleSave = (values: any) => {
     console.log('Saved values:', values);
     // Implement save logic here, e.g., send a request to the server
+  };
+
+  const handleGiveReward = async () => {
+    try {
+      mutateAsync(id || '0');
+      message.success('Rewards distributed successfully!');
+      // Refresh the reward status
+      refetch();
+    } catch (error) {
+      message.error('Failed to distribute rewards. Please try again.');
+      console.error('Error giving rewards:', error);
+    }
   };
 
   if (isLoading) {
@@ -34,31 +55,58 @@ export const TournamentDetail = () => {
     return <div>No tournament data found</div>;
   }
 
+  // Check if tournament is completed and rewards not yet given
+  const showRewardButton = Boolean(
+    data.status === 'Completed' && Reward && Reward.isReward === false
+  );
+  console.log('show', showRewardButton, data.status, Reward);
+
   return (
     <div>
-      <Button
-        type="primary"
-        onClick={() => navigate(-1)}
-        style={{ marginBottom: 16 }}
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          marginBottom: 16,
+        }}
       >
-        Back
-      </Button>
+        <Button type="primary" onClick={() => navigate(-1)}>
+          Back
+        </Button>
+
+        {showRewardButton && (
+          <Button
+            type="primary"
+            danger
+            size="large"
+            icon={<i className="fas fa-trophy" style={{ marginRight: 8 }} />}
+            style={{
+              backgroundColor: '#faad14',
+              borderColor: '#d48806',
+              fontWeight: 'bold',
+              boxShadow: '0 4px 12px rgba(250, 173, 20, 0.5)',
+              display: 'flex',
+              alignItems: 'center',
+            }}
+            onClick={handleGiveReward}
+          >
+            Distribute Rewards
+          </Button>
+        )}
+      </div>
+
       <Tabs defaultActiveKey="1">
-        {!data.status.toLowerCase().includes('pending') &&
-          !data.status.toLowerCase().includes('disable') && (
-            <>
-              <TabPane tab="Room" key="1">
-                <MatchRoom id={data.id} />
-              </TabPane>
-              <TabPane tab="Players" key="2">
-                <PlayersTable
-                  tournamentId={data.id}
-                  registrations={data.registrationDetails}
-                  refetch={refetch}
-                />
-              </TabPane>
-            </>
-          )}
+        <TabPane tab="Room" key="1">
+          <MatchRoom id={data.id} />
+        </TabPane>
+        <TabPane tab="Players" key="2">
+          <PlayersTable
+            tournamentId={data.id}
+            registrations={data.registrationDetails}
+            refetch={refetch}
+          />
+        </TabPane>
+
         <TabPane tab="Tournament Info" key="4">
           <Card title="Tournament Info" bordered={false}>
             <TournamentInfoForm data={data} onSave={handleSave} />
@@ -67,21 +115,12 @@ export const TournamentDetail = () => {
         <TabPane tab="Policy" key="5">
           <Policy id={data.id} data={data} refetch={refetch} />
         </TabPane>
-        {!data.status.toLowerCase().includes('pending') &&
-          !data.status.toLowerCase().includes('disable') && (
-            <>
-              <TabPane tab="Bill" key="6">
-                <BillTab id={data.id} />
-              </TabPane>
-              {data.status.toLowerCase().includes('complete') && (
-                <>
-                  <TabPane tab="Rank" key="7">
-                    <Rank tournamentId={data.id} />
-                  </TabPane>
-                </>
-              )}
-            </>
-          )}
+        <TabPane tab="Bill" key="6">
+          <BillTab id={data.id} />
+        </TabPane>
+        <TabPane tab="Rank" key="7">
+          <Rank tournamentId={data.id} />
+        </TabPane>
       </Tabs>
     </div>
   );

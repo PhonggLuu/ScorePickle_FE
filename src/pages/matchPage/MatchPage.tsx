@@ -8,6 +8,8 @@ import { useNavigate } from 'react-router-dom';
 import { useGetAllMatches } from '@src/modules/Match/hooks/useGetAllCompetitiveAndCustomMatch';
 import MatchListCard from './components/MatchListCard';
 import { Matches, MatchStatus } from '@src/modules/Match/models';
+import { useSelector } from 'react-redux';
+import { RootState } from '@src/redux/store';
 
 export const MatchesPage: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -17,6 +19,7 @@ export const MatchesPage: React.FC = () => {
   const [data, setData] = useState<Matches[]>([]);
   const navigate = useNavigate();
   const [isHover, setIsHover] = useState(false);
+  const user = useSelector((state: RootState) => state.auth.user);
 
   useEffect(() => {
     if (allMatch) {
@@ -85,33 +88,39 @@ export const MatchesPage: React.FC = () => {
       <div className="flex-grow-1 container py-4">
         <div className="d-flex align-items-center mb-4">
           <h1 className="display-4 fw-bold mb-0">Matches</h1>
-          <Button
-            onClick={navigateCreateMatch}
-            onMouseEnter={() => setIsHover(true)}
-            onMouseLeave={() => setIsHover(false)}
-            className="ms-auto"
-            type="primary"
-            style={{
-              transform: isHover ? 'translateY(-4px)' : 'translateY(0)',
-              transition: 'all 0.3s ease',
-              cursor: 'pointer',
-              background: isHover ? '#ffffff' : '#ffffff',
-              color: '#1890ff',
-              borderRadius: '40px',
-              boxShadow: isHover
-                ? '0 8px 16px rgba(24, 144, 255, 0.3)'
-                : '0 4px 8px rgba(24, 144, 255, 0.2)',
-              border: 'none',
-              padding: '10px 20px',
-              height: 'auto',
-            }}
-          >
-            <span
-              style={{ fontSize: '16px', fontWeight: 'bold', color: '#096dd9' }}
+          {user?.id !== undefined && user?.id !== null && (
+            <Button
+              onClick={navigateCreateMatch}
+              onMouseEnter={() => setIsHover(true)}
+              onMouseLeave={() => setIsHover(false)}
+              className="ms-auto"
+              type="primary"
+              style={{
+                transform: isHover ? 'translateY(-4px)' : 'translateY(0)',
+                transition: 'all 0.3s ease',
+                cursor: 'pointer',
+                background: isHover ? '#ffffff' : '#ffffff',
+                color: '#1890ff',
+                borderRadius: '40px',
+                boxShadow: isHover
+                  ? '0 8px 16px rgba(24, 144, 255, 0.3)'
+                  : '0 4px 8px rgba(24, 144, 255, 0.2)',
+                border: 'none',
+                padding: '10px 20px',
+                height: 'auto',
+              }}
             >
-              + Create Match
-            </span>
-          </Button>
+              <span
+                style={{
+                  fontSize: '16px',
+                  fontWeight: 'bold',
+                  color: '#096dd9',
+                }}
+              >
+                + Create Match
+              </span>
+            </Button>
+          )}
         </div>
 
         <div

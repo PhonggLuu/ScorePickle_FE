@@ -30,6 +30,9 @@ import {
 import moment from 'moment';
 import { useUpdateTournament } from '@src/modules/Tournament/hooks/useUpdateTournament';
 import useCloudinaryUpload from '@src/modules/Cloudinary/hooks/useCloudinaryUpload';
+import { useSelector } from 'react-redux';
+import { RootState } from '@src/redux/store';
+import { RoleFactory } from '@src/modules/User/models';
 
 const { Option } = Select;
 
@@ -43,6 +46,7 @@ const TournamentInfoForm = ({ data, onSave }: TournamentInfoFormProps) => {
   const { mutate: updateTournament } = useUpdateTournament();
   const [isFree, setIsFree] = useState<boolean>(data?.isFree || false);
   const isDisabled = data.status !== 'Pending';
+  const user = useSelector((state: RootState) => state.auth.user);
 
   // Banner upload states
   const [bannerInputType, setBannerInputType] = useState<'url' | 'upload'>(
@@ -600,17 +604,19 @@ const TournamentInfoForm = ({ data, onSave }: TournamentInfoFormProps) => {
       </Card>
 
       {/* Submit Button */}
-      <Form.Item>
-        <Button
-          type="primary"
-          htmlType="submit"
-          size="large"
-          style={{ width: '100%' }}
-          disabled={uploading}
-        >
-          {uploading ? 'Uploading...' : 'Save Tournament'}
-        </Button>
-      </Form.Item>
+      {user?.roleId === RoleFactory.Sponsor && (
+        <Form.Item>
+          <Button
+            type="primary"
+            htmlType="submit"
+            size="large"
+            style={{ width: '100%' }}
+            disabled={uploading}
+          >
+            {uploading ? 'Uploading...' : 'Save Tournament'}
+          </Button>
+        </Form.Item>
+      )}
     </Form>
   );
 };

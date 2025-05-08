@@ -58,14 +58,9 @@ export function MatchScore({ matchId }: MatchCollapseProps) {
       );
       const team1Entries = sortedEntries.filter((log) => log.team === 1);
       const team2Entries = sortedEntries.filter((log) => log.team === 2);
-      const team1Score = team1Entries.reduce(
-        (sum, log) => sum + (log.points > 0 ? log.points : 0),
-        0
-      );
-      const team2Score = team2Entries.reduce(
-        (sum, log) => sum + (log.points > 0 ? log.points : 0),
-        0
-      );
+      const team1Score = team1Entries.reduce((sum, log) => sum + log.points, 0);
+      const team2Score = team2Entries.reduce((sum, log) => sum + log.points, 0);
+
       const scoreSummary = `Đội 1: ${team1Score} - Đội 2: ${team2Score}`;
 
       const renderTimeline = (entries: LogEntry[]) => (

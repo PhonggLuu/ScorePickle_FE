@@ -243,14 +243,14 @@ const CreateTournamentModal: React.FC<CreateTournamentModalProps> = ({
           <Col span={8}>
             <Form.Item
               name="maxPlayer"
-              label="Maximum Players"
+              label="Maximum Teams"
               rules={[
-                { required: true, message: 'Please select maximum players' },
+                { required: true, message: 'Please select maximum teams' },
               ]}
               initialValue={16} // Explicitly set default to 16
             >
               <Select
-                placeholder="Select maximum players"
+                placeholder="Select maximum teams"
                 style={{ width: '100%' }}
               >
                 <Option value={16}>16</Option>

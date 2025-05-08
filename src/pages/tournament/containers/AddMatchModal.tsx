@@ -168,7 +168,7 @@ const AddMatchModal: React.FC<AddMatchModalProps> = ({
                 ...new Set([...prev, values.team1Id, values.team2Id]),
               ]);
 
-              message.success('Match created successfully');
+              // message.success('Match created successfully');
               onClose();
               form.resetFields();
               refetch();
