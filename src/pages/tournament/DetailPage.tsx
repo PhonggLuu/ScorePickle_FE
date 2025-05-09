@@ -96,16 +96,20 @@ const TournamentDetail = () => {
       </div>
 
       <Tabs defaultActiveKey="1">
-        <TabPane tab="Room" key="1">
-          <MatchRoom id={data.id} />
-        </TabPane>
-        <TabPane tab="Players" key="2">
-          <PlayersTable
-            tournamentId={data.id}
-            registrations={data.registrationDetails}
-            refetch={refetch}
-          />
-        </TabPane>
+        {data.status !== 'Pending' && (
+          <>
+            <TabPane tab="Room" key="1">
+              <MatchRoom id={data.id} />
+            </TabPane>
+            <TabPane tab="Players" key="2">
+              <PlayersTable
+                tournamentId={data.id}
+                registrations={data.registrationDetails}
+                refetch={refetch}
+              />
+            </TabPane>
+          </>
+        )}
 
         <TabPane tab="Tournament Info" key="4">
           <Card title="Tournament Info" bordered={false}>
@@ -115,12 +119,21 @@ const TournamentDetail = () => {
         <TabPane tab="Policy" key="5">
           <Policy id={data.id} data={data} refetch={refetch} />
         </TabPane>
-        <TabPane tab="Bill" key="6">
-          <BillTab id={data.id} />
-        </TabPane>
-        <TabPane tab="Rank" key="7">
-          <Rank tournamentId={data.id} />
-        </TabPane>
+
+        {data.status !== 'Pending' && (
+          <>
+            <TabPane tab="Bill" key="6">
+              <BillTab id={data.id} />
+            </TabPane>
+            {data.status === 'Completed' && (
+              <>
+                <TabPane tab="Rank" key="7">
+                  <Rank tournamentId={data.id} />
+                </TabPane>
+              </>
+            )}
+          </>
+        )}
       </Tabs>
     </div>
   );

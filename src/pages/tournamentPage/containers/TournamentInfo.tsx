@@ -109,7 +109,6 @@ const TournamentInfo: React.FC<TournamentInfoProps> = ({ id }) => {
     statusColor = 'green';
   }
 
-
   return (
     <motion.div
       className={styles.tournamentInfoContainer}
@@ -174,114 +173,112 @@ const TournamentInfo: React.FC<TournamentInfoProps> = ({ id }) => {
           </Card>
         </motion.div>
         <Row gutter={[24, 16]} className={styles.infoGrid}>
-            <Col xs={24} md={8}>
-              <motion.div variants={cardVariants} whileHover="hover">
-                <Card className={styles.infoCard} title="Tournament Details">
-                  <motion.div
-                    className={styles.infoItem}
-                    variants={infoItemVariants}
-                  >
-                    <UserOutlined className={styles.icon} />
-                    <Text>
-                      <strong>Players:</strong>{' '}
-                      {tournament.registrationDetails.length}/
-                      {tournament.maxPlayer}
-                    </Text>
-                  </motion.div>
+          <Col xs={24} md={8}>
+            <motion.div variants={cardVariants} whileHover="hover">
+              <Card className={styles.infoCard} title="Tournament Details">
+                <motion.div
+                  className={styles.infoItem}
+                  variants={infoItemVariants}
+                >
+                  <UserOutlined className={styles.icon} />
+                  <Text>
+                    <strong>Players:</strong>{' '}
+                    {tournament.registrationDetails.length}/
+                    {tournament.maxPlayer}
+                  </Text>
+                </motion.div>
 
-                  <motion.div
-                    className={styles.infoItem}
-                    variants={infoItemVariants}
-                  >
-                    <BranchesOutlined className={styles.icon} />
-                    <Text>
-                      <strong>Ranking:</strong> Level {tournament.isMinRanking}{' '}
-                      - Level {tournament.isMaxRanking}
-                    </Text>
-                  </motion.div>
+                <motion.div
+                  className={styles.infoItem}
+                  variants={infoItemVariants}
+                >
+                  <BranchesOutlined className={styles.icon} />
+                  <Text>
+                    <strong>Ranking:</strong> Level {tournament.isMinRanking} -
+                    Level {tournament.isMaxRanking}
+                  </Text>
+                </motion.div>
 
-                  <motion.div
-                    className={styles.infoItem}
-                    variants={infoItemVariants}
-                  >
-                    <TeamOutlined className={styles.icon} />
-                    <Text>
-                      <strong>Format:</strong> {tournament.type}
-                    </Text>
-                  </motion.div>
-                </Card>
-              </motion.div>
-            </Col>
+                <motion.div
+                  className={styles.infoItem}
+                  variants={infoItemVariants}
+                >
+                  <TeamOutlined className={styles.icon} />
+                  <Text>
+                    <strong>Format:</strong> {tournament.type}
+                  </Text>
+                </motion.div>
+              </Card>
+            </motion.div>
+          </Col>
 
-            <Col xs={24} md={8}>
-              <motion.div variants={cardVariants} whileHover="hover">
-                <Card className={styles.infoCard} title="Prizes & Fees">
-                  <motion.div
-                    className={styles.infoItem}
-                    variants={infoItemVariants}
-                  >
-                    <DollarOutlined className={styles.icon} />
-                    <Text>
-                      <strong>Entry Fee:</strong>{' '}
-                      {tournament.isFree
-                        ? 'Free'
-                        : `${tournament.entryFee.toLocaleString('vi-VN')} ₫`}
-                    </Text>
-                  </motion.div>
+          <Col xs={24} md={8}>
+            <motion.div variants={cardVariants} whileHover="hover">
+              <Card className={styles.infoCard} title="Prizes & Fees">
+                <motion.div
+                  className={styles.infoItem}
+                  variants={infoItemVariants}
+                >
+                  <DollarOutlined className={styles.icon} />
+                  <Text>
+                    <strong>Entry Fee:</strong>{' '}
+                    {!tournament.isFree
+                      ? 'Free'
+                      : `${tournament.entryFee.toLocaleString('vi-VN')} ₫`}
+                  </Text>
+                </motion.div>
 
-                  <motion.div
-                    className={styles.infoItem}
-                    variants={infoItemVariants}
-                  >
-                    <TrophyOutlined className={styles.icon} />
-                    <Text>
-                      <strong>Prize Pool:</strong>{' '}
-                      {tournament.totalPrize.toLocaleString('vi-VN')} ₫
-                    </Text>
-                  </motion.div>
-                </Card>
-              </motion.div>
-            </Col>
+                <motion.div
+                  className={styles.infoItem}
+                  variants={infoItemVariants}
+                >
+                  <TrophyOutlined className={styles.icon} />
+                  <Text>
+                    <strong>Prize Pool:</strong>{' '}
+                    {tournament.totalPrize.toLocaleString('vi-VN')} ₫
+                  </Text>
+                </motion.div>
+              </Card>
+            </motion.div>
+          </Col>
 
-            <Col xs={24} md={8}>
-              <motion.div variants={cardVariants} whileHover="hover">
-                <Card className={styles.infoCard} title="Schedule & Location">
-                  <motion.div
-                    className={styles.infoItem}
-                    variants={infoItemVariants}
-                  >
-                    <CalendarOutlined className={styles.icon} />
-                    <Text>
-                      <strong>Start Date:</strong>{' '}
-                      {formatDate(tournament.startDate)}
-                    </Text>
-                  </motion.div>
+          <Col xs={24} md={8}>
+            <motion.div variants={cardVariants} whileHover="hover">
+              <Card className={styles.infoCard} title="Schedule & Location">
+                <motion.div
+                  className={styles.infoItem}
+                  variants={infoItemVariants}
+                >
+                  <CalendarOutlined className={styles.icon} />
+                  <Text>
+                    <strong>Start Date:</strong>{' '}
+                    {formatDate(tournament.startDate)}
+                  </Text>
+                </motion.div>
 
-                  <motion.div
-                    className={styles.infoItem}
-                    variants={infoItemVariants}
-                  >
-                    <ClockCircleOutlined className={styles.icon} />
-                    <Text>
-                      <strong>End Date:</strong>{' '}
-                      {formatDate(tournament.endDate)}
-                    </Text>
-                  </motion.div>
+                <motion.div
+                  className={styles.infoItem}
+                  variants={infoItemVariants}
+                >
+                  <ClockCircleOutlined className={styles.icon} />
+                  <Text>
+                    <strong>End Date:</strong> {formatDate(tournament.endDate)}
+                  </Text>
+                </motion.div>
 
-                  <motion.div
-                    className={styles.infoItem}
-                    variants={infoItemVariants}
-                  >
-                    <EnvironmentOutlined className={styles.icon} />
-                    <Text>
-                      <strong>Location:</strong> {tournament.location}
-                    </Text>
-                  </motion.div>
-                </Card>
-              </motion.div>
-            </Col>
-          </Row>
-       
+                <motion.div
+                  className={styles.infoItem}
+                  variants={infoItemVariants}
+                >
+                  <EnvironmentOutlined className={styles.icon} />
+                  <Text>
+                    <strong>Location:</strong> {tournament.location}
+                  </Text>
+                </motion.div>
+              </Card>
+            </motion.div>
+          </Col>
+        </Row>
       </motion.div>
 
       {/* Rules Modal */}
