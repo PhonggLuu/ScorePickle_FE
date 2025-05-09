@@ -623,6 +623,12 @@ const MatchRoom = ({ id }: MatchRoomProps) => {
   }
 
   const handleStartTournament = async () => {
+    if (
+      (TournamentData?.registrationDetails?.length ?? 0) <
+      (TournamentData?.maxPlayer ?? 1)
+    )
+      message.error('Do not have enough Player to start this tournament.');
+
     try {
       setStartLoading(true);
       await updateTournament({
