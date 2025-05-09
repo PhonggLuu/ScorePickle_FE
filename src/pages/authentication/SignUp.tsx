@@ -27,6 +27,7 @@ import { RoleFactory } from '@src/modules/User/models';
 import dayjs from 'dayjs';
 import { useSelector } from 'react-redux';
 import { RootState } from '@src/redux/store';
+import { useSendOtp } from '@src/modules/Auth/hooks/useSendOtp';
 
 const { Title, Text, Link } = Typography;
 
@@ -39,6 +40,7 @@ type FieldType = {
   dateOfBirth: Date;
   gender: string;
   phoneNumber: string;
+  email: string; // Added email property
 };
 
 export const SignUpPage = () => {
@@ -49,47 +51,93 @@ export const SignUpPage = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const { mutate: registerUser } = useRegisterPlayer();
-  const email = useSelector((state: RootState) => state.user.email);
-  const isVerified = useSelector((state: RootState) => state.user.isVerified);
+  const { mutate: sendOtp } = useSendOtp();
+  const [showOtpField, setShowOtpField] = useState(false);
+  const [userFormData, setUserFormData] = useState<FieldType | null>(null);
+  const [otpInput, setOtpInput] = useState('');
+  const otpFromState = useSelector(
+    (state: RootState) => state.user.otp?.toString() || ''
+  );
 
-  useEffect(() => {
-    if (!isVerified) {
-      navigate(PATH_AUTH.registerEmail);
-    }
-  }, [isVerified, navigate]);
-
-  const onFinish = (values: FieldType) => {
-    registerUser(
-      {
-        FirstName: values.firstName,
-        LastName: values.lastName,
-        SecondName: values.secondName || '',
-        Email: email,
-        PasswordHash: values.passwordHash,
-        DateOfBirth: values.dateOfBirth.toISOString(),
-        Gender: values.gender,
-        PhoneNumber: values.phoneNumber,
-        RoleId: RoleFactory.User,
-      },
-      {
-        onSuccess: () => {
-          message.open({
-            type: 'success',
-            content: 'Sign up successful',
-          });
-          navigate(PATH_AUTH.signin);
-        },
-        onError: (error) => {
-          console.log(error);
-          message.open({
-            type: 'error',
-            content: 'Sign up failed',
-          });
-          setLoading(false);
-        },
-      }
-    );
+  const handleSendOtpFirst = (values: FieldType) => {
+    setUserFormData(values);
+    sendOtp(values.email, {
+      onSuccess: () => setShowOtpField(true),
+    });
   };
+  const handleVerifyOtpAndRegister = () => {
+    if (otpInput.toString() === otpFromState && userFormData) {
+      registerUser(
+        {
+          FirstName: userFormData.firstName,
+          LastName: userFormData.lastName,
+          SecondName: userFormData.secondName || '',
+          Email: userFormData.email,
+          PasswordHash: userFormData.passwordHash,
+          DateOfBirth: userFormData.dateOfBirth.toISOString(),
+          Gender: userFormData.gender,
+          PhoneNumber: userFormData.phoneNumber,
+          RoleId: RoleFactory.User,
+        },
+        {
+          onSuccess: () => {
+            message.success('Sign up successfully. Please choose a role.');
+            navigate(PATH_AUTH.selectRole);
+          },
+          onError: () => {
+            message.error('Sign up failed');
+          },
+        }
+      );
+    } else {
+      message.error('OTP does not match');
+    }
+  };
+  const onFinish = (values: FieldType) => {
+    handleSendOtpFirst(values);
+  };
+
+  // const email = useSelector((state: RootState) => state.user.email);
+  // const isVerified = useSelector((state: RootState) => state.user.isVerified);
+
+  // useEffect(() => {
+  //   if (!isVerified) {
+  //     navigate(PATH_AUTH.registerEmail);
+  //   }
+  // }, [isVerified, navigate]);
+
+  // const onFinish = (values: FieldType) => {
+  //   registerUser(
+  //     {
+  //       FirstName: values.firstName,
+  //       LastName: values.lastName,
+  //       SecondName: values.secondName || '',
+  //       Email: values.email,
+  //       PasswordHash: values.passwordHash,
+  //       DateOfBirth: values.dateOfBirth.toISOString(),
+  //       Gender: values.gender,
+  //       PhoneNumber: values.phoneNumber,
+  //       RoleId: RoleFactory.User,
+  //     },
+  //     {
+  //       onSuccess: () => {
+  //         message.open({
+  //           type: 'success',
+  //           content: 'Sign up successful',
+  //         });
+  //         navigate(PATH_AUTH.signin);
+  //       },
+  //       onError: (error) => {
+  //         console.log(error);
+  //         message.open({
+  //           type: 'error',
+  //           content: 'Sign up failed',
+  //         });
+  //         setLoading(false);
+  //       },
+  //     }
+  //   );
+  // };
 
   const onFinishFailed = (errorInfo: any) => {
     console.log('Failed:', errorInfo);
@@ -156,7 +204,9 @@ export const SignUpPage = () => {
             <Row gutter={[8, 0]}>
               <Col xs={24} lg={8}>
                 <Form.Item<FieldType>
-                  label="First name"
+                  label={
+                    <span style={{ whiteSpace: 'nowrap' }}>First name</span>
+                  }
                   name="firstName"
                   rules={[
                     {
@@ -233,11 +283,12 @@ export const SignUpPage = () => {
               <Col xs={24}>
                 <Form.Item<FieldType>
                   label="Email"
+                  name="email"
                   rules={[
                     { required: true, message: 'Please input your email' },
                   ]}
                 >
-                  <Input value={email} readOnly />
+                  <Input />
                 </Form.Item>
               </Col>
               <Col xs={24}>
@@ -264,6 +315,23 @@ export const SignUpPage = () => {
                 >
                   <Input.Password />
                 </Form.Item>
+              </Col>
+              <Col xs={24}>
+                {showOtpField && (
+                  <Form.Item label="OTP">
+                    <Input
+                      value={otpInput}
+                      onChange={(e) => setOtpInput(e.target.value)}
+                    />
+                    <Button
+                      type="primary"
+                      onClick={handleVerifyOtpAndRegister}
+                      style={{ marginTop: '1rem' }}
+                    >
+                      Verify OTP and Register
+                    </Button>
+                  </Form.Item>
+                )}
               </Col>
             </Row>
             <Form.Item>

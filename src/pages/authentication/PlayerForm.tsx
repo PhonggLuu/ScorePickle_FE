@@ -38,15 +38,14 @@ const PlayerForm: React.FC = () => {
       });
   }, []);
 
-  const handleProvinceChange = (value: string) => {
-    form.setFieldsValue({ district: undefined });
+  const handleProvinceChange = (provinceCode: string) => {
+    form.setFieldsValue({ city: undefined });
     setDistricts([]);
     setLoadingDistricts(true);
 
-    // Lấy danh sách quận/huyện theo tỉnh/thành phố
     axios
       .get(
-        `https://vn-public-apis.fpo.vn/districts/getByProvince?provinceCode=${value}&limit=-1`
+        `https://vn-public-apis.fpo.vn/districts/getByProvince?provinceCode=${provinceCode}&limit=-1`
       )
       .then((response) => {
         setDistricts(response.data.data.data || []);
@@ -59,17 +58,10 @@ const PlayerForm: React.FC = () => {
   };
 
   const onFinish = (values: any) => {
-    mutate(
-      {
-        ...values,
-        playerId: playerId ?? userId,
-      },
-      {
-        onSuccess: () => {
-          navigate('/auth/select-role');
-        },
-      }
-    );
+    mutate({
+      ...values,
+      playerId: playerId ?? userId,
+    });
   };
 
   return (
@@ -90,12 +82,21 @@ const PlayerForm: React.FC = () => {
             >
               <Select
                 placeholder="Select a province"
-                onChange={handleProvinceChange}
+                onChange={(code) => {
+                  const selectedProvince = provinces.find(
+                    (p) => p.code === code
+                  );
+                  form.setFieldsValue({
+                    province: selectedProvince?.name,
+                    city: undefined,
+                  });
+                  handleProvinceChange(code); // Gọi API bằng code
+                }}
                 showSearch
                 optionFilterProp="children"
               >
                 {provinces.map((province) => (
-                  <Option key={province.name} value={province.code}>
+                  <Option key={province.code} value={province.code}>
                     {province.name}
                   </Option>
                 ))}
@@ -115,7 +116,7 @@ const PlayerForm: React.FC = () => {
                 optionFilterProp="children"
               >
                 {districts.map((district) => (
-                  <Option key={district.name} value={district.code}>
+                  <Option key={district.name} value={district.name}>
                     {district.name}
                   </Option>
                 ))}
