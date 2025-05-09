@@ -55,10 +55,10 @@ const EditProfile: React.FC = () => {
   const handleUpdateProfile = async (values: UpdateProfile) => {
     const date =
       values.dateOfBirth && moment.isMoment(values.dateOfBirth)
-        ? values.dateOfBirth.toDate()
+        ? values.dateOfBirth.toISOString()
         : null;
 
-    values.dateOfBirth = date ?? new Date();
+    //values.dateOfBirth = date instanceof Date ? date.toISOString() : date ?? new Date().toISOString();
     values.avatarUrl = profileImage;
     values.status = user?.status ?? true;
 
@@ -185,11 +185,15 @@ const EditProfile: React.FC = () => {
                 style={{ height: '50px' }}
                 format="YYYY-MM-DD"
                 suffixIcon={<CalendarOutlined style={{ color: '#bfbfbf' }} />}
+                disabledDate={(current) => {
+                  // Không cho chọn ngày sau hôm nay
+                  return current && current > moment().endOf('day');
+                }}
               />
             </Form.Item>
 
             {/* Gender */}
-            <Form.Item
+            {/* <Form.Item
               name="gender"
               label={<span className="text-white">Gender</span>}
             >
@@ -219,7 +223,7 @@ const EditProfile: React.FC = () => {
                   Female
                 </Radio.Button>
               </Radio.Group>
-            </Form.Item>
+            </Form.Item> */}
 
             {/* Save Button */}
             <Form.Item className="text-end mt-4">

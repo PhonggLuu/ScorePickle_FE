@@ -3,7 +3,7 @@ export interface UpdateProfile {
   firstName: string;
   lastName: string;
   secondName: string;
-  dateOfBirth: Date;
+  dateOfBirth: string;
   gender: string;
   phoneNumber: string;
   avatarUrl: string;
