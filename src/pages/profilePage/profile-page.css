@@ -1,222 +1,316 @@
+/* General Layout */
 .profile-container {
-  min-height: 100vh;
-  color: white;
-  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px;
 }
 
-/* profile-page.css */
-.profile-tabs .ant-tabs-nav-list {
+/* Profile Header */
+.profile-header-card {
+  margin-bottom: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.09);
+  border-radius: 8px;
+}
+
+.profile-header-content {
   display: flex;
-  width: 100%;
-}
-/* Mỗi tab giờ flex-basis 50% (= col-md-6) */
-.profile-tabs .ant-tabs-tab {
-  flex: 0 0 50%;
-  max-width: 50%;
-}
-/* Nút bên trong tab kéo full width và căn text giữa */
-.profile-tabs .ant-tabs-tab-btn {
-  width: 100%;
-  text-align: center;
-  color: #fff; /* nếu cần chắc chắn chữ trắng */
-}
-/* Ẩn đường gạch dưới mặc định nếu muốn */
-.profile-tabs .ant-tabs-ink-bar {
-  display: none;
+  align-items: center;
 }
 
-.profile-header {
-  padding: 20px;
+.profile-avatar {
+  border: 3px solid #f0f0f0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.profile-info {
+  margin-left: 24px;
 }
 
 .profile-name {
-  margin: 0;
-  font-weight: bold;
-  color: white;
+  margin-bottom: 8px !important;
 }
 
 .profile-details {
-  margin: 0;
-  font-size: 14px;
-  color: rgba(255, 255, 255, 0.8);
-}
-
-.stats-box {
-  text-align: center;
-}
-
-.stats-number {
-  font-size: 24px;
-  font-weight: bold;
-  margin: 0;
-  color: white;
-}
-
-.stats-label {
-  font-size: 14px;
-  margin: 0;
-  color: rgba(255, 255, 255, 0.8);
-}
-
-.id-box {
-  background-color: rgba(255, 255, 255, 0.1);
-  padding: 4px 12px;
-  border-radius: 4px;
-}
-
-.profile-content {
-  background-color: transparent;
-  border-radius: 8px;
-  padding: 20px;
-  color: #333;
-}
-
-/* Override Ant Design tab styles */
-.ant-tabs-nav::before {
-  border-bottom: none !important;
-  color: #fff;
-}
-
-.ant-tabs-tab {
-  font-weight: bold !important;
-}
-
-.rating-card,
-.matches-card {
-  height: 100%;
-}
-
-.rating-box {
-  background-color: #f5f5f5;
-  padding: 15px;
-  border-radius: 8px;
-  text-align: center;
-}
-
-.rating-label {
-  font-size: 14px;
-  color: #666;
-  margin-bottom: 5px;
-}
-
-.rating-value {
-  font-size: 24px;
-  font-weight: bold;
-}
-
-.stats-list {
-  margin-top: 20px;
-}
-
-.stats-item {
   display: flex;
   align-items: center;
-  margin-bottom: 5px;
-  padding-bottom: 5px;
+  margin-bottom: 16px;
 }
 
-.stats-icon {
-  width: 30px;
+.detail-icon {
+  margin-right: 6px;
+}
+
+.add-friend-btn {
+  margin-top: 8px;
+}
+
+.level-container {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.level-card {
+  text-align: center;
+  background: linear-gradient(135deg, #f0f9ff 0%, #e6f7ff 100%);
+  border-radius: 8px;
+  width: 100%;
+}
+
+/* Stats Card */
+.section-title {
   font-size: 18px;
-  color: white;
+  font-weight: 500;
 }
 
-.stats-label {
-  flex: 1;
-  color: #666;
+.stats-card,
+.matches-card {
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.09);
 }
 
-.stats-value {
-  font-weight: bold;
+.stat-box {
+  text-align: center;
+  background: #fafafa;
+  border-radius: 8px;
+  transition: all 0.3s;
 }
 
-.month-heading {
-  margin-top: 10px;
-  margin-bottom: 15px;
-  font-weight: bold;
+.stat-box:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+/* Match Cards */
+.match-link {
+  text-decoration: none !important;
+  color: rgba(0, 0, 0, 0.85);
+  display: block;
+  margin-bottom: 16px;
 }
 
 .match-card {
-  border-left: 3px solid #52c41a;
+  border-radius: 8px;
+  background: white;
+  transition: all 0.3s;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.match-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .match-header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  margin-bottom: 10px;
+  align-items: flex-start;
+  margin-bottom: 16px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #f0f0f0;
 }
 
-.match-type {
-  margin-right: 0;
+.match-tag {
+  font-weight: 500;
+  margin-bottom: 8px;
 }
 
-.match-rating {
-  font-weight: bold;
-}
-
-.match-opponent {
-  margin-bottom: 5px;
+.match-title {
+  margin-bottom: 8px !important;
 }
 
 .match-date {
-  color: #666;
-  font-size: 12px;
-  margin-bottom: 15px;
-}
-
-.match-players {
-  margin-bottom: 15px;
-}
-
-.player {
   display: flex;
   align-items: center;
+}
+
+.date-icon,
+.location-icon {
+  margin-right: 6px;
+}
+
+.location-icon {
+  margin-left: 16px;
+}
+
+.final-score-badge {
+  text-align: center;
+  padding: 8px 16px;
+  background: #f5f5f5;
+  border-radius: 8px;
+}
+
+.score-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.score-box {
+  font-size: 20px;
+  font-weight: bold;
+  padding: 4px 10px;
+  min-width: 40px;
+  text-align: center;
+  background: #f0f0f0;
+  border-radius: 4px;
+  transition: all 0.3s;
+}
+
+.score-box.winner {
+  background: #52c41a;
+  color: white;
+  transform: scale(1.1);
+}
+
+.score-divider {
+  margin: 0 8px;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.final-score-label {
+  display: block;
+  margin-top: 4px;
+  font-size: 12px;
+}
+
+.match-content {
+  padding-top: 8px;
+}
+
+/* Team Sections */
+.team-section {
+  padding: 12px;
+  background: #fafafa;
+  border-radius: 8px;
+}
+
+.team-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.team-label {
+  font-size: 16px;
+}
+
+.team-score-tag {
+  margin-left: auto;
+}
+
+.team-divider {
+  height: 100%;
+}
+
+/* Player Cards */
+.player-card {
+  display: flex;
+  align-items: center;
+  padding: 8px;
+  margin-bottom: 8px;
+  background: white;
+  border-radius: 6px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.player-avatar {
+  border: 1px solid #f0f0f0;
+}
+
+.player-info {
+  margin-left: 12px;
+  flex-grow: 1;
 }
 
 .player-name {
-  margin-left: 10px;
-  flex: 1;
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.player-rating {
-  font-weight: bold;
+.join-button {
+  width: 100%;
 }
 
-.match-score {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 15px;
+/* Score Details */
+.score-details {
+  margin-top: 16px;
 }
 
-.score-set {
-  font-weight: bold;
+.score-table {
+  width: 100%;
+  border-collapse: collapse;
+  border-radius: 8px;
+  overflow: hidden;
+  font-size: 14px;
 }
 
-.match-footer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  color: #666;
-  font-size: 12px;
-}
-
-.empty-activity {
+.score-table th,
+.score-table td {
+  padding: 8px 12px;
   text-align: center;
-  padding: 50px;
-  color: #999;
+  border: 1px solid #f0f0f0;
 }
 
-.col-md-4 .ant-card {
-  background-color: transparent;
-  border: 0;
+.score-table th {
+  background: #fafafa;
+  font-weight: 500;
 }
 
-.col-md-8 .ant-card {
-  background-color: transparent;
-  border: 0;
+.score-table tr:nth-child(even) {
+  background: #fafafa;
 }
 
-.col-md-8 .ant-card .match-card {
-  background-color: white;
+/* Filter Controls */
+.filter-controls {
+  display: flex;
+  align-items: center;
+}
+
+/* Empty State */
+.empty-matches {
+  text-align: center;
+  padding: 48px 0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .profile-header-content {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .profile-info {
+    margin-left: 0;
+    margin-top: 16px;
+  }
+
+  .profile-details {
+    justify-content: center;
+  }
+
+  .filter-controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .filter-controls .ant-select,
+  .filter-controls .ant-input-search {
+    width: 100% !important;
+    margin-left: 0 !important;
+    margin-bottom: 8px;
+  }
+
+  .team-divider {
+    display: none;
+  }
+
+  .final-score-badge {
+    margin-top: 16px;
+  }
 }
