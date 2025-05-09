@@ -1,12 +1,15 @@
 import {
   CalendarOutlined,
+  CompressOutlined,
   EditOutlined,
   FilterOutlined,
   LockFilled,
   MailFilled,
+  PlayCircleOutlined,
   PlusOutlined,
   ReloadOutlined,
   SearchOutlined,
+  StopOutlined,
   TeamOutlined,
   TrophyOutlined,
 } from '@ant-design/icons';
@@ -29,6 +32,8 @@ import {
   Progress,
   Select,
   Badge,
+  Modal,
+  message,
 } from 'antd';
 import type { ColumnsType, ColumnType } from 'antd/es/table';
 import { useEffect, useMemo, useRef, useState } from 'react';
@@ -52,6 +57,9 @@ import MatchScoreModal from './MatchScoreModal';
 import Title from 'antd/es/typography/Title';
 import { Option } from 'antd/es/mentions';
 import { useGetVenueBySponserId } from '@src/modules/Venues/hooks/useGetVenueBySponserId';
+import { useGetTournamentById } from '@src/modules/Tournament/hooks/useGetTournamentById';
+import { useUpdateTournament } from '@src/modules/Tournament/hooks/useUpdateTournament';
+import { useEndTournament } from '@src/modules/Tournament/hooks/useEndTourament';
 
 const { Text } = Typography;
 const { Meta } = Card;
@@ -85,6 +93,13 @@ const MatchRoom = ({ id }: MatchRoomProps) => {
     useState<boolean>(false);
   const [selectedMatchForScores, setSelectedMatchForScores] =
     useState<IMatch | null>(null);
+  const { data: TournamentData } = useGetTournamentById(id);
+
+  const { mutateAsync: updateTournament } = useUpdateTournament();
+
+  const { mutateAsync: endTourament } = useEndTournament();
+
+  const [startLoading, setStartLoading] = useState(false);
 
   // Calculate statistics
   const statistics = useMemo(() => {
@@ -286,6 +301,20 @@ const MatchRoom = ({ id }: MatchRoomProps) => {
         text
       ),
   });
+
+  const handleSearchByTitle = (value: string) => {
+    if (!value) {
+      setFilteredDetails(matchData || []);
+      return;
+    }
+
+    const filteredMatches =
+      matchData?.filter((match) =>
+        match.title.toLowerCase().includes(value.toLowerCase())
+      ) || [];
+
+    setFilteredDetails(filteredMatches);
+  };
 
   const columns: ColumnsType<any> = [
     {
@@ -593,6 +622,152 @@ const MatchRoom = ({ id }: MatchRoomProps) => {
     );
   }
 
+  const handleStartTournament = async () => {
+    try {
+      setStartLoading(true);
+      await updateTournament({
+        id: id,
+        data: {
+          status: 'Ongoing',
+        },
+      });
+      message.success('Tournament has been started successfully!');
+      await refetch();
+    } catch (error) {
+      message.error('Failed to start tournament. Please try again later.');
+      console.error('Error starting tournament:', error);
+    } finally {
+      setStartLoading(false);
+    }
+  };
+
+  const handleRejectTournament = async () => {
+    try {
+      setStartLoading(true);
+      await updateTournament({
+        id: id,
+        data: {
+          status: 'Disable',
+        },
+      });
+      message.success('Tournament has been started successfully!');
+      await refetch();
+    } catch (error) {
+      message.error('Failed to start tournament. Please try again later.');
+      console.error('Error starting tournament:', error);
+    } finally {
+      setStartLoading(false);
+    }
+  };
+
+  const handleEndTournament = async () => {
+    try {
+      setStartLoading(true);
+      await endTourament(id);
+      message.success('Tournament has been started successfully!');
+      await refetch();
+    } catch (error) {
+      message.error('Failed to start tournament. Please try again later.');
+      console.error('Error starting tournament:', error);
+    } finally {
+      setStartLoading(false);
+    }
+  };
+
+  const renderActions = () => {
+    if (TournamentData?.status === 'Scheduled') {
+      return (
+        <Row gutter={16}>
+          <Col>
+            <Tooltip title="Start this tournament and allow matches to begin">
+              <Button
+                type="primary"
+                icon={<PlayCircleOutlined />}
+                onClick={() => {
+                  Modal.confirm({
+                    title: 'Start Tournament',
+                    content:
+                      'Are you sure you want to start this tournament? This will change its status to "Ongoing".',
+                    okText: 'Yes, Start Tournament',
+                    cancelText: 'Cancel',
+                    onOk: handleStartTournament,
+                  });
+                }}
+                loading={startLoading}
+                size="large"
+              >
+                Start Tournament
+              </Button>
+            </Tooltip>
+          </Col>
+          <Col>
+            <Tooltip title="Disable this tournament">
+              <Button
+                type="primary"
+                danger
+                icon={<StopOutlined />}
+                onClick={() => {
+                  Modal.confirm({
+                    title: 'Disable Tournament',
+                    content:
+                      'Are you sure you want to disable this tournament? This action can be reversed later.',
+                    okText: 'Yes, Disable Tournament',
+                    okType: 'danger',
+                    cancelText: 'Cancel',
+                    onOk: handleRejectTournament,
+                  });
+                }}
+                loading={startLoading}
+                size="large"
+              >
+                Disable Tournament
+              </Button>
+            </Tooltip>
+          </Col>
+        </Row>
+      );
+    }
+    if (TournamentData?.status === 'Ongoing') {
+      return (
+        <Row gutter={4}>
+          <Col>
+            <Button
+              type="dashed"
+              icon={<PlusOutlined />}
+              onClick={() => setIsModalVisible(true)}
+              size="large"
+            >
+              Add Match
+            </Button>
+          </Col>
+          <Col>
+            <Tooltip title="This will mark the tournament as completed">
+              <Button
+                type="primary"
+                danger
+                icon={<CompressOutlined />}
+                onClick={() => {
+                  Modal.confirm({
+                    title: 'End Tournament',
+                    content:
+                      'Are you sure you want to end this tournament? This action cannot be undone.',
+                    okText: 'Yes, End Tournament',
+                    okType: 'danger',
+                    cancelText: 'No, Cancel',
+                    onOk: handleEndTournament,
+                  });
+                }}
+                size="large"
+              >
+                End Tournament
+              </Button>
+            </Tooltip>
+          </Col>
+        </Row>
+      );
+    }
+  };
+
   return (
     <>
       <style>
@@ -703,16 +878,7 @@ const MatchRoom = ({ id }: MatchRoomProps) => {
               Match Management
             </Title>
           }
-          extra={
-            <Button
-              type="primary"
-              icon={<PlusOutlined />}
-              onClick={() => setIsModalVisible(true)}
-              size="large"
-            >
-              Add Match
-            </Button>
-          }
+          extra={renderActions()}
           style={{ marginBottom: 24, boxShadow: '0 2px 8px rgba(0,0,0,0.09)' }}
         >
           <Row gutter={[16, 16]} align="middle">
@@ -734,12 +900,12 @@ const MatchRoom = ({ id }: MatchRoomProps) => {
                     <TrophyOutlined /> Completed
                   </Option>
                 </Select>
-                {/* <Input.Search
+                <Input.Search
                   placeholder="Search match title"
                   style={{ width: '60%' }}
                   onSearch={handleSearchByTitle}
                   allowClear
-                /> */}
+                />
               </Input.Group>
             </Col>
             <Col xs={24} md={8}>
