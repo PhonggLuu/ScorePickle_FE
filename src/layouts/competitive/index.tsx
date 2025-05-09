@@ -350,7 +350,7 @@ const CompetitiveLayout = ({
                   </Button> */}
 
                   {/* New Find Match button */}
-                  <Button
+                  {/* <Button
                     onClick={handleFindNewMatch}
                     icon={<FireOutlined />}
                     type="default"
@@ -358,7 +358,7 @@ const CompetitiveLayout = ({
                     className="find-new-match-button action-button"
                   >
                     Find New Match
-                  </Button>
+                  </Button> */}
                 </div>
               </div>
             </Badge.Ribbon>
@@ -388,7 +388,7 @@ const CompetitiveLayout = ({
                 View Match Results
               </Button>
 
-              <Button
+              {/* <Button
                 onClick={handleFindMatch}
                 icon={<SearchOutlined />}
                 type="default"
@@ -396,7 +396,7 @@ const CompetitiveLayout = ({
                 className="find-new-match-button action-button"
               >
                 Find New Match
-              </Button>
+              </Button> */}
             </div>
           </div>
         );
