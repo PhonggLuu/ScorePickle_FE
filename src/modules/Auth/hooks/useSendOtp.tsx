@@ -28,8 +28,9 @@ export function useSendOtp() {
     onSuccess: (data) => {
       dispatch(setEmail(data.email));
       dispatch(setOtp(data.otp));
+      console.log(data.otp);
       message.success('Send OTP to your email successfully');
-      navigate('/auth/verify-otp');
+      // navigate('/auth/verify-otp');
     },
     onError: () => {
       message.error('Not found your email address');
