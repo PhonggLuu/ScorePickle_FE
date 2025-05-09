@@ -656,11 +656,11 @@ const MatchRoom = ({ id }: MatchRoomProps) => {
           status: 'Disable',
         },
       });
-      message.success('Tournament has been started successfully!');
+      message.success('Tournament has been rejected successfully!');
       await refetch();
     } catch (error) {
-      message.error('Failed to start tournament. Please try again later.');
-      console.error('Error starting tournament:', error);
+      message.error('Failed to reject tournament. Please try again later.');
+      console.error('Error reject tournament:', error);
     } finally {
       setStartLoading(false);
     }
@@ -670,11 +670,11 @@ const MatchRoom = ({ id }: MatchRoomProps) => {
     try {
       setStartLoading(true);
       await endTourament(id);
-      message.success('Tournament has been started successfully!');
+      message.success('Tournament has been ended successfully!');
       await refetch();
     } catch (error) {
-      message.error('Failed to start tournament. Please try again later.');
-      console.error('Error starting tournament:', error);
+      message.error('Failed to end tournament. Please try again later.');
+      console.error('Error end tournament:', error);
     } finally {
       setStartLoading(false);
     }

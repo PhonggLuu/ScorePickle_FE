@@ -52,6 +52,10 @@ const MyProfile: React.FC = () => {
     [MatchCategory.Tournament]: 'blue',
     [MatchCategory.Competitive]: 'orange',
   };
+  const WLColors: Record<number, string> = {
+    1: 'green',
+    2: '#FF0000',
+  };
   const [matches, setMatches] = useState(matchesData || []);
   const [matchType, setMatchType] = useState('any');
 
@@ -299,6 +303,19 @@ const MyProfile: React.FC = () => {
                               .includes('single')
                               ? 'Player 1'
                               : 'Team 1'}
+
+                            <Tag
+                              color={
+                                (match.info.team1Score ?? 0) >
+                                (match.info.team2Score ?? 0)
+                                  ? WLColors[1]
+                                  : WLColors[0]
+                              }
+                              style={{ fontSize: '16px' }}
+                              className="match-type ms-2"
+                            >
+                              {match.info.team1Score ?? 0}
+                            </Tag>
                           </label>
                           <div className="player d-flex align-items-center mb-2">
                             <Avatar
@@ -385,6 +402,19 @@ const MyProfile: React.FC = () => {
                               .includes('single')
                               ? 'Player 2'
                               : 'Team 2'}
+
+                            <Tag
+                              color={
+                                (match.info.team2Score ?? 0) >
+                                (match.info.team1Score ?? 0)
+                                  ? WLColors[1]
+                                  : WLColors[0]
+                              }
+                              style={{ fontSize: '16px' }}
+                              className="match-type ms-2"
+                            >
+                              {match.info.team2Score ?? 0}
+                            </Tag>
                           </label>
                           {match.info.teams[1].members[0] ? (
                             <div className="player mt-2">

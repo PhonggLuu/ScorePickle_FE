@@ -63,6 +63,10 @@ const MotionCard = motion(Card);
 const MotionCol = motion(Col);
 
 export default function MatchDetails() {
+  const WLColors: Record<number, string> = {
+    1: 'green',
+    2: '#ff4d4f',
+  };
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const [isScoreModalVisible, setIsScoreModalVisible] = useState(false);
@@ -716,28 +720,45 @@ export default function MatchDetails() {
                 animate={{ x: 0, opacity: 1 }}
                 transition={{ duration: 0.5, delay: 0.2 }}
               >
-                <Card
-                  title={
-                    <div className="team-header team1-header">
-                      <TeamOutlined className="team-icon" />
-                      <Text strong>{data.teams[0]?.name || 'Team 1'}</Text>
-                    </div>
-                  }
-                  className="team-card team1-card"
-                  bordered={false}
+                <div
                   style={{
-                    background: '#fff',
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
                   }}
                 >
-                  {isSingleMatch ? (
-                    renderPlayer(data.player1, 1)
-                  ) : (
-                    <>
-                      {renderPlayer(data.player1, 1)}
-                      {renderPlayer(data.player2, 2)}
-                    </>
-                  )}
-                </Card>
+                  <Card
+                    title={
+                      <div className="team-header team1-header">
+                        <TeamOutlined className="team-icon" />
+                        <Text strong>{data.teams[0]?.name || 'Team 1'}</Text>
+                      </div>
+                    }
+                    className="team-card team1-card"
+                    bordered={false}
+                    style={{ background: '#fff', flex: 1 }}
+                  >
+                    {isSingleMatch ? (
+                      renderPlayer(data.player1, 1)
+                    ) : (
+                      <>
+                        {renderPlayer(data.player1, 1)}
+                        {renderPlayer(data.player2, 2)}
+                      </>
+                    )}
+                  </Card>
+                  <Tag
+                    color={
+                      (data.team1Score ?? 0) > (data.team2Score ?? 0)
+                        ? WLColors[1]
+                        : WLColors[0]
+                    }
+                    style={{ fontSize: '30px', marginLeft: '8px' }}
+                    className="match-type ms-2 p-2"
+                  >
+                    {data.team1Score ?? 0}
+                  </Tag>
+                </div>
               </MotionCol>
 
               {/* VS */}
@@ -766,28 +787,45 @@ export default function MatchDetails() {
                 animate={{ x: 0, opacity: 1 }}
                 transition={{ duration: 0.5, delay: 0.3 }}
               >
-                <Card
-                  title={
-                    <div className="team-header team2-header">
-                      <TeamOutlined className="team-icon" />
-                      <Text strong>{data.teams[1]?.name || 'Team 2'}</Text>
-                    </div>
-                  }
-                  className="team-card team2-card"
-                  bordered={false}
+                <div
                   style={{
-                    background: '#fff',
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
                   }}
                 >
-                  {isSingleMatch ? (
-                    renderPlayer(data.player3, 3)
-                  ) : (
-                    <>
-                      {renderPlayer(data.player3, 3)}
-                      {renderPlayer(data.player4, 4)}
-                    </>
-                  )}
-                </Card>
+                  <Tag
+                    color={
+                      (data.team2Score ?? 0) > (data.team1Score ?? 0)
+                        ? WLColors[1]
+                        : WLColors[0]
+                    }
+                    style={{ fontSize: '30px', marginRight: '8px' }}
+                    className="match-type ms-2 p-2"
+                  >
+                    {data.team2Score ?? 0}
+                  </Tag>
+                  <Card
+                    title={
+                      <div className="team-header team2-header">
+                        <TeamOutlined className="team-icon" />
+                        <Text strong>{data.teams[1]?.name || 'Team 2'}</Text>
+                      </div>
+                    }
+                    className="team-card team2-card"
+                    bordered={false}
+                    style={{ background: '#fff', flex: 1 }}
+                  >
+                    {isSingleMatch ? (
+                      renderPlayer(data.player3, 3)
+                    ) : (
+                      <>
+                        {renderPlayer(data.player3, 3)}
+                        {renderPlayer(data.player4, 4)}
+                      </>
+                    )}
+                  </Card>
+                </div>
               </MotionCol>
             </Row>
             {/* Editable information section */}

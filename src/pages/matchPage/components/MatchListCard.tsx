@@ -192,7 +192,7 @@ export default function MatchListCard({ value }: MatchCardProps) {
           )}
           <Text strong>
             Players:{' '}
-            {value.teams[0].members.length | value.teams[1].members.length}/
+            {value.teams[0].members.length + value.teams[1].members.length}/
             {MatchFormat[value.matchFormat].toLowerCase().includes('single')
               ? 2
               : 4}

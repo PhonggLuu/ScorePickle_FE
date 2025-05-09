@@ -45,62 +45,46 @@ const TournamentInfoForm = ({ data, onSave }: TournamentInfoFormProps) => {
   const [form] = Form.useForm();
   const { mutate: updateTournament } = useUpdateTournament();
   const [isFree, setIsFree] = useState<boolean>(data?.isFree || false);
+  const [savedEntryFee, setSavedEntryFee] = useState<number>(
+    data?.entryFee || 10000
+  );
+
   const isDisabled = data.status !== 'Pending';
   const user = useSelector((state: RootState) => state.auth.user);
 
-  // Banner upload states
   const [bannerInputType, setBannerInputType] = useState<'url' | 'upload'>(
     'url'
   );
   const [previewBanner, setPreviewBanner] = useState<string>('');
   const { uploadToCloudinary, uploading, progress } = useCloudinaryUpload();
-
-  // Watch for banner URL changes
   const bannerUrl = Form.useWatch('banner', form);
 
-  // Check if tournament is editable - only status can be changed if not editable
   const isEdit = data.status === 'Scheduled' || data.status === 'Pending';
   const isFieldDisabled = !isEdit;
 
-  // Update preview when banner URL changes
   useEffect(() => {
-    if (bannerUrl) {
-      setPreviewBanner(bannerUrl);
-    }
+    form.setFieldsValue({
+      entryFee: data?.isFree ? data?.entryFee : 0,
+      isFree: data?.isFree,
+    });
+    setIsFree(data?.isFree || false);
+    setSavedEntryFee(data?.entryFee || 10000);
+  }, [data, form]);
+
+  useEffect(() => {
+    if (bannerUrl) setPreviewBanner(bannerUrl);
   }, [bannerUrl]);
 
-  // Set initial preview
   useEffect(() => {
-    if (data?.banner) {
-      setPreviewBanner(data.banner);
-    }
-
-    // Initialize isFree state
-    setIsFree(data?.isFree || false);
-  }, [data?.banner, data?.isFree]);
-
-  // Handle form values when isFree changes
-  useEffect(() => {
-    const currentIsFree = form.getFieldValue('isFree');
-    if (currentIsFree) {
-      form.setFieldsValue({ entryFee: 0 });
-    } else {
-      // If it's not free and the current entry fee is 0, set a default
-      const currentEntryFee = form.getFieldValue('entryFee');
-      if (currentEntryFee === 0) {
-        form.setFieldsValue({ entryFee: 10000 });
-      }
-    }
-  }, [form.getFieldValue('isFree')]);
+    if (data?.banner) setPreviewBanner(data.banner);
+  }, [data?.banner]);
 
   const handleFinish = (values: any) => {
     const updatedValues = {
       ...values,
       startDate: values.startDate ? values.startDate.toISOString() : null,
       endDate: values.endDate ? values.endDate.toISOString() : null,
-      // Ensure isFree and entryFee are consistent
-      entryFee: values.isFree ? 0 : values.entryFee,
-      // Ensure rankings are valid
+      entryFee: !values.isFree ? 0 : values.entryFee,
       isMinRanking: Math.max(1, Math.min(9, values.isMinRanking)),
       isMaxRanking: Math.max(
         values.isMinRanking,
@@ -108,7 +92,6 @@ const TournamentInfoForm = ({ data, onSave }: TournamentInfoFormProps) => {
       ),
     };
 
-    // Filter out unchanged fields
     const fieldsToUpdate = Object.keys(updatedValues).reduce((acc, key) => {
       if (updatedValues[key] !== data[key]) {
         acc[key] = updatedValues[key];
@@ -130,7 +113,6 @@ const TournamentInfoForm = ({ data, onSave }: TournamentInfoFormProps) => {
     );
   };
 
-  // Handle banner image upload
   const handleBannerUpload = async (file: File) => {
     try {
       const result = await uploadToCloudinary(file);
@@ -138,12 +120,12 @@ const TournamentInfoForm = ({ data, onSave }: TournamentInfoFormProps) => {
         form.setFieldsValue({ banner: result.secure_url });
         setPreviewBanner(result.secure_url);
         message.success('Banner uploaded successfully');
-        return false; // Prevent default upload behavior
+        return false;
       }
     } catch (err) {
       message.error('Failed to upload banner image');
     }
-    return false; // Prevent default upload behavior
+    return false;
   };
 
   return (
@@ -151,26 +133,14 @@ const TournamentInfoForm = ({ data, onSave }: TournamentInfoFormProps) => {
       form={form}
       layout="vertical"
       initialValues={{
-        name: data?.name,
-        location: data?.location,
-        maxPlayer: data?.maxPlayer,
-        totalPrize: data?.totalPrize,
-        status: data?.status,
+        ...data,
         startDate: data?.startDate ? moment(data?.startDate) : null,
         endDate: data?.endDate ? moment(data?.endDate) : null,
-        banner: data?.banner,
-        type: data?.type,
-        entryFee: data?.entryFee,
-        isFree: data?.isFree,
-        social: data?.social,
-        isMinRanking: data?.isMinRanking || 1,
-        isMaxRanking: data?.isMaxRanking || 9,
       }}
       onFinish={handleFinish}
     >
-      {/* Section 2: Tournament Schedule & Status */}
+      {/* Status Section */}
       <Card
-        className="section-card"
         title={
           <>
             <CalendarOutlined /> Schedule & Status
@@ -223,9 +193,9 @@ const TournamentInfoForm = ({ data, onSave }: TournamentInfoFormProps) => {
           </Col>
         </Row>
       </Card>
-      {/* Section 1: Basic Tournament Information */}
+
+      {/* Basic Info Section */}
       <Card
-        className="section-card"
         title={
           <>
             <InfoCircleOutlined /> Basic Information
@@ -255,9 +225,11 @@ const TournamentInfoForm = ({ data, onSave }: TournamentInfoFormProps) => {
               ]}
             >
               <Select disabled={isFieldDisabled || isDisabled}>
-                <Option value={0}>Singles</Option>
-                <Option value={1}>Doubles</Option>
-                <Option value={2}>Mixed</Option>
+                <Option value={1}>SingleMale</Option>
+                <Option value={2}>SingleFemale</Option>
+                <Option value={3}>DoublesMales</Option>
+                <Option value={4}>DoublesFemales</Option>
+                <Option value={5}>DoublesMix</Option>
               </Select>
             </Form.Item>
           </Col>
@@ -277,9 +249,8 @@ const TournamentInfoForm = ({ data, onSave }: TournamentInfoFormProps) => {
         </Row>
       </Card>
 
-      {/* Section 3: Tournament Details */}
+      {/* Tournament Details Section */}
       <Card
-        className="section-card"
         title={
           <>
             <TrophyOutlined /> Tournament Details
@@ -299,7 +270,6 @@ const TournamentInfoForm = ({ data, onSave }: TournamentInfoFormProps) => {
               <InputNumber
                 min={0}
                 style={{ width: '100%' }}
-                disabled={true}
                 formatter={(value) =>
                   `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
                 }
@@ -317,33 +287,28 @@ const TournamentInfoForm = ({ data, onSave }: TournamentInfoFormProps) => {
                 { required: true, message: 'Please input the max players!' },
               ]}
             >
-              <InputNumber min={1} style={{ width: '100%' }} disabled={true} />
+              <InputNumber min={1} style={{ width: '100%' }} />
             </Form.Item>
           </Col>
           <Col span={8}>
             <Form.Item
               name="isFree"
-              label={
-                <span>
-                  Fee Tournament{' '}
-                  <Tooltip title="Toggle between free and paid tournament">
-                    <InfoCircleOutlined style={{ color: '#1890ff' }} />
-                  </Tooltip>
-                </span>
-              }
+              label="Fee Tournament"
               valuePropName="checked"
             >
               <Switch
-                checkedChildren="Paid"
+                checkedChildren="Has Entry Fee"
                 unCheckedChildren="Free"
                 disabled={isFieldDisabled || isDisabled}
                 onChange={(checked) => {
                   setIsFree(checked);
                   if (checked) {
-                    form.setFieldsValue({ entryFee: 0 });
+                    form.setFieldsValue({ entryFee: savedEntryFee });
                   } else {
-                    // Set default entry fee when switching to paid
-                    form.setFieldsValue({ entryFee: 10000 });
+                    const currentFee =
+                      form.getFieldValue('entryFee') || savedEntryFee;
+                    setSavedEntryFee(currentFee);
+                    form.setFieldsValue({ entryFee: 0 });
                   }
                 }}
               />
@@ -354,28 +319,14 @@ const TournamentInfoForm = ({ data, onSave }: TournamentInfoFormProps) => {
           <Col span={12}>
             <Form.Item
               name="entryFee"
-              label={
-                <span>
-                  Entry Fee{' '}
-                  <Tooltip
-                    title={
-                      isFree
-                        ? 'Free tournament, no entry fee'
-                        : 'Entry fee must be between 10,000 and 1,000,000'
-                    }
-                  >
-                    <DollarOutlined style={{ color: '#1890ff' }} />
-                  </Tooltip>
-                </span>
-              }
+              label="Entry Fee"
               rules={[
                 { required: true, message: 'Please input the entry fee!' },
                 {
                   validator: (_, value) => {
-                    if (isFree) return Promise.resolve();
-                    if (value >= 10000 && value <= 1000000) {
+                    if (!isFree) return Promise.resolve();
+                    if (value >= 10000 && value <= 1000000)
                       return Promise.resolve();
-                    }
                     return Promise.reject(
                       new Error(
                         'Entry fee must be between 10,000 and 1,000,000'
@@ -386,19 +337,15 @@ const TournamentInfoForm = ({ data, onSave }: TournamentInfoFormProps) => {
               ]}
             >
               <InputNumber
-                min={isFree ? 0 : 10000}
-                max={isFree ? 0 : 1000000}
+                min={isFree ? 10000 : 0}
+                max={isFree ? 1000000 : 0}
                 style={{ width: '100%' }}
-                disabled={isFree || isFieldDisabled || isDisabled}
+                disabled={!isFree || isFieldDisabled || isDisabled}
                 formatter={(value) =>
                   `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
                 }
                 parser={(value: string | undefined) =>
-                  value
-                    ? Number(value.replace(/[^\d]/g, ''))
-                    : isFree
-                      ? 0
-                      : 10000
+                  value ? Number(value.replace(/[^\d]/g, '')) : 0
                 }
                 addonAfter="VND"
               />
