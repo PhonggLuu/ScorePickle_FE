@@ -671,7 +671,6 @@ const MatchRoom = ({ id }: MatchRoomProps) => {
       setStartLoading(true);
       await endTourament(id);
       message.success('Tournament has been ended successfully!');
-      await refetch();
     } catch (error) {
       message.error('Failed to end tournament. Please try again later.');
       console.error('Error end tournament:', error);

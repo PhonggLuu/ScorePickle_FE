@@ -7,21 +7,22 @@ import {
   Select,
   Button,
   message,
-  Checkbox,
   Collapse,
   Row,
   Col,
+  Space,
+  Alert,
+  Tooltip,
 } from 'antd';
 import moment from 'moment';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../../redux/store';
+import { fetchUserById } from '../../../modules/User/hooks/useGetUserById';
+import { User } from '../../../modules/User/models';
 import { IMatch } from '@src/modules/Match/models';
-import { useUpdateMatch } from '@src/modules/Match/hooks/useUpdateMatch';
 import { useGetAllReferees } from '@src/modules/User/hooks/useGetAllReferee';
 import { useGetVenueBySponserId } from '@src/modules/Venues/hooks/useGetVenueBySponserId';
-import { useSelector } from 'react-redux';
-import { RootState } from '@src/redux/store';
-import { Team } from '@src/modules/Tournament/models';
-import { fetchUserById } from '@src/modules/User/hooks/useGetUserById';
-import { User } from '@src/modules/User/models';
+import { useUpdateMatch } from '@src/modules/Match/hooks/useUpdateMatch';
 
 const { Option } = Select;
 const { Panel } = Collapse;
@@ -45,14 +46,15 @@ const UpdateMatchModal: React.FC<UpdateMatchModalProps> = ({
   const { data: referees } = useGetAllReferees();
   const { data: venues } = useGetVenueBySponserId(user?.id || 0);
   const { mutate: updateMatch } = useUpdateMatch();
-  const [matchFormat] = useState<number>(match?.matchFormat);
-  const [, setUserDetails] = useState<User[]>([]);
+  const [matchFormat, setMatchFormat] = useState<number>(match?.matchFormat);
+  const [userDetails, setUserDetails] = useState<User[]>([]);
   const userCache = useRef<Map<number, User>>(new Map());
-  console.log('match', match);
+  const [currentStatus, setCurrentStatus] = useState<number>(match?.status);
+  const isEditable = currentStatus === 1; // Only editable if Scheduled (1)
 
   useEffect(() => {
     if (match) {
-      const userIds = match.teamResponse.flatMap((team: Team) =>
+      const userIds = match.teamResponse.flatMap((team: { members: any[] }) =>
         team.members.map((member) => member.playerId)
       );
 
@@ -78,27 +80,85 @@ const UpdateMatchModal: React.FC<UpdateMatchModalProps> = ({
     }
   }, [match]);
 
-  const handleFinish = (values: any) => {
-    const updatedValues = {
-      ...values,
-      matchDate: values.matchDate ? values.matchDate.toISOString() : null,
-      venueId: values.venueId || null,
-      refereeId: values.refereeId || null,
-    };
+  const getUserById = (id: number) =>
+    userDetails.find((user) => user?.id === id);
 
-    updateMatch(
-      { id: match?.id, data: updatedValues },
-      {
-        onSuccess: () => {
-          message.success('Match updated successfully');
-          onClose();
-          refetch();
-        },
-        onError: () => {
-          message.error('Failed to update match');
-        },
+  const handleStatusChange = (value: number) => {
+    setCurrentStatus(value);
+  };
+
+  const handleFinish = (values: any) => {
+    try {
+      // Convert form values to proper types
+      const numericFields = ['winScore', 'team1Score', 'team2Score'];
+      numericFields.forEach((field) => {
+        if (values[field] !== undefined && values[field] !== null) {
+          values[field] = Number(values[field]);
+        }
+      });
+
+      // Process values and prepare data
+      const processedValues = {
+        ...values,
+        matchDate: values.matchDate ? values.matchDate.toISOString() : null,
+        venueId: values.venueId || null,
+        refereeId: values.refereeId || null,
+        status: Number(values.status),
+        matchCategory: Number(values.matchCategory),
+      };
+
+      // Compare with initial values to find changed fields
+      const changedFields: Record<string, any> = {};
+
+      Object.keys(processedValues).forEach((key) => {
+        // Skip undefined values
+        if (processedValues[key] === undefined) return;
+
+        // Handle date comparison specially
+        if (key === 'matchDate') {
+          const originalDate = match?.matchDate
+            ? moment(match.matchDate).toISOString()
+            : null;
+          if (originalDate !== processedValues[key]) {
+            changedFields[key] = processedValues[key];
+          }
+          return;
+        }
+
+        // For all other fields, direct comparison
+        if (match && match[key as keyof IMatch] !== processedValues[key]) {
+          changedFields[key] = processedValues[key];
+        }
+      });
+
+      console.log('Changed fields:', changedFields);
+      console.log('match id:', match?.id);
+
+      // Only proceed if there are changes
+      if (Object.keys(changedFields).length === 0) {
+        message.info('No changes detected');
+        return;
       }
-    );
+
+      // Update only the changed fields
+      updateMatch(
+        { id: match?.id, data: changedFields },
+        {
+          onSuccess: () => {
+            message.success('Match updated successfully');
+            onClose();
+            refetch();
+          },
+          onError: (error) => {
+            console.error('Update error:', error);
+            message.error('Failed to update match');
+          },
+        }
+      );
+    } catch (error) {
+      console.error('Error in handleFinish:', error);
+      message.error('An error occurred while processing your request');
+    }
   };
 
   const initialValues = {
@@ -114,17 +174,6 @@ const UpdateMatchModal: React.FC<UpdateMatchModalProps> = ({
     refereeId: match?.refereeId,
     team1Score: match?.team1Score,
     team2Score: match?.team2Score,
-    ...(matchFormat === 1
-      ? {
-          player1Id: match?.teamResponse?.[0]?.members?.[0]?.playerId,
-          player2Id: match?.teamResponse?.[1]?.members?.[0]?.playerId,
-        }
-      : {
-          player1Id: match?.teamResponse?.[0]?.members?.[0]?.playerId,
-          player2Id: match?.teamResponse?.[0]?.members?.[1]?.playerId,
-          player3Id: match?.teamResponse?.[1]?.members?.[0]?.playerId,
-          player4Id: match?.teamResponse?.[1]?.members?.[1]?.playerId,
-        }),
   };
 
   return (
@@ -133,7 +182,7 @@ const UpdateMatchModal: React.FC<UpdateMatchModalProps> = ({
       title="Update Match"
       onCancel={onClose}
       footer={null}
-      width={800} // Make the modal wider
+      width={800}
     >
       <Form
         form={form}
@@ -141,6 +190,47 @@ const UpdateMatchModal: React.FC<UpdateMatchModalProps> = ({
         initialValues={initialValues}
         onFinish={handleFinish}
       >
+        {/* Status alert when match is not editable */}
+        {!isEditable && currentStatus !== 1 && (
+          <Alert
+            message="Limited Edit Mode"
+            description="This match is no longer in 'Scheduled' status. You can only update the status field."
+            type="warning"
+            showIcon
+            style={{ marginBottom: 16 }}
+          />
+        )}
+        {match?.status !== 3 && (
+          <Row gutter={16}>
+            <Col span={24}>
+              <Form.Item
+                name="status"
+                label={
+                  <span style={{ fontWeight: 'bold', color: '#1890ff' }}>
+                    Match Status
+                  </span>
+                }
+                rules={[
+                  { required: true, message: 'Please select the match status' },
+                ]}
+              >
+                <Select
+                  style={{
+                    borderColor: '#1890ff',
+                    boxShadow: '0 0 0 2px rgba(24,144,255,0.2)',
+                  }}
+                  disabled={!isEditable}
+                  onChange={handleStatusChange}
+                >
+                  <Option value={1}>Scheduled</Option>
+                  <Option value={2}>Ongoing</Option>
+                  <Option value={4}>Cancelled</Option>
+                </Select>
+              </Form.Item>
+            </Col>
+          </Row>
+        )}
+
         <Collapse defaultActiveKey={['1']}>
           <Panel header="Match Details" key="1">
             <Row gutter={16}>
@@ -155,12 +245,12 @@ const UpdateMatchModal: React.FC<UpdateMatchModalProps> = ({
                     },
                   ]}
                 >
-                  <Input />
+                  <Input disabled={!isEditable} />
                 </Form.Item>
               </Col>
               <Col span={12}>
                 <Form.Item name="winScore" label="Win Score">
-                  <Select>
+                  <Select disabled={!isEditable}>
                     <Option value={1}>11</Option>
                     <Option value={2}>15</Option>
                     <Option value={3}>21</Option>
@@ -171,68 +261,32 @@ const UpdateMatchModal: React.FC<UpdateMatchModalProps> = ({
             <Row gutter={16}>
               <Col span={12}>
                 <Form.Item name="matchDate" label="Match Date">
-                  <DatePicker showTime />
-                </Form.Item>
-              </Col>
-              <Col span={12}>
-                <Form.Item name="status" label="Status">
-                  <Select>
-                    <Option value={1}>Scheduled</Option>
-                    <Option value={3}>Ongoing</Option>
-                    <Option value={2}>Completed</Option>
-                    <Option value={4}>Cancelled</Option>
-                  </Select>
-                </Form.Item>
-              </Col>
-            </Row>
-            <Row gutter={16}>
-              <Col span={12}>
-                <Form.Item name="matchCategory" label="Match Category">
-                  <Select disabled>
-                    <Option value={1}>Competitive</Option>
-                    <Option value={2}>Custom</Option>
-                    <Option value={3}>Tournament</Option>
-                  </Select>
-                </Form.Item>
-              </Col>
-              <Col span={12}>
-                <Form.Item name="matchFormat" label="Match Format">
-                  <Select disabled>
-                    <Option value={1}>Single</Option>
-                    <Option value={2}>Team</Option>
-                  </Select>
-                </Form.Item>
-              </Col>
-            </Row>
-            <Row gutter={16}>
-              <Col span={12}>
-                <Form.Item
-                  name="isPublic"
-                  valuePropName="checked"
-                  initialValue={true}
-                >
-                  <Checkbox>Public</Checkbox>
+                  <DatePicker showTime disabled={!isEditable} />
                 </Form.Item>
               </Col>
             </Row>
             <Form.Item name="description" label="Description">
-              <TextArea rows={4} />
+              <TextArea rows={4} disabled={!isEditable} />
             </Form.Item>
           </Panel>
           <Panel header="Referee and Venue" key="2">
             <Row gutter={16}>
               <Col span={12}>
                 <Form.Item name="refereeId" label="Referee">
-                  <Select showSearch optionFilterProp="children">
+                  <Select
+                    showSearch
+                    optionFilterProp="children"
+                    disabled={!isEditable}
+                  >
                     {referees?.map((referee) => (
-                      <Option key={referee?.user.id} value={referee?.user.id}>
+                      <Option key={referee?.user?.id} value={referee?.user?.id}>
                         <div style={{ display: 'flex', alignItems: 'center' }}>
                           <img
-                            src={referee?.user.avatarUrl}
+                            src={referee?.user?.avatarUrl}
                             alt="avatar"
                             style={{ width: 20, height: 20, marginRight: 8 }}
                           />
-                          {referee?.user.firstName} {referee?.user.lastName}
+                          {referee?.user?.firstName} {referee?.user?.lastName}
                         </div>
                       </Option>
                     ))}
@@ -241,7 +295,11 @@ const UpdateMatchModal: React.FC<UpdateMatchModalProps> = ({
               </Col>
               <Col span={12}>
                 <Form.Item name="venueId" label="Venue">
-                  <Select showSearch optionFilterProp="children">
+                  <Select
+                    showSearch
+                    optionFilterProp="children"
+                    disabled={!isEditable}
+                  >
                     {venues?.map((venue) => (
                       <Option key={venue?.id} value={venue?.id}>
                         <div
@@ -269,10 +327,30 @@ const UpdateMatchModal: React.FC<UpdateMatchModalProps> = ({
             </Row>
           </Panel>
         </Collapse>
+
         <Form.Item>
-          <Button type="primary" htmlType="submit">
-            Save
-          </Button>
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'flex-end',
+              marginTop: 24,
+            }}
+          >
+            <Space>
+              <Button onClick={onClose}>Cancel</Button>
+              <Tooltip
+                title={
+                  !isEditable
+                    ? "You can only update the status when match is not in 'Scheduled' state"
+                    : ''
+                }
+              >
+                <Button type="primary" htmlType="submit">
+                  Save
+                </Button>
+              </Tooltip>
+            </Space>
+          </div>
         </Form.Item>
       </Form>
     </Modal>

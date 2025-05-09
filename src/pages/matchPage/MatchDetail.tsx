@@ -54,6 +54,7 @@ import { useUpdateMatch } from '@src/modules/Match/hooks/useUpdateMatch';
 import './styles/matchDetail.css';
 import { MatchConfirmationModal } from './components/MatchConfirmationModal';
 import { useVenueById } from '@src/modules/Venues/hooks/useGetVenueById';
+import { CustomScoreSubmissionModal } from './components/CustomScoreSubmissionModal';
 
 const { Text, Title } = Typography;
 const { TextArea } = Input;
@@ -70,6 +71,8 @@ export default function MatchDetails() {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const [isScoreModalVisible, setIsScoreModalVisible] = useState(false);
+  const [isCustomScoreModalVisible, setIsCustomScoreModalVisible] =
+    useState(false);
   const matchId = Number(id || 0);
   const { data, isLoading, refetch } = useGetMatchDetail(matchId);
   const { data: venue } = useVenueById(data?.venueId ?? 0);
@@ -319,39 +322,6 @@ export default function MatchDetails() {
             <TextArea rows={3} placeholder="Enter match description" />
           </Form.Item>
 
-          {/* <Form.Item
-            name="status"
-            label="Status"
-            rules={[{ required: true, message: 'Please select a status' }]}
-          >
-            <Select placeholder="Select match status">
-              <Option
-                value={MatchStatus.Scheduled}
-                disabled={data.status !== MatchStatus.Scheduled}
-              >
-                {MatchStatus[MatchStatus.Scheduled]}
-              </Option>
-              <Option
-                value={MatchStatus.Ongoing}
-                disabled={data.status !== MatchStatus.Scheduled}
-              >
-                {MatchStatus[MatchStatus.Ongoing]}
-              </Option>
-              <Option
-                value={MatchStatus.Completed}
-                disabled={data.status !== MatchStatus.Ongoing}
-              >
-                {MatchStatus[MatchStatus.Completed]}
-              </Option>
-              <Option
-                value={MatchStatus.Disabled}
-                disabled={data.status !== MatchStatus.Scheduled}
-              >
-                {MatchStatus[MatchStatus.Disabled]}
-              </Option>
-            </Select>
-          </Form.Item> */}
-
           <div className="form-actions">
             <Button
               onClick={() => setIsEditing(false)}
@@ -519,6 +489,37 @@ export default function MatchDetails() {
         );
 
       case MatchStatus.Ongoing:
+        // Don't show any actions for Tournament matches
+        if (data.matchCategory === MatchCategory.Tournament) {
+          return null;
+        }
+
+        // For Competitive matches use the MatchConfirmationModal
+        if (data.matchCategory === MatchCategory.Competitive) {
+          return (
+            <div className="status-action-buttons">
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'end',
+                  marginBottom: 16,
+                }}
+              >
+                {isCurrentUserRoomOwner && (
+                  <Button
+                    type="primary"
+                    icon={<TrophyOutlined />}
+                    onClick={() => setIsScoreModalVisible(true)}
+                  >
+                    Manage Score
+                  </Button>
+                )}
+              </div>
+            </div>
+          );
+        }
+
+        // For Custom matches use the new ScoreSubmissionModal
         return (
           <div className="status-action-buttons">
             <div
@@ -528,22 +529,16 @@ export default function MatchDetails() {
                 marginBottom: 16,
               }}
             >
-              <Button
-                type="primary"
-                icon={<TrophyOutlined />}
-                onClick={() => setIsScoreModalVisible(true)}
-              >
-                Manage Score
-              </Button>
+              {isCurrentUserRoomOwner && (
+                <Button
+                  type="primary"
+                  icon={<TrophyOutlined />}
+                  onClick={() => setIsCustomScoreModalVisible(true)}
+                >
+                  Submit Score
+                </Button>
+              )}
             </div>
-            {/* <Button
-              type="primary"
-              icon={<CheckCircleOutlined />}
-              onClick={() => handleStatusChange(MatchStatus.Completed)}
-              className="action-button complete-button"
-            >
-              Complete Match
-            </Button> */}
           </div>
         );
 
@@ -955,6 +950,11 @@ export default function MatchDetails() {
             user?.id === data?.player1?.id || user?.id === data?.player2?.id;
           return isTeam1 ? 'Team 1' : 'Team 2';
         })()}
+      />
+      <CustomScoreSubmissionModal
+        open={isCustomScoreModalVisible}
+        onClose={() => setIsCustomScoreModalVisible(false)}
+        matchId={matchId.toString()}
       />
     </>
   );
