@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import {
   Table,
   Tag,
@@ -10,6 +10,10 @@ import {
   Row,
   Col,
   Statistic,
+  Radio,
+  Space,
+  Badge,
+  Tooltip,
 } from 'antd';
 import { useGetAllBillByUser } from '@src/modules/Tournament/hooks/useGetAllBillByUser';
 import { useSelector } from 'react-redux';
@@ -23,9 +27,41 @@ import {
   CheckCircleOutlined,
   ClockCircleOutlined,
   CloseCircleOutlined,
+  BankOutlined,
+  WalletOutlined,
+  FilterOutlined,
 } from '@ant-design/icons';
 
 const { Text, Title } = Typography;
+
+// Payment Method styling configuration
+const PAYMENT_METHODS = {
+  VNPAY: {
+    color: '#0077c8',
+    bgColor: '#e6f7ff',
+    icon: <WalletOutlined />,
+    text: 'VNPAY',
+  },
+  Banking: {
+    color: '#389e0d',
+    bgColor: '#f6ffed',
+    icon: <BankOutlined />,
+    text: 'Reward',
+  },
+  PayOs: {
+    color: '#722ed1',
+    bgColor: '#f9f0ff',
+    icon: <DollarCircleOutlined />,
+    text: 'PayOs',
+  },
+  // Default for other payment methods
+  default: {
+    color: '#d4b106',
+    bgColor: '#fffbe6',
+    icon: <DollarCircleOutlined />,
+    text: 'Other',
+  },
+};
 
 // Animation variants
 const fadeIn = {
@@ -103,6 +139,9 @@ const Transaction = () => {
     refetch,
   } = useGetAllBillByUser(userId || 0);
 
+  // State for payment method filtering
+  const [activePaymentFilter, setActivePaymentFilter] = useState('All');
+
   // Calculate summary statistics
   const summaryStats = useMemo(() => {
     if (!bills || bills.length === 0) {
@@ -148,6 +187,42 @@ const Transaction = () => {
     );
   }, [bills]);
 
+  // Get unique payment methods for filtering
+  const uniquePaymentMethods = useMemo(() => {
+    if (!bills) return [];
+    return [...new Set(bills.map((bill) => bill.paymentMethod))];
+  }, [bills]);
+
+  // Filter bills by payment method
+  const filteredBills = useMemo(() => {
+    if (!bills) return [];
+    if (activePaymentFilter === 'All') return bills;
+    return bills.filter((bill) => bill.paymentMethod === activePaymentFilter);
+  }, [bills, activePaymentFilter]);
+
+  // Get payment method config for styling
+  const getPaymentMethodConfig = (method) => {
+    if (!method) return PAYMENT_METHODS.default;
+
+    const methodUpperCase = method.toUpperCase();
+
+    if (methodUpperCase.includes('VNPAY')) return PAYMENT_METHODS.VNPAY;
+    if (
+      methodUpperCase.includes('BANK') ||
+      methodUpperCase.includes('TRANSFER')
+    )
+      return PAYMENT_METHODS.Banking;
+    if (methodUpperCase.includes('PAYOS')) return PAYMENT_METHODS.PayOs;
+
+    return PAYMENT_METHODS.default;
+  };
+
+  // Helper function to get display text for payment methods
+  const getDisplayText = (method) => {
+    const config = getPaymentMethodConfig(method);
+    return method === 'Banking' ? 'Reward' : method;
+  };
+
   const columns = [
     {
       title: 'ID',
@@ -163,18 +238,45 @@ const Transaction = () => {
       sorter: (a, b) => a.amount - b.amount,
     },
     {
-      title: 'Payment Method',
+      title: (
+        <span style={{ display: 'flex', alignItems: 'center' }}>
+          <FilterOutlined style={{ marginRight: 5 }} /> Payment Method
+        </span>
+      ),
       dataIndex: 'paymentMethod',
       key: 'paymentMethod',
+      render: (method) => {
+        const config = getPaymentMethodConfig(method);
+        const displayText = getDisplayText(method);
+
+        return (
+          <Tooltip title={`Payment via ${displayText}`}>
+            <Tag
+              icon={config.icon}
+              style={{
+                color: config.color,
+                backgroundColor: config.bgColor,
+                borderColor: config.color,
+                padding: '4px 8px',
+                fontWeight: 500,
+                fontSize: '14px',
+              }}
+            >
+              {displayText}
+            </Tag>
+          </Tooltip>
+        );
+      },
       filters: bills
         ? [...new Set(bills.map((bill) => bill.paymentMethod))].map(
             (method) => ({
-              text: method,
+              text: getDisplayText(method),
               value: method,
             })
           )
         : [],
       onFilter: (value, record) => record.paymentMethod === value,
+      filterSearch: true,
     },
     {
       title: 'Status',
@@ -413,6 +515,70 @@ const Transaction = () => {
             </motion.div>
           }
         >
+          {hasTransactions && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+              style={{ marginBottom: 16 }}
+            >
+              <Card
+                size="small"
+                style={{
+                  background: '#f9f9f9',
+                  border: '1px dashed #d9d9d9',
+                  marginBottom: 16,
+                }}
+              >
+                <Text strong>Filter by Payment Method:</Text>
+                <div style={{ marginTop: 12 }}>
+                  <Radio.Group
+                    value={activePaymentFilter}
+                    onChange={(e) => setActivePaymentFilter(e.target.value)}
+                    buttonStyle="solid"
+                    style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}
+                  >
+                    <Radio.Button value="All" style={{ marginRight: 8 }}>
+                      <Space>
+                        <FilterOutlined /> All Methods
+                      </Space>
+                    </Radio.Button>
+
+                    {uniquePaymentMethods.map((method) => {
+                      const config = getPaymentMethodConfig(method);
+                      const text = getDisplayText(method);
+                      return (
+                        <Radio.Button
+                          key={method}
+                          value={method}
+                          style={{
+                            marginRight: 8,
+                            borderColor: config.color,
+                            ...(activePaymentFilter === method
+                              ? {
+                                  backgroundColor: config.color,
+                                  color: '#fff',
+                                }
+                              : {}),
+                          }}
+                        >
+                          <Badge
+                            dot={activePaymentFilter === method}
+                            color={config.color}
+                          >
+                            <Space>
+                              {config.icon} {text}
+                            </Space>
+                          </Badge>
+                        </Radio.Button>
+                      );
+                    })}
+                  </Radio.Group>
+                </div>
+              </Card>
+            </motion.div>
+          )}
+
           {hasTransactions ? (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -421,7 +587,7 @@ const Transaction = () => {
             >
               <Table
                 columns={columns as any}
-                dataSource={bills}
+                dataSource={filteredBills}
                 rowKey="id"
                 pagination={{
                   pageSize: 10,
@@ -436,7 +602,10 @@ const Transaction = () => {
                       </Table.Summary.Cell>
                       <Table.Summary.Cell index={1} colSpan={1}>
                         <Text type="danger" strong>
-                          ₫{summaryStats.totalAmount.toLocaleString()}
+                          ₫
+                          {filteredBills
+                            .reduce((sum, bill) => sum + (bill.amount || 0), 0)
+                            .toLocaleString()}
                         </Text>
                       </Table.Summary.Cell>
                       <Table.Summary.Cell index={2} colSpan={4} />
@@ -446,7 +615,18 @@ const Transaction = () => {
                 bordered
                 scroll={{ x: 'max-content' }}
                 locale={{ emptyText: 'No transactions found' }}
-                rowClassName={(_, index) => `table-row-motion row-${index}`}
+                rowClassName={(record, index) => {
+                  const methodType = record.paymentMethod
+                    ?.toLowerCase()
+                    .includes('bank')
+                    ? 'banking'
+                    : record.paymentMethod?.toLowerCase().includes('vnpay')
+                      ? 'vnpay'
+                      : record.paymentMethod?.toLowerCase().includes('payos')
+                        ? 'payos'
+                        : '';
+                  return `table-row-motion row-${index} payment-method-${methodType}`;
+                }}
                 className="transaction-table"
               />
             </motion.div>
@@ -557,6 +737,37 @@ const Transaction = () => {
         
         .ant-card {
           box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        /* Payment Method Row Highlighting */
+        .payment-method-vnpay {
+          background-color: rgba(0, 119, 200, 0.03);
+        }
+        
+        .payment-method-vnpay:hover {
+          background-color: rgba(0, 119, 200, 0.08) !important;
+        }
+        
+        .payment-method-banking {
+          background-color: rgba(56, 158, 13, 0.03);
+        }
+        
+        .payment-method-banking:hover {
+          background-color: rgba(56, 158, 13, 0.08) !important;
+        }
+        
+        .payment-method-payos {
+          background-color: rgba(114, 46, 209, 0.03);
+        }
+        
+        .payment-method-payos:hover {
+          background-color: rgba(114, 46, 209, 0.08) !important;
+        }
+
+        /* Make the payment method buttons more distinct */
+        .ant-radio-button-wrapper:hover {
+          transform: translateY(-2px);
+          transition: all 0.3s ease;
         }
       `,
         }}

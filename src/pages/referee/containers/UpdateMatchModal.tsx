@@ -15,14 +15,14 @@ import {
   Tooltip,
 } from 'antd';
 import moment from 'moment';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../../redux/store';
+import { fetchUserById } from '../../../modules/User/hooks/useGetUserById';
+import { User } from '../../../modules/User/models';
 import { IMatch } from '@src/modules/Match/models';
-import { useUpdateMatch } from '@src/modules/Match/hooks/useUpdateMatch';
 import { useGetAllReferees } from '@src/modules/User/hooks/useGetAllReferee';
 import { useGetVenueBySponserId } from '@src/modules/Venues/hooks/useGetVenueBySponserId';
-import { useSelector } from 'react-redux';
-import { RootState } from '@src/redux/store';
-import { fetchUserById } from '@src/modules/User/hooks/useGetUserById';
-import { User } from '@src/modules/User/models';
+import { useUpdateMatch } from '@src/modules/Match/hooks/useUpdateMatch';
 
 const { Option } = Select;
 const { Panel } = Collapse;
@@ -46,7 +46,8 @@ const UpdateMatchModal: React.FC<UpdateMatchModalProps> = ({
   const { data: referees } = useGetAllReferees();
   const { data: venues } = useGetVenueBySponserId(user?.id || 0);
   const { mutate: updateMatch } = useUpdateMatch();
-  const [, setUserDetails] = useState<User[]>([]);
+  const [matchFormat, setMatchFormat] = useState<number>(match?.matchFormat);
+  const [userDetails, setUserDetails] = useState<User[]>([]);
   const userCache = useRef<Map<number, User>>(new Map());
   const [currentStatus, setCurrentStatus] = useState<number>(match?.status);
   const isEditable = currentStatus === 1; // Only editable if Scheduled (1)
@@ -78,6 +79,9 @@ const UpdateMatchModal: React.FC<UpdateMatchModalProps> = ({
       fetchUsers();
     }
   }, [match]);
+
+  const getUserById = (id: number) =>
+    userDetails.find((user) => user?.id === id);
 
   const handleStatusChange = (value: number) => {
     setCurrentStatus(value);
@@ -196,36 +200,36 @@ const UpdateMatchModal: React.FC<UpdateMatchModalProps> = ({
             style={{ marginBottom: 16 }}
           />
         )}
-
-        <Row gutter={16}>
-          <Col span={24}>
-            <Form.Item
-              name="status"
-              label={
-                <span style={{ fontWeight: 'bold', color: '#1890ff' }}>
-                  Match Status
-                </span>
-              }
-              rules={[
-                { required: true, message: 'Please select the match status' },
-              ]}
-            >
-              <Select
-                style={{
-                  borderColor: '#1890ff',
-                  boxShadow: '0 0 0 2px rgba(24,144,255,0.2)',
-                }}
-                disabled
-                onChange={handleStatusChange}
+        {match?.status !== 3 && (
+          <Row gutter={16}>
+            <Col span={24}>
+              <Form.Item
+                name="status"
+                label={
+                  <span style={{ fontWeight: 'bold', color: '#1890ff' }}>
+                    Match Status
+                  </span>
+                }
+                rules={[
+                  { required: true, message: 'Please select the match status' },
+                ]}
               >
-                <Option value={1}>Scheduled</Option>
-                <Option value={3}>Ongoing</Option>
-                <Option value={2}>Completed</Option>
-                <Option value={4}>Cancelled</Option>
-              </Select>
-            </Form.Item>
-          </Col>
-        </Row>
+                <Select
+                  style={{
+                    borderColor: '#1890ff',
+                    boxShadow: '0 0 0 2px rgba(24,144,255,0.2)',
+                  }}
+                  disabled={!isEditable}
+                  onChange={handleStatusChange}
+                >
+                  <Option value={1}>Scheduled</Option>
+                  <Option value={2}>Ongoing</Option>
+                  <Option value={4}>Cancelled</Option>
+                </Select>
+              </Form.Item>
+            </Col>
+          </Row>
+        )}
 
         <Collapse defaultActiveKey={['1']}>
           <Panel header="Match Details" key="1">
