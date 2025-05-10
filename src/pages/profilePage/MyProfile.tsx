@@ -39,6 +39,7 @@ import { useAddFriend } from '@src/modules/Friend/hooks/useAddFriend';
 import { AddFriendRequest } from '@src/modules/Friend/models';
 import { useJoinMatch } from '@src/modules/Match/hooks/useJoinMatch';
 import { Link } from 'react-router-dom';
+import Achievement from '@src/components/Achievement';
 
 const { Option } = Select;
 const { Search } = Input;
@@ -227,7 +228,9 @@ const MyProfile: React.FC = () => {
           </Col>
         </Row>
       </Card>
-
+      <div className="profile-content">
+        <Achievement userId={Number(id)} />
+      </div>
       {/* Content */}
       <div className="profile-content">
         <Row gutter={[24, 24]}>
